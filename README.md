@@ -14,9 +14,11 @@ Built with .NET 8 WPF, a plugin DLL architecture, and a visual Scratch-like sequ
 - **Live Data window** — floating OxyPlot chart + measurement table, one window per instrument
 - **Visual sequence editor** — drag-and-drop block programming (Start → Measure → Loop → Save CSV → End)
 - **VISA auto-discovery** — scans USB, GPIB, TCPIP and serial for connected instruments
+- **Instrument auto-detection** — sends `*IDN?` to the selected resource and highlights the matching driver automatically
 - **Simulation mode** — runs without NI-VISA installed; great for UI development
 - **Plugin architecture** — each instrument is an independent DLL, loaded at runtime
 - **Data viewer** — live charts and tables from sequence runs
+- **About dialog** — version, author and GitHub link accessible via the toolbar
 
 ## Supported Instruments
 
@@ -70,8 +72,8 @@ Update checks require an internet connection. If GitHub is unreachable (e.g. iso
 
 1. Run `InstrumentControl.exe` (installed or portable)
 2. Click **Add Instrument** in the left sidebar
-3. In the Connection Manager, click **Refresh** to scan for VISA resources
-4. Select a resource and a driver, then click **Connect**
+3. The Connection Manager opens and scans for VISA resources automatically
+4. Select a resource — the app queries it with `*IDN?` and highlights the matching driver; select a driver manually if needed, then click **Connect**
 5. The **Front Panel** tab opens — use it to control the instrument directly
 6. Switch to the **Sequence Editor** tab to build automated measurement programs:
    - Drag blocks from the left toolbox onto the canvas
