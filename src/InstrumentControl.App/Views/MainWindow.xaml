@@ -1,4 +1,5 @@
 <Window x:Class="InstrumentControl.App.Views.MainWindow"
+        Icon="/Resources/InstrumentControl.ico"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:vm="clr-namespace:InstrumentControl.App.ViewModels"
@@ -33,34 +34,60 @@
         </Menu>
 
         <!-- Toolbar -->
-        <ToolBar DockPanel.Dock="Top" Background="#F8F9FA" Height="40">
-            <Button Style="{StaticResource AccentButtonStyle}" Margin="2,0"
-                    Click="MenuAddInstrument_Click" ToolTip="Dodaj przyrząd (Ctrl+N)">
-                ➕ Dodaj przyrząd
+        <Grid DockPanel.Dock="Top" Height="40" Background="#F8F9FA">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+            <ToolBar Grid.Column="0" Background="#F8F9FA" Height="40">
+                <Button Style="{StaticResource AccentButtonStyle}" Margin="2,0"
+                        Click="MenuAddInstrument_Click" ToolTip="Dodaj przyrząd (Ctrl+N)">
+                    ➕ Dodaj przyrząd
+                </Button>
+                <Separator/>
+                <Button Style="{StaticResource SuccessButtonStyle}" Margin="2,0"
+                        Command="{Binding SeqVm.RunSequenceCommand}" ToolTip="Uruchom sekwencję (F5)">
+                    ▶ Uruchom
+                </Button>
+                <Button Style="{StaticResource PrimaryButtonStyle}" Margin="2,0"
+                        Command="{Binding SeqVm.PauseSequenceCommand}">
+                    <TextBlock Text="{Binding SeqVm.IsPaused, Converter={StaticResource PauseResumeConverter}}"/>
+                </Button>
+                <Button Style="{StaticResource DangerButtonStyle}" Margin="2,0"
+                        Command="{Binding SeqVm.StopSequenceCommand}" IsEnabled="{Binding SeqVm.IsRunning}">
+                    ■ Stop
+                </Button>
+                <Separator/>
+                <Button Style="{StaticResource BaseButtonStyle}" Background="White" Margin="2,0"
+                        Command="{Binding SeqVm.OpenSequenceCommand}">
+                    📂 Otwórz
+                </Button>
+                <Button Style="{StaticResource BaseButtonStyle}" Background="White" Margin="2,0"
+                        Command="{Binding SeqVm.SaveSequenceCommand}">
+                    💾 Zapisz
+                </Button>
+            </ToolBar>
+            <Button Grid.Column="1" Click="AboutButton_Click"
+                    Background="Transparent" BorderThickness="0"
+                    Margin="0,0,8,0" Padding="10,0" Cursor="Hand"
+                    ToolTip="O programie" VerticalAlignment="Stretch"
+                    Foreground="#7F8C8D" FontSize="13">
+                <Button.Template>
+                    <ControlTemplate TargetType="Button">
+                        <Border Background="{TemplateBinding Background}"
+                                Padding="{TemplateBinding Padding}">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter Property="Background" Value="#E8ECF0"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Button.Template>
+                ℹ O programie
             </Button>
-            <Separator/>
-            <Button Style="{StaticResource SuccessButtonStyle}" Margin="2,0"
-                    Command="{Binding SeqVm.RunSequenceCommand}" ToolTip="Uruchom sekwencję (F5)">
-                ▶ Uruchom
-            </Button>
-            <Button Style="{StaticResource PrimaryButtonStyle}" Margin="2,0"
-                    Command="{Binding SeqVm.PauseSequenceCommand}">
-                <TextBlock Text="{Binding SeqVm.IsPaused, Converter={StaticResource PauseResumeConverter}}"/>
-            </Button>
-            <Button Style="{StaticResource DangerButtonStyle}" Margin="2,0"
-                    Command="{Binding SeqVm.StopSequenceCommand}" IsEnabled="{Binding SeqVm.IsRunning}">
-                ■ Stop
-            </Button>
-            <Separator/>
-            <Button Style="{StaticResource BaseButtonStyle}" Background="White" Margin="2,0"
-                    Command="{Binding SeqVm.OpenSequenceCommand}">
-                📂 Otwórz
-            </Button>
-            <Button Style="{StaticResource BaseButtonStyle}" Background="White" Margin="2,0"
-                    Command="{Binding SeqVm.SaveSequenceCommand}">
-                💾 Zapisz
-            </Button>
-        </ToolBar>
+        </Grid>
 
         <!-- Status Bar -->
         <StatusBar DockPanel.Dock="Bottom" Background="{StaticResource PrimaryBrush}" Foreground="White">
