@@ -52,6 +52,9 @@ public partial class MainWindow : Window
         }
     }
 
+    private void AboutButton_Click(object sender, RoutedEventArgs e) =>
+        new AboutWindow { Owner = this }.ShowDialog();
+
     private void MenuExit_Click(object sender, RoutedEventArgs e) => Close();
 
     protected override void OnClosed(EventArgs e)

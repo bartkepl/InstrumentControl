@@ -14,6 +14,9 @@ public partial class DriverInfoVm : ObservableObject
     public string Name => $"{Driver.Manufacturer} {Driver.Model}";
     public string Description => Driver.Description;
 
+    [ObservableProperty] private bool _isDetected;
+    [ObservableProperty] private bool _isGrayedOut;
+
     public DriverInfoVm(IInstrumentDriver driver) => Driver = driver;
 }
 
@@ -21,6 +24,7 @@ public partial class ConnectionManagerViewModel : ViewModelBase
 {
     private readonly VisaService _visaService;
     private readonly PluginLoader _pluginLoader;
+    private CancellationTokenSource? _detectCts;
 
     [ObservableProperty] private ObservableCollection<string> _availableResources = new();
     [ObservableProperty] private ObservableCollection<string> _availableComPorts = new();
@@ -34,6 +38,8 @@ public partial class ConnectionManagerViewModel : ViewModelBase
     [ObservableProperty] private string _testResult = string.Empty;
     [ObservableProperty] private bool _useSimulation;
     [ObservableProperty] private int _comBaudRate = 9600;
+    [ObservableProperty] private string _detectedIdnText = string.Empty;
+    [ObservableProperty] private bool _isAutoDetecting;
 
     public bool ConnectionSuccessful { get; private set; }
     public IInstrumentDriver? ConnectedDriver { get; private set; }
@@ -57,10 +63,113 @@ public partial class ConnectionManagerViewModel : ViewModelBase
         SelectedDriver = AvailableDrivers.FirstOrDefault();
     }
 
+    // ── Auto-detection ───────────────────────────────────────────────────────
+
+    partial void OnSelectedResourceChanged(string value)
+    {
+        bool canAutoDetect = !string.IsNullOrEmpty(value)
+            && !value.StartsWith("ASRL", StringComparison.OrdinalIgnoreCase)
+            && !value.StartsWith("SIM::", StringComparison.OrdinalIgnoreCase)
+            && !UseSimulation;
+
+        if (canAutoDetect)
+            TriggerAutoDetect(value);
+        else
+            ClearDetection();
+    }
+
+    private void TriggerAutoDetect(string resource)
+    {
+        _detectCts?.Cancel();
+        _detectCts = new CancellationTokenSource();
+        _ = AutoDetectAsync(resource, _detectCts.Token);
+    }
+
+    private async Task AutoDetectAsync(string resource, CancellationToken ct)
+    {
+        IsAutoDetecting = true;
+        DetectedIdnText = string.Empty;
+        ClearDetectionMarkers();
+
+        // Debounce — rapid list navigation shouldn't spam VISA
+        try { await Task.Delay(350, ct); }
+        catch (OperationCanceledException) { IsAutoDetecting = false; return; }
+
+        if (ct.IsCancellationRequested) { IsAutoDetecting = false; return; }
+
+        string? idn = null;
+        try
+        {
+            idn = await Task.Run(async () =>
+            {
+                var conn = _visaService.OpenVisaSession(resource);
+                await conn.OpenAsync();
+                try
+                {
+                    return await conn.QueryAsync("*IDN?", 2000);
+                }
+                finally
+                {
+                    try { await conn.CloseAsync(); } catch { }
+                    conn.Dispose();
+                }
+            }, ct);
+        }
+        catch (OperationCanceledException) { IsAutoDetecting = false; return; }
+        catch { /* device may not support *IDN? or be on a different bus */ }
+
+        if (ct.IsCancellationRequested) { IsAutoDetecting = false; return; }
+
+        if (!string.IsNullOrWhiteSpace(idn))
+        {
+            var matched = MatchDriver(idn);
+            DetectedIdnText = $"IDN: {idn.Trim()}";
+            foreach (var dvm in AvailableDrivers)
+            {
+                dvm.IsDetected = dvm == matched;
+                dvm.IsGrayedOut = matched != null && dvm != matched;
+            }
+            if (matched != null)
+                SelectedDriver = matched;
+        }
+
+        IsAutoDetecting = false;
+    }
+
+    private DriverInfoVm? MatchDriver(string idn)
+    {
+        string upper = idn.ToUpperInvariant();
+        return AvailableDrivers.FirstOrDefault(d =>
+            !string.IsNullOrEmpty(d.Driver.Model) &&
+            upper.Contains(d.Driver.Model.ToUpperInvariant()));
+    }
+
+    private void ClearDetectionMarkers()
+    {
+        foreach (var dvm in AvailableDrivers)
+        {
+            dvm.IsDetected = false;
+            dvm.IsGrayedOut = false;
+        }
+    }
+
+    private void ClearDetection()
+    {
+        _detectCts?.Cancel();
+        DetectedIdnText = string.Empty;
+        IsAutoDetecting = false;
+        ClearDetectionMarkers();
+    }
+
+    public void CancelPending() => _detectCts?.Cancel();
+
+    // ── Commands ──────────────────────────────────────────────────────────────
+
     [RelayCommand]
     private async Task RefreshResources()
     {
         IsBusy = true;
+        ClearDetection();
         StatusText = "Skanowanie zasobów VISA...";
         await Task.Run(() =>
         {
@@ -129,7 +238,6 @@ public partial class ConnectionManagerViewModel : ViewModelBase
             ConnectionSuccessful = true;
             StatusText = $"Połączono: {driver.InstrumentInfo?.DisplayName}";
 
-            // Close the dialog window
             if (Application.Current.Windows.OfType<Views.ConnectionManagerWindow>().FirstOrDefault() is { } wnd)
                 wnd.DialogResult = true;
         }
