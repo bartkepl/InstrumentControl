@@ -1,0 +1,135 @@
+<UserControl x:Class="InstrumentControl.App.Views.SequenceEditorView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="clr-namespace:InstrumentControl.App.ViewModels"
+             xmlns:ctrl="clr-namespace:InstrumentControl.App.Controls"
+             Background="{StaticResource BackgroundBrush}">
+
+    <UserControl.Resources>
+        <BooleanToVisibilityConverter x:Key="BoolToVis"/>
+    </UserControl.Resources>
+
+    <DockPanel>
+        <!-- Top toolbar -->
+        <Border DockPanel.Dock="Top" Background="White" Padding="6,5" BorderBrush="#DDD" BorderThickness="0,0,0,1">
+            <DockPanel>
+                <StackPanel Orientation="Horizontal" DockPanel.Dock="Left">
+                    <Button Content="▶ Uruchom" Style="{StaticResource SuccessButtonStyle}"
+                            Command="{Binding RunSequenceCommand}" Margin="2,0"
+                            IsEnabled="{Binding IsRunning, Converter={StaticResource InverseBoolConverter}}"/>
+                    <Button Style="{StaticResource PrimaryButtonStyle}" Margin="2,0"
+                            Command="{Binding PauseSequenceCommand}">
+                        <TextBlock Text="{Binding IsPaused, Converter={StaticResource PauseResumeConverter}}"/>
+                    </Button>
+                    <Button Content="■ Stop" Style="{StaticResource DangerButtonStyle}"
+                            Command="{Binding StopSequenceCommand}"
+                            IsEnabled="{Binding IsRunning}" Margin="2,0"/>
+                    <Separator Margin="4,0"/>
+                    <Button Content="🗋 Nowa" Style="{StaticResource BaseButtonStyle}" Background="White"
+                            Command="{Binding NewSequenceCommand}" Margin="2,0"/>
+                    <Button Content="📂 Otwórz" Style="{StaticResource BaseButtonStyle}" Background="White"
+                            Command="{Binding OpenSequenceCommand}" Margin="2,0"/>
+                    <Button Content="💾 Zapisz" Style="{StaticResource BaseButtonStyle}" Background="White"
+                            Command="{Binding SaveSequenceCommand}" Margin="2,0"/>
+                </StackPanel>
+
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" DockPanel.Dock="Right">
+                    <TextBlock Text="Sekwencja: " VerticalAlignment="Center" FontSize="12" Foreground="#7F8C8D"/>
+                    <TextBox Text="{Binding SequenceName, UpdateSourceTrigger=PropertyChanged}"
+                             Width="200" Padding="6,4" FontSize="13" FontWeight="SemiBold"
+                             VerticalAlignment="Center"/>
+                    <TextBlock Text="  Stan: " VerticalAlignment="Center" FontSize="12" Foreground="#7F8C8D"/>
+                    <TextBlock Text="{Binding SequenceStatus}" VerticalAlignment="Center"
+                               FontSize="12" FontWeight="SemiBold" Foreground="{StaticResource AccentBrush}"/>
+                </StackPanel>
+            </DockPanel>
+        </Border>
+
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="200" MinWidth="150"/>
+                <ColumnDefinition Width="3"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+
+            <!-- Toolbox (left) -->
+            <Border Grid.Column="0" Background="White" BorderBrush="#DDD" BorderThickness="0,0,1,0">
+                <DockPanel>
+                    <Border DockPanel.Dock="Top" Background="#F8F9FA" Padding="8,6" BorderBrush="#EEE" BorderThickness="0,0,0,1">
+                        <TextBlock Text="BLOKI" FontSize="11" FontWeight="Bold" Foreground="#7F8C8D"/>
+                    </Border>
+                    <ScrollViewer x:Name="ToolboxScrollViewer" VerticalScrollBarVisibility="Auto">
+                        <!-- Content replaced by code-behind BuildToolbox() -->
+                    </ScrollViewer>
+                </DockPanel>
+            </Border>
+
+            <GridSplitter Grid.Column="1" Width="3" HorizontalAlignment="Stretch" Background="#DDD"/>
+
+            <!-- Canvas area -->
+            <Grid Grid.Column="2">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="3"/>
+                    <RowDefinition Height="140"/>
+                </Grid.RowDefinitions>
+
+                <!-- Block canvas -->
+                <ctrl:BlockCanvas x:Name="TheBlockCanvas" Grid.Row="0"
+                                  Blocks="{Binding Blocks}"
+                                  Connections="{Binding Connections}"
+                                  SelectedBlock="{Binding SelectedBlock, Mode=TwoWay}"
+                                  ExecutingBlockId="{Binding ExecutingBlockId}"
+                                  BlockDropped="TheBlockCanvas_BlockDropped"
+                                  BlockConnected="TheBlockCanvas_BlockConnected"
+                                  BlockDeleted="TheBlockCanvas_BlockDeleted"
+                                  ConnectionDeleted="TheBlockCanvas_ConnectionDeleted"/>
+
+                <GridSplitter Grid.Row="1" Height="3" HorizontalAlignment="Stretch" Background="#CCC"/>
+
+                <!-- Properties panel / Log at bottom -->
+                <Grid Grid.Row="2">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="3"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+
+                    <!-- Block properties -->
+                    <Border Grid.Column="0" Background="White" Padding="8">
+                        <DockPanel>
+                            <TextBlock DockPanel.Dock="Top" Text="WŁAŚCIWOŚCI BLOKU"
+                                       Style="{StaticResource SectionHeaderStyle}"/>
+                            <ctrl:BlockPropertiesEditor x:Name="PropsEditor"
+                                                        SelectedBlock="{Binding SelectedBlock}"
+                                                        InstrumentNames="{Binding ConnectedInstrumentNames}"/>
+                        </DockPanel>
+                    </Border>
+
+                    <GridSplitter Grid.Column="1" Width="3" HorizontalAlignment="Stretch" Background="#CCC"/>
+
+                    <!-- Execution log -->
+                    <Border Grid.Column="2" Background="#1E1E1E" Padding="8">
+                        <DockPanel>
+                            <DockPanel DockPanel.Dock="Top">
+                                <TextBlock Text="LOG WYKONANIA" FontSize="11" FontWeight="Bold"
+                                           Foreground="#95A5A6" DockPanel.Dock="Left"/>
+                                <Button Content="Wyczyść" HorizontalAlignment="Right" Foreground="#7F8C8D"
+                                        Background="Transparent" BorderThickness="0" FontSize="11"
+                                        Click="ClearLog_Click"/>
+                            </DockPanel>
+                            <ScrollViewer x:Name="LogScrollViewer" VerticalScrollBarVisibility="Auto"
+                                          CanContentScroll="True">
+                                <TextBox IsReadOnly="True" Text="{Binding LogText, Mode=OneWay}"
+                                         FontFamily="Consolas" FontSize="11"
+                                         Foreground="#00FF41" Background="Transparent"
+                                         BorderThickness="0" TextWrapping="Wrap"
+                                         x:Name="LogTextBox"/>
+                            </ScrollViewer>
+                        </DockPanel>
+                    </Border>
+                </Grid>
+            </Grid>
+        </Grid>
+    </DockPanel>
+</UserControl>

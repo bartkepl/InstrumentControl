@@ -1,0 +1,30 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net8.0-windows</TargetFramework>
+    <UseWPF>true</UseWPF>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <AssemblyName>InstrumentControl</AssemblyName>
+    <RootNamespace>InstrumentControl.App</RootNamespace>
+  </PropertyGroup>
+  <ItemGroup>
+    <!-- Zmiana App.xaml z ApplicationDefinition na Page — WPF nie generuje wtedy własnej metody Main,
+         co pozwala Program.cs zdefiniować jawny [STAThread] Main wymagany przez Velopack. -->
+    <ApplicationDefinition Remove="App.xaml" />
+    <Page Include="App.xaml" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Velopack" Version="1.2.0" />
+    <PackageReference Include="CommunityToolkit.Mvvm" Version="8.3.2" />
+    <PackageReference Include="OxyPlot.Wpf" Version="2.1.2" />
+    <PackageReference Include="Microsoft.Xaml.Behaviors.Wpf" Version="1.1.135" />
+    <PackageReference Include="System.Composition" Version="8.0.0" />
+    <PackageReference Include="System.Composition.AttributedModel" Version="8.0.0" />
+    <PackageReference Include="System.Composition.Hosting" Version="8.0.0" />
+    <PackageReference Include="System.Composition.Runtime" Version="8.0.0" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\InstrumentControl.Core\InstrumentControl.Core.csproj" />
+  </ItemGroup>
+</Project>

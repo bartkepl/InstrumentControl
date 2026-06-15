@@ -1,0 +1,910 @@
+<UserControl x:Class="Keithley2000.Views.Keithley2000FrontPanelView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             mc:Ignorable="d"
+             d:DesignHeight="720" d:DesignWidth="840"
+             MinWidth="680" MinHeight="580"
+             Background="#D4D0CC">
+
+    <UserControl.Resources>
+        <BooleanToVisibilityConverter x:Key="BoolToVis"/>
+
+        <!-- ── Colours: authentic Keithley 2000 gray body + teal VFD ─────────── -->
+        <SolidColorBrush x:Key="PanelBg"         Color="#D4D0CC"/>
+        <SolidColorBrush x:Key="BezelBg"         Color="#C4C0BC"/>
+        <!-- Dark buttons — accurate to real K2000 round dark buttons -->
+        <SolidColorBrush x:Key="DisplayBg"       Color="#010603"/>
+        <SolidColorBrush x:Key="DisplayTeal"     Color="#00E5CC"/>
+        <SolidColorBrush x:Key="DisplayDimTeal"  Color="#003D38"/>
+        <SolidColorBrush x:Key="ButtonBg"        Color="#2C3040"/>
+        <SolidColorBrush x:Key="ButtonHover"     Color="#383D52"/>
+        <SolidColorBrush x:Key="ButtonPressed"   Color="#1E2230"/>
+        <SolidColorBrush x:Key="ButtonBorder"    Color="#4A5068"/>
+        <SolidColorBrush x:Key="ActiveFn"        Color="#CC0000"/>
+        <SolidColorBrush x:Key="ActiveRange"     Color="#AA0000"/>
+        <SolidColorBrush x:Key="ActiveNplc"      Color="#880000"/>
+        <SolidColorBrush x:Key="ActiveMath"      Color="#006688"/>
+        <SolidColorBrush x:Key="MeasureKRed"     Color="#880000"/>
+        <SolidColorBrush x:Key="ResetRed"        Color="#CC0000"/>
+        <SolidColorBrush x:Key="LabelFg"         Color="#303030"/>
+        <SolidColorBrush x:Key="StatusBg"        Color="#B8B4B0"/>
+        <SolidColorBrush x:Key="StatsBg"         Color="#C8C4C0"/>
+        <SolidColorBrush x:Key="SectionBg"       Color="#C8C4C0"/>
+
+        <!-- ── Dark toggle button (authentic Keithley look) ─────────────────── -->
+        <Style x:Key="DmmToggleBase" TargetType="ToggleButton">
+            <Setter Property="Height" Value="30"/>
+            <Setter Property="Foreground" Value="#D0D4DC"/>
+            <Setter Property="Background" Value="{StaticResource ButtonBg}"/>
+            <Setter Property="BorderBrush" Value="{StaticResource ButtonBorder}"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="FontFamily" Value="Consolas"/>
+            <Setter Property="FontSize" Value="11"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="ToggleButton">
+                        <Border x:Name="bd"
+                                Background="{TemplateBinding Background}"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="{TemplateBinding BorderThickness}"
+                                CornerRadius="14" Padding="3,2">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="bd" Property="Background" Value="{StaticResource ButtonHover}"/>
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter TargetName="bd" Property="Background" Value="{StaticResource ButtonPressed}"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style x:Key="FnButton" TargetType="ToggleButton" BasedOn="{StaticResource DmmToggleBase}">
+            <Style.Triggers>
+                <Trigger Property="IsChecked" Value="True">
+                    <Setter Property="Background" Value="{StaticResource ActiveFn}"/>
+                    <Setter Property="Foreground" Value="White"/>
+                    <Setter Property="BorderBrush" Value="#FF4040"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+
+        <Style x:Key="RangeButton" TargetType="ToggleButton" BasedOn="{StaticResource DmmToggleBase}">
+            <Setter Property="Height" Value="26"/>
+            <Style.Triggers>
+                <Trigger Property="IsChecked" Value="True">
+                    <Setter Property="Background" Value="{StaticResource ActiveRange}"/>
+                    <Setter Property="Foreground" Value="White"/>
+                    <Setter Property="BorderBrush" Value="#DD2222"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+
+        <Style x:Key="NplcButton" TargetType="ToggleButton" BasedOn="{StaticResource DmmToggleBase}">
+            <Setter Property="Height" Value="26"/>
+            <Style.Triggers>
+                <Trigger Property="IsChecked" Value="True">
+                    <Setter Property="Background" Value="{StaticResource ActiveNplc}"/>
+                    <Setter Property="Foreground" Value="White"/>
+                    <Setter Property="BorderBrush" Value="#BB1818"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+
+        <Style x:Key="TcButton" TargetType="ToggleButton" BasedOn="{StaticResource DmmToggleBase}">
+            <Setter Property="Height" Value="26"/>
+            <Style.Triggers>
+                <Trigger Property="IsChecked" Value="True">
+                    <Setter Property="Background" Value="#004488"/>
+                    <Setter Property="Foreground" Value="White"/>
+                    <Setter Property="BorderBrush" Value="#2266CC"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+
+        <Style x:Key="MathButton" TargetType="ToggleButton" BasedOn="{StaticResource DmmToggleBase}">
+            <Setter Property="Height" Value="26"/>
+            <Setter Property="FontSize" Value="10"/>
+            <Style.Triggers>
+                <Trigger Property="IsChecked" Value="True">
+                    <Setter Property="Background" Value="{StaticResource ActiveMath}"/>
+                    <Setter Property="Foreground" Value="White"/>
+                    <Setter Property="BorderBrush" Value="#00AACC"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+
+        <Style x:Key="SectionLabel" TargetType="TextBlock">
+            <Setter Property="Foreground" Value="{StaticResource LabelFg}"/>
+            <Setter Property="FontSize" Value="9"/>
+            <Setter Property="FontFamily" Value="Segoe UI"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="Margin" Value="0,4,0,2"/>
+        </Style>
+
+        <Style x:Key="ActionButton" TargetType="Button">
+            <Setter Property="Height" Value="38"/>
+            <Setter Property="FontFamily" Value="Segoe UI"/>
+            <Setter Property="FontSize" Value="13"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="bd" Background="{TemplateBinding Background}" CornerRadius="5">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="bd" Property="Opacity" Value="0.85"/>
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter TargetName="bd" Property="Opacity" Value="0.65"/>
+                            </Trigger>
+                            <Trigger Property="IsEnabled" Value="False">
+                                <Setter TargetName="bd" Property="Opacity" Value="0.38"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style x:Key="SmallButton" TargetType="Button" BasedOn="{StaticResource ActionButton}">
+            <Setter Property="Height" Value="28"/>
+            <Setter Property="FontSize" Value="11"/>
+            <Setter Property="Padding" Value="10,0"/>
+        </Style>
+
+    </UserControl.Resources>
+
+    <!-- ═══════════════════════════════════════════════════════════════════════
+         Outer bezel — Keithley light gray
+    ════════════════════════════════════════════════════════════════════════ -->
+    <Border Background="{StaticResource BezelBg}"
+            BorderBrush="#9A9694"
+            BorderThickness="2"
+            CornerRadius="6"
+            Margin="6">
+
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>   <!-- 0  brand strip      -->
+                <RowDefinition Height="Auto"/>   <!-- 1  LCD display      -->
+                <RowDefinition Height="Auto"/>   <!-- 2  separator        -->
+                <RowDefinition Height="Auto"/>   <!-- 3  Function rows    -->
+                <RowDefinition Height="Auto"/>   <!-- 4  TC type (TEMP)   -->
+                <RowDefinition Height="Auto"/>   <!-- 5  MATH             -->
+                <RowDefinition Height="Auto"/>   <!-- 6  Range + NPLC     -->
+                <RowDefinition Height="Auto"/>   <!-- 7  LCD control      -->
+                <RowDefinition Height="Auto"/>   <!-- 8  Auto-zero+Burst  -->
+                <RowDefinition Height="Auto"/>   <!-- 9  LIMIT test       -->
+                <RowDefinition Height="Auto"/>   <!-- 10 Continuous ctrl  -->
+                <RowDefinition Height="Auto"/>   <!-- 11 Statistics       -->
+                <RowDefinition Height="Auto"/>   <!-- 12 Action buttons   -->
+                <RowDefinition Height="*"/>      <!-- 13 spacer           -->
+                <RowDefinition Height="Auto"/>   <!-- 14 status bar       -->
+            </Grid.RowDefinitions>
+
+            <!-- ── Brand strip ───────────────────────────────────────────────── -->
+            <Border Grid.Row="0" Background="#B0ACA8" CornerRadius="4,4,0,0" Padding="14,6">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+
+                    <StackPanel Grid.Column="0" Orientation="Vertical" VerticalAlignment="Center">
+                        <Border Background="#CC0000" CornerRadius="2" Padding="6,2">
+                            <TextBlock Text="KEITHLEY" Foreground="White" FontFamily="Arial"
+                                       FontSize="9" FontWeight="Bold"/>
+                        </Border>
+                        <TextBlock Text="A Tektronix Company" Foreground="#606060" FontFamily="Arial"
+                                   FontSize="7" Margin="1,1,0,0"/>
+                    </StackPanel>
+
+                    <TextBlock Grid.Column="1" Text="2000 MULTIMETER"
+                               Foreground="#101010" FontFamily="Arial"
+                               FontSize="18" FontWeight="Bold" HorizontalAlignment="Center"/>
+
+                    <StackPanel Grid.Column="2" VerticalAlignment="Center">
+                        <TextBlock Text="6½ DIGIT"
+                                   Foreground="#CC0000" FontFamily="Arial" FontSize="9"
+                                   HorizontalAlignment="Right" FontWeight="Bold"/>
+                        <TextBlock Text="TRUE RMS"
+                                   Foreground="#606060" FontFamily="Arial" FontSize="8"
+                                   HorizontalAlignment="Right"/>
+                    </StackPanel>
+                </Grid>
+            </Border>
+
+            <!-- ── LCD Display (teal VFD) ────────────────────────────────────── -->
+            <Border Grid.Row="1"
+                    Background="{StaticResource DisplayBg}"
+                    BorderBrush="#050E05"
+                    BorderThickness="4" CornerRadius="4"
+                    Margin="14,8,14,2" Padding="10,8">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+
+                    <!-- Main reading -->
+                    <Grid Grid.Row="0">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+
+                        <TextBlock Grid.Column="0"
+                                   Text="{Binding DisplayValue}"
+                                   Foreground="{StaticResource DisplayTeal}"
+                                   FontFamily="Consolas" FontSize="50" FontWeight="Bold"
+                                   HorizontalAlignment="Right" VerticalAlignment="Center"
+                                   TextAlignment="Right" TextTrimming="CharacterEllipsis">
+                            <TextBlock.Effect>
+                                <DropShadowEffect Color="#00E5CC" BlurRadius="12" ShadowDepth="0" Opacity="0.45"/>
+                            </TextBlock.Effect>
+                        </TextBlock>
+
+                        <StackPanel Grid.Column="1" VerticalAlignment="Bottom" Margin="6,0,0,6">
+                            <TextBlock Text="{Binding DisplayUnit}"
+                                       Foreground="{StaticResource DisplayTeal}"
+                                       FontFamily="Consolas" FontSize="20" FontWeight="Bold">
+                                <TextBlock.Effect>
+                                    <DropShadowEffect Color="#00E5CC" BlurRadius="8" ShadowDepth="0" Opacity="0.40"/>
+                                </TextBlock.Effect>
+                            </TextBlock>
+                        </StackPanel>
+                    </Grid>
+
+                    <!-- Info bar -->
+                    <Grid Grid.Row="1" Margin="0,4,0,0">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+
+                        <Border Grid.Column="0" Background="#051205" CornerRadius="2" Padding="6,1" Margin="0,0,8,0">
+                            <TextBlock Text="{Binding DisplayFunction}"
+                                       Foreground="{StaticResource DisplayTeal}"
+                                       FontFamily="Consolas" FontSize="11" FontWeight="Bold"/>
+                        </Border>
+
+                        <Border Grid.Column="1"
+                                Visibility="{Binding IsMathActive, Converter={StaticResource BoolToVis}}"
+                                Background="#001A28" CornerRadius="2" Padding="6,1" Margin="0,0,8,0">
+                            <TextBlock Text="{Binding SelectedMathMode}"
+                                       Foreground="#40CCEE"
+                                       FontFamily="Consolas" FontSize="11" FontWeight="Bold"/>
+                        </Border>
+
+                        <TextBlock Grid.Column="2"
+                                   Text="{Binding SelectedRange, StringFormat='RNG: {0}'}"
+                                   Foreground="{StaticResource DisplayDimTeal}"
+                                   FontFamily="Consolas" FontSize="10"
+                                   VerticalAlignment="Center" Margin="0,0,8,0"/>
+
+                        <TextBlock Grid.Column="3"
+                                   Text="{Binding SelectedNplc, StringFormat='NPLC: {0}'}"
+                                   Foreground="{StaticResource DisplayDimTeal}"
+                                   FontFamily="Consolas" FontSize="10"
+                                   VerticalAlignment="Center" Margin="0,0,8,0"/>
+
+                        <TextBlock Grid.Column="4"
+                                   Text="{Binding MeasureCount, StringFormat='N={0}'}"
+                                   Foreground="{StaticResource DisplayDimTeal}"
+                                   FontFamily="Consolas" FontSize="10"
+                                   VerticalAlignment="Center" Margin="0,0,8,0"/>
+
+                        <Border Grid.Column="5"
+                                Visibility="{Binding IsMeasuring, Converter={StaticResource BoolToVis}}"
+                                Background="#661C00" CornerRadius="2" Padding="5,1">
+                            <TextBlock Text="BUSY" Foreground="#FFB060"
+                                       FontFamily="Consolas" FontSize="10" FontWeight="Bold"/>
+                        </Border>
+                    </Grid>
+                </Grid>
+            </Border>
+
+            <!-- ── Separator ─────────────────────────────────────────────────── -->
+            <Rectangle Grid.Row="2" Height="1" Fill="#9A9694" Margin="14,2"/>
+
+            <!-- ── Function buttons (2 × 6, round dark buttons) ──────────────── -->
+            <StackPanel Grid.Row="3" Margin="14,2,14,0">
+                <TextBlock Text="FUNCTION" Style="{StaticResource SectionLabel}" Foreground="#CC0000"/>
+                <UniformGrid x:Name="FunctionButtonsPanel" Rows="2" Columns="6">
+                    <ToggleButton Tag="DCV"    Style="{StaticResource FnButton}" Content="DCV"    Margin="2,1" Click="FunctionButton_Click"/>
+                    <ToggleButton Tag="ACV"    Style="{StaticResource FnButton}" Content="ACV"    Margin="2,1" Click="FunctionButton_Click"/>
+                    <ToggleButton Tag="DCI"    Style="{StaticResource FnButton}" Content="DCI"    Margin="2,1" Click="FunctionButton_Click"/>
+                    <ToggleButton Tag="ACI"    Style="{StaticResource FnButton}" Content="ACI"    Margin="2,1" Click="FunctionButton_Click"/>
+                    <ToggleButton Tag="RES2W"  Style="{StaticResource FnButton}" Content="Ω 2W"   Margin="2,1" Click="FunctionButton_Click"/>
+                    <ToggleButton Tag="RES4W"  Style="{StaticResource FnButton}" Content="Ω 4W"   Margin="2,1" Click="FunctionButton_Click"/>
+                    <ToggleButton Tag="FREQ"   Style="{StaticResource FnButton}" Content="FREQ"   Margin="2,1" Click="FunctionButton_Click"/>
+                    <ToggleButton Tag="PERIOD" Style="{StaticResource FnButton}" Content="PERIOD" Margin="2,1" Click="FunctionButton_Click"/>
+                    <ToggleButton Tag="DIODE"  Style="{StaticResource FnButton}" Content="DIODE ►|" Margin="2,1" Click="FunctionButton_Click"/>
+                    <ToggleButton Tag="CONT"   Style="{StaticResource FnButton}" Content="CONT ))))" Margin="2,1" Click="FunctionButton_Click"/>
+                    <ToggleButton Tag="TEMP"   Style="{StaticResource FnButton}" Content="TEMP °C" Margin="2,1" Click="FunctionButton_Click"/>
+                    <Border/>
+                </UniformGrid>
+            </StackPanel>
+
+            <!-- ── TC type selector (visible always, grayed when not TEMP) ───── -->
+            <Border Grid.Row="4" Margin="14,3,14,0"
+                    Background="{StaticResource SectionBg}"
+                    BorderBrush="#9A9694" BorderThickness="1" CornerRadius="4" Padding="8,4">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="12"/>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+
+                    <TextBlock Grid.Column="0" Text="TC TYPE"
+                               Foreground="#303030" FontSize="9" FontWeight="Bold"
+                               FontFamily="Segoe UI" VerticalAlignment="Center"/>
+
+                    <UniformGrid x:Name="TcButtonsPanel" Grid.Column="2" Rows="1" Columns="8">
+                        <ToggleButton Tag="J" Style="{StaticResource TcButton}" Content="J" Margin="1" Click="TcButton_Click"/>
+                        <ToggleButton Tag="K" Style="{StaticResource TcButton}" Content="K" Margin="1" Click="TcButton_Click"/>
+                        <ToggleButton Tag="T" Style="{StaticResource TcButton}" Content="T" Margin="1" Click="TcButton_Click"/>
+                        <ToggleButton Tag="E" Style="{StaticResource TcButton}" Content="E" Margin="1" Click="TcButton_Click"/>
+                        <ToggleButton Tag="N" Style="{StaticResource TcButton}" Content="N" Margin="1" Click="TcButton_Click"/>
+                        <ToggleButton Tag="R" Style="{StaticResource TcButton}" Content="R" Margin="1" Click="TcButton_Click"/>
+                        <ToggleButton Tag="S" Style="{StaticResource TcButton}" Content="S" Margin="1" Click="TcButton_Click"/>
+                        <ToggleButton Tag="B" Style="{StaticResource TcButton}" Content="B" Margin="1" Click="TcButton_Click"/>
+                    </UniformGrid>
+                </Grid>
+            </Border>
+
+            <!-- ── MATH section ───────────────────────────────────────────────── -->
+            <Border Grid.Row="5" Margin="14,3,14,0"
+                    Background="{StaticResource SectionBg}"
+                    BorderBrush="#9A9694" BorderThickness="1" CornerRadius="4"
+                    Padding="8,4">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="12"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+
+                    <TextBlock Grid.Column="0" Text="MATH"
+                               Foreground="#006688" FontSize="9" FontWeight="Bold"
+                               FontFamily="Segoe UI" VerticalAlignment="Center"/>
+
+                    <UniformGrid x:Name="MathButtonsPanel" Grid.Column="2" Rows="1" Columns="4">
+                        <ToggleButton Tag="NULL" Style="{StaticResource MathButton}" Content="REL / NULL" Margin="2,1" Click="MathButton_Click"/>
+                        <ToggleButton Tag="MXB"  Style="{StaticResource MathButton}" Content="MX+B"       Margin="2,1" Click="MathButton_Click"/>
+                        <ToggleButton Tag="PCT"  Style="{StaticResource MathButton}" Content="%"           Margin="2,1" Click="MathButton_Click"/>
+                        <ToggleButton Tag="DBM"  Style="{StaticResource MathButton}" Content="dBm"         Margin="2,1" Click="MathButton_Click"/>
+                    </UniformGrid>
+
+                    <Button Grid.Column="3" Content="MATH OFF" Width="68" Height="24"
+                            Background="#707878" Foreground="White"
+                            FontSize="9" FontFamily="Consolas" Margin="6,0,0,0"
+                            Command="{Binding MathOffCommand}">
+                        <Button.Template>
+                            <ControlTemplate TargetType="Button">
+                                <Border Background="{TemplateBinding Background}"
+                                        BorderBrush="#606868" BorderThickness="1" CornerRadius="3">
+                                    <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                </Border>
+                                <ControlTemplate.Triggers>
+                                    <Trigger Property="IsMouseOver" Value="True">
+                                        <Setter Property="Background" Value="#808888"/>
+                                    </Trigger>
+                                </ControlTemplate.Triggers>
+                            </ControlTemplate>
+                        </Button.Template>
+                    </Button>
+                </Grid>
+            </Border>
+
+            <!-- ── Range + NPLC (side by side) ───────────────────────────────── -->
+            <Grid Grid.Row="6" Margin="14,4,14,0">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="12"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+
+                <!-- Range -->
+                <StackPanel Grid.Column="0">
+                    <TextBlock Text="RANGE" Style="{StaticResource SectionLabel}"/>
+                    <UniformGrid x:Name="RangeButtonsPanel" Rows="1" Columns="6">
+                        <ToggleButton Tag="AUTO" Style="{StaticResource RangeButton}" Content="AUTO" Margin="1" Click="RangeButton_Click"/>
+                        <ToggleButton Tag="100m" Style="{StaticResource RangeButton}" Content="100m" Margin="1" Click="RangeButton_Click"/>
+                        <ToggleButton Tag="1"    Style="{StaticResource RangeButton}" Content="1"    Margin="1" Click="RangeButton_Click"/>
+                        <ToggleButton Tag="10"   Style="{StaticResource RangeButton}" Content="10"   Margin="1" Click="RangeButton_Click"/>
+                        <ToggleButton Tag="100"  Style="{StaticResource RangeButton}" Content="100"  Margin="1" Click="RangeButton_Click"/>
+                        <ToggleButton Tag="1000" Style="{StaticResource RangeButton}" Content="1000" Margin="1" Click="RangeButton_Click"/>
+                    </UniformGrid>
+                </StackPanel>
+
+                <!-- NPLC -->
+                <StackPanel Grid.Column="2">
+                    <TextBlock Text="NPLC" Style="{StaticResource SectionLabel}"/>
+                    <UniformGrid x:Name="NplcButtonsPanel" Rows="1" Columns="5">
+                        <ToggleButton Tag="0.02" Style="{StaticResource NplcButton}" Content="0.02" Margin="1" Click="NplcButton_Click"/>
+                        <ToggleButton Tag="0.2"  Style="{StaticResource NplcButton}" Content="0.2"  Margin="1" Click="NplcButton_Click"/>
+                        <ToggleButton Tag="1"    Style="{StaticResource NplcButton}" Content="1"    Margin="1" Click="NplcButton_Click"/>
+                        <ToggleButton Tag="10"   Style="{StaticResource NplcButton}" Content="10"   Margin="1" Click="NplcButton_Click"/>
+                        <ToggleButton Tag="100"  Style="{StaticResource NplcButton}" Content="100"  Margin="1" Click="NplcButton_Click"/>
+                    </UniformGrid>
+                </StackPanel>
+            </Grid>
+
+            <!-- ── LCD display control ───────────────────────────────────────── -->
+            <Border Grid.Row="7" Margin="14,4,14,0"
+                    Background="{StaticResource SectionBg}"
+                    BorderBrush="#9A9694" BorderThickness="1" CornerRadius="4"
+                    Padding="8,5">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="6"/>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="8"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="6"/>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="4"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+
+                    <TextBlock Grid.Column="0" Text="DISP"
+                               Foreground="#303030" FontSize="9" FontWeight="Bold"
+                               FontFamily="Segoe UI" VerticalAlignment="Center"/>
+
+                    <!-- DISP ON/OFF toggle -->
+                    <ToggleButton Grid.Column="2" Width="58" Height="24"
+                                  IsChecked="{Binding IsDisplayEnabled}"
+                                  FontFamily="Consolas" FontSize="9" Cursor="Hand">
+                        <ToggleButton.Style>
+                            <Style TargetType="ToggleButton">
+                                <Setter Property="Content" Value="DISP OFF"/>
+                                <Setter Property="Background" Value="#505050"/>
+                                <Setter Property="Foreground" Value="#D0D4DC"/>
+                                <Style.Triggers>
+                                    <Trigger Property="IsChecked" Value="True">
+                                        <Setter Property="Content" Value="DISP ON"/>
+                                        <Setter Property="Background" Value="#660000"/>
+                                    </Trigger>
+                                </Style.Triggers>
+                            </Style>
+                        </ToggleButton.Style>
+                        <ToggleButton.Template>
+                            <ControlTemplate TargetType="ToggleButton">
+                                <Border Background="{TemplateBinding Background}"
+                                        BorderBrush="#404040" BorderThickness="1" CornerRadius="12">
+                                    <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                </Border>
+                                <ControlTemplate.Triggers>
+                                    <Trigger Property="IsMouseOver" Value="True">
+                                        <Setter Property="Opacity" Value="0.85"/>
+                                    </Trigger>
+                                </ControlTemplate.Triggers>
+                            </ControlTemplate>
+                        </ToggleButton.Template>
+                    </ToggleButton>
+
+                    <TextBox Grid.Column="4"
+                             Text="{Binding DisplayMessage, UpdateSourceTrigger=PropertyChanged}"
+                             Height="24" FontFamily="Consolas" FontSize="11"
+                             Background="#D8D4D0" Foreground="#101010"
+                             BorderBrush="#9A9694" BorderThickness="1"
+                             Padding="4,2"
+                             MaxLength="12"/>
+
+                    <Button Grid.Column="6" Content="Wyślij" Width="52" Height="24"
+                            Background="#CC0000" Foreground="White" FontSize="10"
+                            Command="{Binding SendDisplayTextCommand}">
+                        <Button.Template>
+                            <ControlTemplate TargetType="Button">
+                                <Border Background="{TemplateBinding Background}"
+                                        BorderBrush="#AA0000" BorderThickness="1" CornerRadius="3">
+                                    <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                </Border>
+                                <ControlTemplate.Triggers>
+                                    <Trigger Property="IsMouseOver" Value="True">
+                                        <Setter Property="Background" Value="#EE1111"/>
+                                    </Trigger>
+                                </ControlTemplate.Triggers>
+                            </ControlTemplate>
+                        </Button.Template>
+                    </Button>
+
+                    <Button Grid.Column="8" Content="CLR" Width="38" Height="24"
+                            Background="#707878" Foreground="White" FontSize="10"
+                            Command="{Binding ClearDisplayCommand}">
+                        <Button.Template>
+                            <ControlTemplate TargetType="Button">
+                                <Border Background="{TemplateBinding Background}"
+                                        BorderBrush="#606868" BorderThickness="1" CornerRadius="3">
+                                    <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                </Border>
+                                <ControlTemplate.Triggers>
+                                    <Trigger Property="IsMouseOver" Value="True">
+                                        <Setter Property="Background" Value="#808888"/>
+                                    </Trigger>
+                                </ControlTemplate.Triggers>
+                            </ControlTemplate>
+                        </Button.Template>
+                    </Button>
+                </Grid>
+            </Border>
+
+            <!-- ── Continuous measurement control ────────────────────────────── -->
+            <!-- ── Auto-zero + Burst measurement ────────────────────────────── -->
+            <Border Grid.Row="8" Margin="14,4,14,0"
+                    Background="{StaticResource SectionBg}"
+                    BorderBrush="#9A9694" BorderThickness="1" CornerRadius="4"
+                    Padding="8,5">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="10"/>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="12"/>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="10"/>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="8"/>
+                        <ColumnDefinition Width="46"/>
+                        <ColumnDefinition Width="6"/>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="8"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+
+                    <TextBlock Grid.Column="0" Text="ZERO:AUTO"
+                               Foreground="{StaticResource LabelFg}" FontSize="9" FontWeight="Bold"
+                               FontFamily="Consolas" VerticalAlignment="Center"/>
+                    <CheckBox Grid.Column="2"
+                              IsChecked="{Binding IsAutoZeroEnabled}"
+                              VerticalAlignment="Center">
+                        <CheckBox.Content>
+                            <TextBlock FontFamily="Consolas" FontSize="10" Foreground="{StaticResource LabelFg}">
+                                <TextBlock.Style>
+                                    <Style TargetType="TextBlock">
+                                        <Setter Property="Text" Value="OFF"/>
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding IsAutoZeroEnabled}" Value="True">
+                                                <Setter Property="Text" Value="ON"/>
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </TextBlock.Style>
+                            </TextBlock>
+                        </CheckBox.Content>
+                    </CheckBox>
+                    <Rectangle Grid.Column="3" Width="1" Fill="#9A9694" VerticalAlignment="Stretch" Margin="0,2"/>
+                    <TextBlock Grid.Column="4" Text="BURST"
+                               Foreground="{StaticResource LabelFg}" FontSize="9" FontWeight="Bold"
+                               FontFamily="Consolas" VerticalAlignment="Center"/>
+                    <TextBox Grid.Column="6"
+                             Text="{Binding BurstCount, UpdateSourceTrigger=PropertyChanged}"
+                             Height="24" Width="44" FontFamily="Consolas" FontSize="11"
+                             Background="#E0DCE0" Foreground="#101010"
+                             BorderBrush="#9A9694" BorderThickness="1" Padding="4,2"/>
+                    <TextBlock Grid.Column="8" Text="próbek"
+                               Foreground="#505050" FontSize="9"
+                               FontFamily="Consolas" VerticalAlignment="Center"/>
+                    <Button Grid.Column="10" Content="▶ BURST" Height="24" Width="70"
+                            Background="#660000" Foreground="White" FontSize="10"
+                            Command="{Binding BurstMeasureCommand}">
+                        <Button.Template>
+                            <ControlTemplate TargetType="Button">
+                                <Border Background="{TemplateBinding Background}"
+                                        BorderBrush="#880000" BorderThickness="1" CornerRadius="12">
+                                    <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                </Border>
+                                <ControlTemplate.Triggers>
+                                    <Trigger Property="IsMouseOver" Value="True">
+                                        <Setter Property="Background" Value="#880000"/>
+                                    </Trigger>
+                                    <Trigger Property="IsEnabled" Value="False">
+                                        <Setter Property="Opacity" Value="0.38"/>
+                                    </Trigger>
+                                </ControlTemplate.Triggers>
+                            </ControlTemplate>
+                        </Button.Template>
+                    </Button>
+                    <TextBlock Grid.Column="12"
+                               Text="{Binding BurstResultsText}"
+                               Foreground="#006688" FontFamily="Consolas" FontSize="9"
+                               VerticalAlignment="Center" TextTrimming="CharacterEllipsis"
+                               Margin="6,0,0,0"/>
+                </Grid>
+            </Border>
+
+            <!-- ── LIMIT test ─────────────────────────────────────────────────── -->
+            <Border Grid.Row="9" Margin="14,4,14,0"
+                    Background="{StaticResource SectionBg}"
+                    BorderBrush="#9A9694" BorderThickness="1" CornerRadius="4"
+                    Padding="8,5">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="10"/>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="50"/>
+                        <ColumnDefinition Width="10"/>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="50"/>
+                        <ColumnDefinition Width="8"/>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="8"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Grid.Column="0" Text="LIMIT"
+                               Foreground="#CC6600" FontSize="9" FontWeight="Bold"
+                               FontFamily="Consolas" VerticalAlignment="Center"/>
+                    <TextBlock Grid.Column="2" Text="LOW:"
+                               Foreground="#505050" FontSize="9" FontFamily="Consolas"
+                               VerticalAlignment="Center"/>
+                    <TextBox Grid.Column="3"
+                             Text="{Binding LimitLow, UpdateSourceTrigger=PropertyChanged}"
+                             Height="24" FontFamily="Consolas" FontSize="10"
+                             Background="#E0DCE0" Foreground="#101010"
+                             BorderBrush="#9A9694" BorderThickness="1" Padding="3,2"/>
+                    <TextBlock Grid.Column="5" Text="HIGH:"
+                               Foreground="#505050" FontSize="9" FontFamily="Consolas"
+                               VerticalAlignment="Center"/>
+                    <TextBox Grid.Column="6"
+                             Text="{Binding LimitHigh, UpdateSourceTrigger=PropertyChanged}"
+                             Height="24" FontFamily="Consolas" FontSize="10"
+                             Background="#E0DCE0" Foreground="#101010"
+                             BorderBrush="#9A9694" BorderThickness="1" Padding="3,2"/>
+                    <Button Grid.Column="8" Height="24" Width="80"
+                            FontSize="10" FontFamily="Consolas"
+                            Command="{Binding ToggleLimitTestCommand}">
+                        <Button.Style>
+                            <Style TargetType="Button">
+                                <Setter Property="Content" Value="LIMIT ON"/>
+                                <Setter Property="Background" Value="#660000"/>
+                                <Setter Property="Foreground" Value="White"/>
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding IsLimitEnabled}" Value="True">
+                                        <Setter Property="Content" Value="LIMIT OFF"/>
+                                        <Setter Property="Background" Value="#505850"/>
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </Button.Style>
+                        <Button.Template>
+                            <ControlTemplate TargetType="Button">
+                                <Border Background="{TemplateBinding Background}"
+                                        BorderBrush="#884440" BorderThickness="1" CornerRadius="12">
+                                    <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                </Border>
+                                <ControlTemplate.Triggers>
+                                    <Trigger Property="IsMouseOver" Value="True">
+                                        <Setter Property="Opacity" Value="0.85"/>
+                                    </Trigger>
+                                </ControlTemplate.Triggers>
+                            </ControlTemplate>
+                        </Button.Template>
+                    </Button>
+                    <Border Grid.Column="10" Padding="8,2" CornerRadius="3" Margin="2,0">
+                        <Border.Style>
+                            <Style TargetType="Border">
+                                <Setter Property="Background" Value="#404040"/>
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding LimitPass}" Value="True">
+                                        <Setter Property="Background" Value="#004488"/>
+                                    </DataTrigger>
+                                    <DataTrigger Binding="{Binding LimitStatus}" Value="FAIL">
+                                        <Setter Property="Background" Value="#880000"/>
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </Border.Style>
+                        <TextBlock Text="{Binding LimitStatus}"
+                                   Foreground="White" FontFamily="Consolas"
+                                   FontSize="10" FontWeight="Bold"/>
+                    </Border>
+                </Grid>
+            </Border>
+
+            <!-- ── Continuous ctrl ───────────────────────────────────────────── -->
+            <Border Grid.Row="10" Margin="14,4,14,0"
+                    Background="{StaticResource SectionBg}"
+                    BorderBrush="#9A9694" BorderThickness="1" CornerRadius="4"
+                    Padding="10,6">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="12"/>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="8"/>
+                        <ColumnDefinition Width="90"/>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+
+                    <Button Grid.Column="0" Width="110" Command="{Binding ToggleContinuousCommand}">
+                        <Button.Style>
+                            <Style TargetType="Button" BasedOn="{StaticResource SmallButton}">
+                                <Setter Property="Content" Value="▶  CIĄGŁY"/>
+                                <Setter Property="Background" Value="#880000"/>
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding IsContinuous}" Value="True">
+                                        <Setter Property="Content" Value="■  STOP"/>
+                                        <Setter Property="Background" Value="#CC0000"/>
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </Button.Style>
+                    </Button>
+
+                    <TextBlock Grid.Column="2" Text="Interwał:"
+                               Foreground="{StaticResource LabelFg}" FontSize="11"
+                               VerticalAlignment="Center"/>
+
+                    <ComboBox Grid.Column="4"
+                              ItemsSource="{Binding Intervals}"
+                              SelectedItem="{Binding SelectedInterval}"
+                              Height="28"
+                              Background="#D0CCB8"
+                              Foreground="#202020"
+                              BorderBrush="#9A9694"
+                              FontFamily="Consolas"/>
+
+                    <TextBlock Grid.Column="5" Text="ms"
+                               Foreground="{StaticResource LabelFg}" FontSize="11"
+                               VerticalAlignment="Center" Margin="4,0,0,0"/>
+
+                    <Button Grid.Column="7" Content="▶ LIVE" Width="70" Height="28"
+                            Style="{StaticResource SmallButton}"
+                            Background="#005566"
+                            Command="{Binding OpenLiveWindowCommand}"/>
+                </Grid>
+            </Border>
+
+            <!-- ── Statistics ─────────────────────────────────────────────────── -->
+            <Border Grid.Row="11" Margin="14,4,14,0"
+                    Background="{StaticResource SectionBg}"
+                    BorderBrush="#9A9694" BorderThickness="1" CornerRadius="4"
+                    Padding="8,5">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+
+                    <TextBlock Grid.Column="0" Text="MIN:" Foreground="{StaticResource LabelFg}"
+                               FontSize="10" FontFamily="Consolas" VerticalAlignment="Center"/>
+                    <TextBlock Grid.Column="1" Text="{Binding MinValue}"
+                               Foreground="#006688" FontSize="11" FontFamily="Consolas"
+                               VerticalAlignment="Center" Margin="4,0,12,0"/>
+
+                    <TextBlock Grid.Column="2" Text="MAX:" Foreground="{StaticResource LabelFg}"
+                               FontSize="10" FontFamily="Consolas" VerticalAlignment="Center"/>
+                    <TextBlock Grid.Column="3" Text="{Binding MaxValue}"
+                               Foreground="#006688" FontSize="11" FontFamily="Consolas"
+                               VerticalAlignment="Center" Margin="4,0,12,0"/>
+
+                    <TextBlock Grid.Column="4" Text="AVG:" Foreground="{StaticResource LabelFg}"
+                               FontSize="10" FontFamily="Consolas" VerticalAlignment="Center"/>
+                    <TextBlock Grid.Column="5" Text="{Binding AvgValue}"
+                               Foreground="#006688" FontSize="11" FontFamily="Consolas"
+                               VerticalAlignment="Center" Margin="4,0,12,0"/>
+
+                    <TextBlock Grid.Column="6"
+                               Text="{Binding MeasureCount, StringFormat='N={0}'}"
+                               Foreground="{StaticResource LabelFg}"
+                               FontSize="10" FontFamily="Consolas"
+                               VerticalAlignment="Center" Margin="0,0,8,0"/>
+
+                    <Button Grid.Column="7" Content="CLR" Width="36" Height="24"
+                            Background="#909888" Foreground="#202020"
+                            Command="{Binding ClearStatsCommand}"
+                            FontSize="10" FontFamily="Consolas">
+                        <Button.Template>
+                            <ControlTemplate TargetType="Button">
+                                <Border Background="{TemplateBinding Background}"
+                                        BorderBrush="#808880" BorderThickness="1" CornerRadius="3">
+                                    <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                </Border>
+                                <ControlTemplate.Triggers>
+                                    <Trigger Property="IsMouseOver" Value="True">
+                                        <Setter Property="Background" Value="#A0A898"/>
+                                    </Trigger>
+                                </ControlTemplate.Triggers>
+                            </ControlTemplate>
+                        </Button.Template>
+                    </Button>
+                </Grid>
+            </Border>
+
+            <!-- ── Action buttons ─────────────────────────────────────────────── -->
+            <Grid Grid.Row="12" Margin="14,8,14,4">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="12"/>
+                    <ColumnDefinition Width="130"/>
+                </Grid.ColumnDefinitions>
+
+                <Button Grid.Column="0"
+                        Content="▶  SINGLE"
+                        Style="{StaticResource ActionButton}"
+                        Background="{StaticResource MeasureKRed}"
+                        Command="{Binding MeasureCommand}"/>
+
+                <Button Grid.Column="2"
+                        Content="⟳  RESET"
+                        Style="{StaticResource ActionButton}"
+                        Background="{StaticResource ResetRed}"
+                        Command="{Binding ResetCommand}"/>
+            </Grid>
+
+            <!-- ── Spacer ─────────────────────────────────────────────────────── -->
+            <Border Grid.Row="13" Background="Transparent" MinHeight="2"/>
+
+            <!-- ── Status bar ─────────────────────────────────────────────────── -->
+            <Border Grid.Row="14"
+                    Background="{StaticResource StatusBg}"
+                    BorderBrush="#8A8680" BorderThickness="0,1,0,0"
+                    CornerRadius="0,0,4,4" Padding="10,4">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+
+                    <Ellipse Grid.Column="0" Width="8" Height="8"
+                             VerticalAlignment="Center" Margin="0,0,6,0">
+                        <Ellipse.Style>
+                            <Style TargetType="Ellipse">
+                                <Setter Property="Fill" Value="#8A8680"/>
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding IsConnected}" Value="True">
+                                        <Setter Property="Fill" Value="#CC0000"/>
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </Ellipse.Style>
+                    </Ellipse>
+
+                    <TextBlock Grid.Column="1"
+                               Text="{Binding StatusText}"
+                               Foreground="#303030" FontFamily="Consolas" FontSize="10"
+                               VerticalAlignment="Center" TextTrimming="CharacterEllipsis"/>
+
+                    <TextBlock Grid.Column="2"
+                               Text="KEITHLEY 2000  |  6½ Digit"
+                               Foreground="#707068" FontFamily="Consolas" FontSize="9"
+                               VerticalAlignment="Center"/>
+                </Grid>
+            </Border>
+
+        </Grid>
+    </Border>
+</UserControl>

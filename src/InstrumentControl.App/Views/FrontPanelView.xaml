@@ -1,0 +1,41 @@
+<UserControl x:Class="InstrumentControl.App.Views.FrontPanelView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="clr-namespace:InstrumentControl.App.ViewModels">
+    <Grid Background="{StaticResource BackgroundBrush}">
+        <!-- No instrument selected -->
+        <Grid x:Name="NoInstrumentPanel" Visibility="Visible">
+            <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
+                <TextBlock Text="⚡" FontSize="64" HorizontalAlignment="Center" Foreground="#BDC3C7"/>
+                <TextBlock Text="Brak podłączonego przyrządu" FontSize="18" Foreground="#95A5A6"
+                           HorizontalAlignment="Center" Margin="0,12,0,0"/>
+                <TextBlock Text="Kliknij 'Dodaj przyrząd' aby połączyć się z urządzeniem"
+                           FontSize="13" Foreground="#BDC3C7" HorizontalAlignment="Center" Margin="0,6,0,0"/>
+            </StackPanel>
+        </Grid>
+
+        <!-- Instrument panel container -->
+        <Border x:Name="InstrumentPanelContainer" Visibility="Collapsed">
+            <DockPanel>
+                <!-- Instrument toolbar -->
+                <Border DockPanel.Dock="Top" Background="White" Padding="10,6">
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock x:Name="InstrumentTitle" FontSize="14" FontWeight="SemiBold"
+                                   VerticalAlignment="Center" Margin="0,0,12,0"/>
+                        <TextBlock x:Name="InstrumentResource" FontSize="11" Foreground="#7F8C8D"
+                                   VerticalAlignment="Center" Margin="0,0,16,0"/>
+                        <Button Content="Rozłącz" Style="{StaticResource DangerButtonStyle}"
+                                x:Name="DisconnectButton" Margin="4,0"/>
+                        <Button Content="Reset" Style="{StaticResource PrimaryButtonStyle}"
+                                x:Name="ResetButton" Margin="4,0"/>
+                    </StackPanel>
+                </Border>
+
+                <!-- Dynamic front panel loaded from driver DLL -->
+                <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto">
+                    <ContentPresenter x:Name="FrontPanelContent" Margin="10"/>
+                </ScrollViewer>
+            </DockPanel>
+        </Border>
+    </Grid>
+</UserControl>
