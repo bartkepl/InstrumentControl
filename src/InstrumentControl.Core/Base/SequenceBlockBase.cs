@@ -65,6 +65,10 @@ public abstract class SequenceBlockBase : ISequenceBlock
         var clone = (SequenceBlockBase)MemberwiseClone();
         clone.BlockId = Guid.NewGuid().ToString("N")[..8];
         clone.Properties = new Dictionary<string, object?>(Properties);
+        // Pre-populate defaults so editors always have a starting value in Properties
+        foreach (var propDef in clone.PropertyDefinitions)
+            if (!clone.Properties.ContainsKey(propDef.Name) && propDef.DefaultValue != null)
+                clone.Properties[propDef.Name] = propDef.DefaultValue;
         return clone;
     }
 }

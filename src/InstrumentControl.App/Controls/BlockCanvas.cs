@@ -173,7 +173,8 @@ public class BlockCanvas : Border
         _connectionVisuals.Clear();
         if (Blocks == null) return;
         foreach (var vm in Blocks) AddBlockVisual(vm);
-        RedrawConnections();
+        // Defer until layout pass so TranslatePoint works correctly for body ports
+        _canvas.Dispatcher.BeginInvoke(RedrawConnections, System.Windows.Threading.DispatcherPriority.Loaded);
     }
 
     private void AddBlockVisual(SequenceBlockVm vm)

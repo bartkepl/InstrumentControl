@@ -224,6 +224,7 @@ public override async Task ConnectAsync(IConnectionProvider connection)
 | `LogMessageBlock` | Write a message to the sequence log |
 | `SaveCsvBlock` | Append measurement results to a CSV file |
 | `AddToChartBlock` | Plot a value on the Data Viewer chart |
+| `MathBlock` | Evaluate a math expression and store the result in a variable. Variables: `{name}`. Functions: `sqrt`, `abs`, `pow`, `sin`, `cos`, `tan`, `log`, `round`, `min`, `max`, `clamp`, `deg2rad`, `hypot`, … |
 
 Instrument plugins add their own measurement blocks (e.g. `HP34401A_MeasureDCV`).
 

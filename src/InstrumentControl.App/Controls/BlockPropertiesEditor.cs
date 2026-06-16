@@ -77,35 +77,45 @@ public class BlockPropertiesEditor : ContentControl
             FontSize = 13
         };
 
-        var panel = new StackPanel();
-        panel.Children.Add(headerBorder);
+        // Single grid for all property rows — labels share one column so inputs are aligned
+        var propsGrid = new Grid { Margin = new Thickness(0, 4, 0, 0) };
+        propsGrid.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto });
+        propsGrid.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) });
 
+        int rowIndex = 0;
         foreach (var propDef in props)
         {
-            var rowPanel = new Grid { Margin = new Thickness(0, 2, 0, 2) };
-            rowPanel.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto });
-            rowPanel.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) });
+            propsGrid.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto });
 
             var label = new TextBlock
             {
                 Text = propDef.DisplayName + ":",
                 FontSize = 11,
                 VerticalAlignment = VerticalAlignment.Center,
-                Margin = new Thickness(0, 0, 8, 0),
-                MaxWidth = 120,
-                TextTrimming = TextTrimming.CharacterEllipsis,
+                Margin = new Thickness(0, 2, 8, 2),
                 ToolTip = propDef.DisplayName
             };
+            Grid.SetRow(label, rowIndex);
             Grid.SetColumn(label, 0);
+            propsGrid.Children.Add(label);
 
             var currentValue = block.Properties.TryGetValue(propDef.Name, out var v) ? v : propDef.DefaultValue;
             UIElement editor = CreateEditor(propDef, currentValue, block, propDef.Name);
+            if (editor is FrameworkElement fe)
+            {
+                fe.VerticalAlignment = VerticalAlignment.Center;
+                fe.Margin = new Thickness(0, 2, 0, 2);
+            }
+            Grid.SetRow(editor, rowIndex);
             Grid.SetColumn(editor, 1);
+            propsGrid.Children.Add(editor);
 
-            rowPanel.Children.Add(label);
-            rowPanel.Children.Add(editor);
-            panel.Children.Add(rowPanel);
+            rowIndex++;
         }
+
+        var panel = new StackPanel();
+        panel.Children.Add(headerBorder);
+        panel.Children.Add(propsGrid);
 
         Content = new ScrollViewer
         {
@@ -158,7 +168,8 @@ public class BlockPropertiesEditor : ContentControl
                 var tb = new TextBox
                 {
                     Text = strVal, FontSize = 11, Height = 22,
-                    Padding = new Thickness(4, 0, 0, 0), MaxWidth = 100
+                    Padding = new Thickness(4, 0, 0, 0), MaxWidth = 100,
+                    HorizontalAlignment = HorizontalAlignment.Left
                 };
                 tb.LostFocus += (_, _) =>
                 {
@@ -198,7 +209,7 @@ public class BlockPropertiesEditor : ContentControl
                 var tb = new TextBox
                 {
                     Text = strVal, FontSize = 11, Height = 22,
-                    Padding = new Thickness(4, 0, 0, 0), MaxWidth = 200
+                    Padding = new Thickness(4, 0, 0, 0)
                 };
                 tb.TextChanged += (_, _) => block.Properties[propName] = tb.Text;
                 return tb;
