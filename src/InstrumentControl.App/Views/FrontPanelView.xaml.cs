@@ -1,5 +1,6 @@
 using System.Windows;
 using System.Windows.Controls;
+using InstrumentControl.App.Services;
 using InstrumentControl.App.ViewModels;
 
 namespace InstrumentControl.App.Views;
@@ -41,7 +42,7 @@ public partial class FrontPanelView : UserControl
         {
             FrontPanelContent.Content = new TextBlock
             {
-                Text = $"Błąd ładowania panelu: {ex.Message}",
+                Text = $"{LocalizationService.Get("VM_ErrorLoading")} {ex.Message}",
                 Foreground = System.Windows.Media.Brushes.Red,
                 Margin = new Thickness(16)
             };
@@ -51,13 +52,13 @@ public partial class FrontPanelView : UserControl
         {
             await vm.Driver.DisconnectAsync();
             vm.IsConnected = false;
-            vm.StatusText = "Rozłączony";
+            vm.StatusText = LocalizationService.Get("VM_StatusDisconnected");
         };
 
         ResetButton.Click += async (s, e) =>
         {
             try { await vm.Driver.ResetAsync(); }
-            catch (Exception ex) { MessageBox.Show($"Reset nieudany: {ex.Message}"); }
+            catch (Exception ex) { MessageBox.Show($"{LocalizationService.Get("VM_ResetFailed")} {ex.Message}"); }
         };
     }
 }

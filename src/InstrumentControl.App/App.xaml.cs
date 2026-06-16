@@ -1,5 +1,6 @@
 using System.IO;
 using System.Windows;
+using InstrumentControl.App.Services;
 using InstrumentControl.App.Views;
 using InstrumentControl.Core.Blocks;
 using InstrumentControl.Core.Services;
@@ -15,6 +16,8 @@ public partial class App : Application
     protected override void OnStartup(StartupEventArgs e)
     {
         base.OnStartup(e);
+
+        LocalizationService.Initialize();
 
         // Global unhandled exception handlers — show copyable error window
         DispatcherUnhandledException += (_, args) =>

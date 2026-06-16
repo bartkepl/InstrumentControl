@@ -42,6 +42,9 @@ public class BlockCanvas : Border
     private readonly Dictionary<string, BlockVisual> _blockVisuals = new();
     private readonly List<ConnectionVisual> _connectionVisuals = new();
 
+    private readonly ScrollViewer _scroll;
+    private double _scale = 1.0;
+
     private BlockVisual? _dragging;
     private Point _dragOffset;
     private string? _connectingFromId;
@@ -100,18 +103,21 @@ public class BlockCanvas : Border
             Background = BuildGridBrush()
         };
 
-        var scroll = new ScrollViewer
+        _scroll = new ScrollViewer
         {
             HorizontalScrollBarVisibility = ScrollBarVisibility.Auto,
             VerticalScrollBarVisibility = ScrollBarVisibility.Auto,
             Content = _canvas
         };
 
-        Child = scroll;
+        Child = _scroll;
         AllowDrop = true;
+        Focusable = true;
 
         _canvas.MouseMove += Canvas_MouseMove;
         _canvas.MouseUp += Canvas_MouseUp;
+        _scroll.PreviewMouseWheel += Scroll_PreviewMouseWheel;
+        PreviewKeyDown += Canvas_PreviewKeyDown;
 
         Drop += Canvas_Drop;
         DragOver += (_, e) => { e.Effects = DragDropEffects.Copy; e.Handled = true; };
@@ -195,6 +201,7 @@ public class BlockCanvas : Border
             bv.Root.CaptureMouse();
             SelectedBlock = vm;
             foreach (var kv in _blockVisuals) kv.Value.SetSelected(kv.Key == vm.Block.BlockId);
+            Focus();
             e.Handled = true;
         };
 
@@ -318,6 +325,23 @@ public class BlockCanvas : Border
         menu.Items.Add(disc);
         menu.IsOpen = true;
         e.Handled = true;
+    }
+
+    private void Scroll_PreviewMouseWheel(object sender, MouseWheelEventArgs e)
+    {
+        if ((Keyboard.Modifiers & ModifierKeys.Control) == 0) return;
+        _scale = Math.Clamp(_scale + (e.Delta > 0 ? 0.1 : -0.1), 0.25, 3.0);
+        _canvas.LayoutTransform = new ScaleTransform(_scale, _scale);
+        e.Handled = true;
+    }
+
+    private void Canvas_PreviewKeyDown(object sender, KeyEventArgs e)
+    {
+        if (e.Key == Key.Delete && SelectedBlock != null)
+        {
+            BlockDeleted?.Invoke(this, new BlockDeletedEventArgs(SelectedBlock.Block.BlockId));
+            e.Handled = true;
+        }
     }
 
     private void Canvas_Drop(object sender, DragEventArgs e)

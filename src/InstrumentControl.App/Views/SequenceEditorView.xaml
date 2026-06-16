@@ -14,31 +14,37 @@
         <Border DockPanel.Dock="Top" Background="White" Padding="6,5" BorderBrush="#DDD" BorderThickness="0,0,0,1">
             <DockPanel>
                 <StackPanel Orientation="Horizontal" DockPanel.Dock="Left">
-                    <Button Content="▶ Uruchom" Style="{StaticResource SuccessButtonStyle}"
+                    <Button Style="{StaticResource SuccessButtonStyle}"
                             Command="{Binding RunSequenceCommand}" Margin="2,0"
+                            Content="{DynamicResource SeqEditor_Run}"
                             IsEnabled="{Binding IsRunning, Converter={StaticResource InverseBoolConverter}}"/>
                     <Button Style="{StaticResource PrimaryButtonStyle}" Margin="2,0"
                             Command="{Binding PauseSequenceCommand}">
-                        <TextBlock Text="{Binding IsPaused, Converter={StaticResource PauseResumeConverter}}"/>
+                        <TextBlock Text="{Binding IsPaused, Converter={StaticResource PauseResumeConverter}}"
+                                   Foreground="White"/>
                     </Button>
-                    <Button Content="■ Stop" Style="{StaticResource DangerButtonStyle}"
+                    <Button Style="{StaticResource DangerButtonStyle}"
                             Command="{Binding StopSequenceCommand}"
+                            Content="{DynamicResource SeqEditor_Stop}"
                             IsEnabled="{Binding IsRunning}" Margin="2,0"/>
                     <Separator Margin="4,0"/>
-                    <Button Content="🗋 Nowa" Style="{StaticResource BaseButtonStyle}" Background="White"
-                            Command="{Binding NewSequenceCommand}" Margin="2,0"/>
-                    <Button Content="📂 Otwórz" Style="{StaticResource BaseButtonStyle}" Background="White"
-                            Command="{Binding OpenSequenceCommand}" Margin="2,0"/>
-                    <Button Content="💾 Zapisz" Style="{StaticResource BaseButtonStyle}" Background="White"
-                            Command="{Binding SaveSequenceCommand}" Margin="2,0"/>
+                    <Button Style="{StaticResource BaseButtonStyle}" Background="White"
+                            Command="{Binding NewSequenceCommand}" Margin="2,0"
+                            Content="{DynamicResource SeqEditor_New}"/>
+                    <Button Style="{StaticResource BaseButtonStyle}" Background="White"
+                            Command="{Binding OpenSequenceCommand}" Margin="2,0"
+                            Content="{DynamicResource SeqEditor_Open}"/>
+                    <Button Style="{StaticResource BaseButtonStyle}" Background="White"
+                            Command="{Binding SaveSequenceCommand}" Margin="2,0"
+                            Content="{DynamicResource SeqEditor_Save}"/>
                 </StackPanel>
 
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" DockPanel.Dock="Right">
-                    <TextBlock Text="Sekwencja: " VerticalAlignment="Center" FontSize="12" Foreground="#7F8C8D"/>
+                    <TextBlock Text="{DynamicResource SeqEditor_SequenceLabel}" VerticalAlignment="Center" FontSize="12" Foreground="#7F8C8D"/>
                     <TextBox Text="{Binding SequenceName, UpdateSourceTrigger=PropertyChanged}"
                              Width="200" Padding="6,4" FontSize="13" FontWeight="SemiBold"
                              VerticalAlignment="Center"/>
-                    <TextBlock Text="  Stan: " VerticalAlignment="Center" FontSize="12" Foreground="#7F8C8D"/>
+                    <TextBlock Text="{DynamicResource SeqEditor_StatusLabel}" VerticalAlignment="Center" FontSize="12" Foreground="#7F8C8D"/>
                     <TextBlock Text="{Binding SequenceStatus}" VerticalAlignment="Center"
                                FontSize="12" FontWeight="SemiBold" Foreground="{StaticResource AccentBrush}"/>
                 </StackPanel>
@@ -56,7 +62,7 @@
             <Border Grid.Column="0" Background="White" BorderBrush="#DDD" BorderThickness="0,0,1,0">
                 <DockPanel>
                     <Border DockPanel.Dock="Top" Background="#F8F9FA" Padding="8,6" BorderBrush="#EEE" BorderThickness="0,0,0,1">
-                        <TextBlock Text="BLOKI" FontSize="11" FontWeight="Bold" Foreground="#7F8C8D"/>
+                        <TextBlock Text="{DynamicResource SeqEditor_Blocks}" FontSize="11" FontWeight="Bold" Foreground="#7F8C8D"/>
                     </Border>
                     <ScrollViewer x:Name="ToolboxScrollViewer" VerticalScrollBarVisibility="Auto">
                         <!-- Content replaced by code-behind BuildToolbox() -->
@@ -69,9 +75,9 @@
             <!-- Canvas area -->
             <Grid Grid.Column="2">
                 <Grid.RowDefinitions>
-                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="3*"/>
                     <RowDefinition Height="3"/>
-                    <RowDefinition Height="140"/>
+                    <RowDefinition Height="*" MinHeight="160"/>
                 </Grid.RowDefinitions>
 
                 <!-- Block canvas -->
@@ -98,7 +104,7 @@
                     <!-- Block properties -->
                     <Border Grid.Column="0" Background="White" Padding="8">
                         <DockPanel>
-                            <TextBlock DockPanel.Dock="Top" Text="WŁAŚCIWOŚCI BLOKU"
+                            <TextBlock DockPanel.Dock="Top" Text="{DynamicResource SeqEditor_BlockProperties}"
                                        Style="{StaticResource SectionHeaderStyle}"/>
                             <ctrl:BlockPropertiesEditor x:Name="PropsEditor"
                                                         SelectedBlock="{Binding SelectedBlock}"
@@ -112,11 +118,13 @@
                     <Border Grid.Column="2" Background="#1E1E1E" Padding="8">
                         <DockPanel>
                             <DockPanel DockPanel.Dock="Top">
-                                <TextBlock Text="LOG WYKONANIA" FontSize="11" FontWeight="Bold"
+                                <TextBlock Text="{DynamicResource SeqEditor_ExecLog}" FontSize="11" FontWeight="Bold"
                                            Foreground="#95A5A6" DockPanel.Dock="Left"/>
-                                <Button Content="Wyczyść" HorizontalAlignment="Right" Foreground="#7F8C8D"
+                                <Button HorizontalAlignment="Right" Foreground="#7F8C8D"
                                         Background="Transparent" BorderThickness="0" FontSize="11"
-                                        Click="ClearLog_Click"/>
+                                        Click="ClearLog_Click">
+                                    <TextBlock Text="{DynamicResource SeqEditor_Clear}"/>
+                                </Button>
                             </DockPanel>
                             <ScrollViewer x:Name="LogScrollViewer" VerticalScrollBarVisibility="Auto"
                                           CanContentScroll="True">

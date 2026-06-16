@@ -2,6 +2,7 @@ using System.Collections.ObjectModel;
 using System.Windows;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using InstrumentControl.App.Services;
 using InstrumentControl.Core.Interfaces;
 using InstrumentControl.Core.Models;
 using InstrumentControl.Core.Services;
@@ -34,7 +35,7 @@ public partial class ConnectionManagerViewModel : ViewModelBase
     [ObservableProperty] private DriverInfoVm? _selectedDriver;
     [ObservableProperty] private string _instrumentLabel = string.Empty;
     [ObservableProperty] private bool _isBusy;
-    [ObservableProperty] private string _statusText = "Kliknij 'Odśwież' aby znaleźć zasoby VISA";
+    [ObservableProperty] private string _statusText = "";
     [ObservableProperty] private string _testResult = string.Empty;
     [ObservableProperty] private bool _useSimulation;
     [ObservableProperty] private int _comBaudRate = 9600;
@@ -49,6 +50,7 @@ public partial class ConnectionManagerViewModel : ViewModelBase
         _visaService = visaService;
         _pluginLoader = pluginLoader;
         UseSimulation = visaService.IsSimulationMode;
+        StatusText = LocalizationService.Get("ConnMgr_InitStatus");
         LoadDrivers();
     }
 
@@ -170,7 +172,7 @@ public partial class ConnectionManagerViewModel : ViewModelBase
     {
         IsBusy = true;
         ClearDetection();
-        StatusText = "Skanowanie zasobów VISA...";
+        StatusText = LocalizationService.Get("VM_ScanningVisa");
         await Task.Run(() =>
         {
             var resources = _visaService.FindResources();
@@ -181,7 +183,7 @@ public partial class ConnectionManagerViewModel : ViewModelBase
                 foreach (var r in resources) AvailableResources.Add(r);
                 AvailableComPorts.Clear();
                 foreach (var p in ports) AvailableComPorts.Add(p);
-                StatusText = $"Znaleziono {resources.Length} zasobów VISA, {ports.Length} portów COM";
+                StatusText = string.Format(LocalizationService.Get("VM_FoundResources"), resources.Length, ports.Length);
                 if (resources.Length > 0) SelectedResource = resources[0];
             });
         });
@@ -192,7 +194,7 @@ public partial class ConnectionManagerViewModel : ViewModelBase
     private async Task TestConnection()
     {
         if (SelectedDriver == null) return;
-        IsBusy = true; TestResult = "Testowanie...";
+        IsBusy = true; TestResult = LocalizationService.Get("VM_Testing");
         try
         {
             var resource = GetResourceString();
@@ -202,13 +204,13 @@ public partial class ConnectionManagerViewModel : ViewModelBase
                 : _visaService.OpenVisaSession(resource);
             await driver.ConnectAsync(conn);
             var idn = await driver.GetIdentificationAsync();
-            TestResult = $"OK: {idn}";
+            TestResult = $"{LocalizationService.Get("VM_TestOk")} {idn}";
             await driver.DisconnectAsync();
             driver.Dispose();
         }
         catch (Exception ex)
         {
-            TestResult = $"Błąd: {ex.Message}";
+            TestResult = $"{LocalizationService.Get("VM_ErrorPrefix")} {ex.Message}";
         }
         IsBusy = false;
     }
@@ -216,8 +218,8 @@ public partial class ConnectionManagerViewModel : ViewModelBase
     [RelayCommand]
     private async Task Connect()
     {
-        if (SelectedDriver == null) { StatusText = "Wybierz driver"; return; }
-        IsBusy = true; StatusText = "Łączenie...";
+        if (SelectedDriver == null) { StatusText = LocalizationService.Get("VM_SelectDriver"); return; }
+        IsBusy = true; StatusText = LocalizationService.Get("VM_Connecting");
         try
         {
             var resource = GetResourceString();
@@ -236,14 +238,14 @@ public partial class ConnectionManagerViewModel : ViewModelBase
 
             ConnectedDriver = driver;
             ConnectionSuccessful = true;
-            StatusText = $"Połączono: {driver.InstrumentInfo?.DisplayName}";
+            StatusText = $"{LocalizationService.Get("VM_Connected")} {driver.InstrumentInfo?.DisplayName}";
 
             if (Application.Current.Windows.OfType<Views.ConnectionManagerWindow>().FirstOrDefault() is { } wnd)
                 wnd.DialogResult = true;
         }
         catch (Exception ex)
         {
-            StatusText = $"Błąd połączenia: {ex.Message}";
+            StatusText = $"{LocalizationService.Get("VM_ConnectionError")} {ex.Message}";
             ConnectionSuccessful = false;
         }
         IsBusy = false;

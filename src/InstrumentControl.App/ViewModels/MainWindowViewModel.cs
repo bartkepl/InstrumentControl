@@ -2,6 +2,7 @@ using System.Collections.ObjectModel;
 using System.Windows;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using InstrumentControl.App.Services;
 using InstrumentControl.Core.Interfaces;
 using InstrumentControl.Core.Models;
 using InstrumentControl.Core.Services;
@@ -12,7 +13,7 @@ public partial class ConnectedInstrumentVm : ObservableObject
 {
     public IInstrumentDriver Driver { get; }
 
-    [ObservableProperty] private string _statusText = "Połączony";
+    [ObservableProperty] private string _statusText = LocalizationService.Get("VM_StatusConnected");
     [ObservableProperty] private bool _isConnected = true;
     [ObservableProperty] private string _lastValue = "";
 
@@ -24,7 +25,7 @@ public partial class ConnectedInstrumentVm : ObservableObject
         Driver = driver;
         Driver.StatusChanged += (_, msg) => RunOnUi(() => StatusText = msg);
         Driver.MeasurementReceived += (_, r) => RunOnUi(() => LastValue = $"{r.Value:G6} {r.Unit}");
-        Driver.ErrorOccurred += (_, ex) => RunOnUi(() => { StatusText = $"Błąd: {ex.Message}"; IsConnected = false; });
+        Driver.ErrorOccurred += (_, ex) => RunOnUi(() => { StatusText = $"{LocalizationService.Get("VM_ErrorPrefix")} {ex.Message}"; IsConnected = false; });
     }
 
     private void RunOnUi(Action a) =>
@@ -50,8 +51,16 @@ public partial class MainWindowViewModel : ViewModelBase
         _dataManager = dataManager;
         IsVisaSimulated = visaService.IsSimulationMode;
         StatusBarText = visaService.IsSimulationMode
-            ? "Tryb symulacji (NI-VISA nie znaleziono)"
-            : "NI-VISA aktywne";
+            ? LocalizationService.Get("StatusBar_SimStartup")
+            : LocalizationService.Get("StatusBar_VisaStartup");
+
+        LocalizationService.LanguageChanged += (_, _) => RunOnUi(() =>
+        {
+            StatusBarText = IsVisaSimulated
+                ? LocalizationService.Get("StatusBar_SimStartup")
+                : LocalizationService.Get("StatusBar_VisaStartup");
+            OnPropertyChanged(nameof(IsVisaSimulated));
+        });
     }
 
     [RelayCommand]

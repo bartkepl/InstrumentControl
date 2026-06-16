@@ -1,0 +1,134 @@
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:sys="clr-namespace:System;assembly=mscorlib">
+
+    <!-- About window -->
+    <sys:String x:Key="About_Title">O programie</sys:String>
+    <sys:String x:Key="About_Version">Wersja</sys:String>
+    <sys:String x:Key="About_Author">AUTOR</sys:String>
+    <sys:String x:Key="About_Repository">REPOZYTORIUM</sys:String>
+    <sys:String x:Key="About_Language">JĘZYK</sys:String>
+    <sys:String x:Key="About_Close">Zamknij</sys:String>
+
+    <!-- Main menu -->
+    <sys:String x:Key="Menu_File">_Plik</sys:String>
+    <sys:String x:Key="Menu_File_NewSequence">Nowa sekwencja</sys:String>
+    <sys:String x:Key="Menu_File_OpenSequence">Otwórz sekwencję...</sys:String>
+    <sys:String x:Key="Menu_File_SaveSequence">Zapisz sekwencję</sys:String>
+    <sys:String x:Key="Menu_File_SaveSequenceAs">Zapisz sekwencję jako...</sys:String>
+    <sys:String x:Key="Menu_File_Exit">Wyjście</sys:String>
+    <sys:String x:Key="Menu_Instrument">_Instrument</sys:String>
+    <sys:String x:Key="Menu_Instrument_Add">Dodaj przyrząd...</sys:String>
+    <sys:String x:Key="Menu_Data">_Dane</sys:String>
+    <sys:String x:Key="Menu_Data_Clear">Wyczyść dane</sys:String>
+    <sys:String x:Key="Menu_Data_ExportCsv">Eksport CSV...</sys:String>
+
+    <!-- Toolbar -->
+    <sys:String x:Key="Toolbar_AddInstrument">➕ Dodaj przyrząd</sys:String>
+    <sys:String x:Key="Toolbar_Run">▶ Uruchom</sys:String>
+    <sys:String x:Key="Toolbar_Stop">■ Stop</sys:String>
+    <sys:String x:Key="Toolbar_Open">📂 Otwórz</sys:String>
+    <sys:String x:Key="Toolbar_Save">💾 Zapisz</sys:String>
+    <sys:String x:Key="Toolbar_About">ℹ O programie</sys:String>
+    <sys:String x:Key="Toolbar_AddInstrumentTip">Dodaj przyrząd (Ctrl+N)</sys:String>
+    <sys:String x:Key="Toolbar_RunTip">Uruchom sekwencję (F5)</sys:String>
+
+    <!-- Sidebar -->
+    <sys:String x:Key="Sidebar_Instruments">PRZYRZĄDY</sys:String>
+    <sys:String x:Key="Sidebar_AddInstrument">+ Dodaj przyrząd</sys:String>
+
+    <!-- Tab headers -->
+    <sys:String x:Key="Tab_FrontPanel">🖥  Panel frontowy</sys:String>
+    <sys:String x:Key="Tab_SequenceEditor">⚙  Edytor sekwencji</sys:String>
+    <sys:String x:Key="Tab_Data">📊  Dane / Wykresy</sys:String>
+    <sys:String x:Key="Tab_Log">📋  Log</sys:String>
+
+    <!-- Status bar -->
+    <sys:String x:Key="StatusBar_VisaActive">● VISA AKTYWNE</sys:String>
+    <sys:String x:Key="StatusBar_SimMode">⚠ TRYB SYMULACJI</sys:String>
+    <sys:String x:Key="StatusBar_VisaStartup">NI-VISA aktywne</sys:String>
+    <sys:String x:Key="StatusBar_SimStartup">Tryb symulacji (NI-VISA nie znaleziono)</sys:String>
+    <sys:String x:Key="StatusBar_SequenceLabel">Sekwencja:</sys:String>
+
+    <!-- Sequence editor -->
+    <sys:String x:Key="SeqEditor_Run">▶ Uruchom</sys:String>
+    <sys:String x:Key="SeqEditor_Stop">■ Stop</sys:String>
+    <sys:String x:Key="SeqEditor_New">🗋 Nowa</sys:String>
+    <sys:String x:Key="SeqEditor_Open">📂 Otwórz</sys:String>
+    <sys:String x:Key="SeqEditor_Save">💾 Zapisz</sys:String>
+    <sys:String x:Key="SeqEditor_Clear">Wyczyść</sys:String>
+    <sys:String x:Key="SeqEditor_SequenceLabel">Sekwencja:</sys:String>
+    <sys:String x:Key="SeqEditor_StatusLabel">  Stan:</sys:String>
+    <sys:String x:Key="SeqEditor_Blocks">BLOKI</sys:String>
+    <sys:String x:Key="SeqEditor_BlockProperties">WŁAŚCIWOŚCI BLOKU</sys:String>
+    <sys:String x:Key="SeqEditor_ExecLog">LOG WYKONANIA</sys:String>
+
+    <!-- Data viewer -->
+    <sys:String x:Key="DataViewer_Clear">🗑 Wyczyść</sys:String>
+    <sys:String x:Key="DataViewer_ExportCsv">📥 Eksport CSV</sys:String>
+    <sys:String x:Key="DataViewer_ColTime">Czas</sys:String>
+    <sys:String x:Key="DataViewer_ColInstrument">Przyrząd</sys:String>
+    <sys:String x:Key="DataViewer_ColChannel">Kanał</sys:String>
+    <sys:String x:Key="DataViewer_ColParameter">Parametr</sys:String>
+    <sys:String x:Key="DataViewer_ColValue">Wartość</sys:String>
+    <sys:String x:Key="DataViewer_ColUnit">Jednostka</sys:String>
+    <sys:String x:Key="DataViewer_ColFunction">Funkcja</sys:String>
+    <sys:String x:Key="DataViewer_ResultsLabel">Wyniki:</sys:String>
+    <sys:String x:Key="Chart_Title">Pomiary na żywo</sys:String>
+    <sys:String x:Key="Chart_XAxis">Nr próbki</sys:String>
+    <sys:String x:Key="Chart_YAxis">Wartość</sys:String>
+
+    <!-- Connection manager -->
+    <sys:String x:Key="ConnMgr_Title">Dodaj przyrząd</sys:String>
+    <sys:String x:Key="ConnMgr_VisaResources">Zasoby VISA</sys:String>
+    <sys:String x:Key="ConnMgr_Refresh">🔄 Odśwież</sys:String>
+    <sys:String x:Key="ConnMgr_ManualHint">Lub wpisz ręcznie (GPIB0::22::INSTR, COM3, ...)</sys:String>
+    <sys:String x:Key="ConnMgr_Driver">Driver przyrządu</sys:String>
+    <sys:String x:Key="ConnMgr_Detected">✓ wykryto</sys:String>
+    <sys:String x:Key="ConnMgr_Options">Opcje</sys:String>
+    <sys:String x:Key="ConnMgr_SimMode">Tryb symulacji (bez fizycznego urządzenia)</sys:String>
+    <sys:String x:Key="ConnMgr_LabelHint">Etykieta przyrządu (opcjonalna):</sys:String>
+    <sys:String x:Key="ConnMgr_LabelPlaceholder">np. DMM1, Zasilacz_lab3</sys:String>
+    <sys:String x:Key="ConnMgr_TestConnection">Test połączenia</sys:String>
+    <sys:String x:Key="ConnMgr_Connect">Połącz</sys:String>
+    <sys:String x:Key="ConnMgr_Cancel">Anuluj</sys:String>
+    <sys:String x:Key="ConnMgr_InitStatus">Kliknij 'Odśwież' aby znaleźć zasoby VISA</sys:String>
+
+    <!-- Front panel -->
+    <sys:String x:Key="FrontPanel_NoInstrument">Brak podłączonego przyrządu</sys:String>
+    <sys:String x:Key="FrontPanel_NoInstrumentHint">Kliknij 'Dodaj przyrząd' aby połączyć się z urządzeniem</sys:String>
+    <sys:String x:Key="FrontPanel_Disconnect">Rozłącz</sys:String>
+    <sys:String x:Key="FrontPanel_Reset">Reset</sys:String>
+
+    <!-- Converters -->
+    <sys:String x:Key="Converter_Pause">⏸ Pauza</sys:String>
+    <sys:String x:Key="Converter_Resume">▶ Wznów</sys:String>
+
+    <!-- ViewModel runtime strings (C# only) -->
+    <sys:String x:Key="VM_StatusConnected">Połączony</sys:String>
+    <sys:String x:Key="VM_StatusDisconnected">Rozłączony</sys:String>
+    <sys:String x:Key="VM_ErrorPrefix">Błąd:</sys:String>
+    <sys:String x:Key="VM_ErrorLoading">Błąd ładowania panelu:</sys:String>
+    <sys:String x:Key="VM_NewSequenceName">Nowa sekwencja</sys:String>
+    <sys:String x:Key="VM_SeqStatus_Ready">Gotowy</sys:String>
+    <sys:String x:Key="VM_SequenceEmpty">Sekwencja jest pusta. Dodaj bloki z panelu BLOKI.</sys:String>
+    <sys:String x:Key="VM_SequenceNoStart">Brak bloku Start. Dodaj blok 'Start' do sekwencji.</sys:String>
+    <sys:String x:Key="VM_ErrorLogPrefix">BŁĄD:</sys:String>
+    <sys:String x:Key="VM_ScanningVisa">Skanowanie zasobów VISA...</sys:String>
+    <sys:String x:Key="VM_FoundResources">Znaleziono {0} zasobów VISA, {1} portów COM</sys:String>
+    <sys:String x:Key="VM_Testing">Testowanie...</sys:String>
+    <sys:String x:Key="VM_TestOk">OK:</sys:String>
+    <sys:String x:Key="VM_Connecting">Łączenie...</sys:String>
+    <sys:String x:Key="VM_SelectDriver">Wybierz driver</sys:String>
+    <sys:String x:Key="VM_Connected">Połączono:</sys:String>
+    <sys:String x:Key="VM_ConnectionError">Błąd połączenia:</sys:String>
+    <sys:String x:Key="VM_ResetFailed">Reset nieudany:</sys:String>
+    <sys:String x:Key="VM_FilterSeq">Sekwencje InstrumentControl (*.iseq)|*.iseq|Wszystkie pliki (*.*)|*.*</sys:String>
+    <sys:String x:Key="VM_FilterCsv">CSV (*.csv)|*.csv</sys:String>
+    <sys:String x:Key="VM_CsvDefaultName">pomiary_{0}</sys:String>
+    <sys:String x:Key="VM_ExportSuccess">Zapisano {0} wierszy do:</sys:String>
+    <sys:String x:Key="VM_ExportError">Błąd eksportu:</sys:String>
+    <sys:String x:Key="VM_ExportTitle">Eksport CSV</sys:String>
+    <sys:String x:Key="VM_SeqLoadError">Nie można wczytać pliku sekwencji.</sys:String>
+
+</ResourceDictionary>

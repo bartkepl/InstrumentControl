@@ -4,6 +4,7 @@ using System.Windows;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using InstrumentControl.App.Controls;
+using InstrumentControl.App.Services;
 using InstrumentControl.App.Views;
 using InstrumentControl.Core.Interfaces;
 using InstrumentControl.Core.Models;
@@ -58,10 +59,13 @@ public partial class SequenceEditorViewModel : ViewModelBase
     [ObservableProperty] private ObservableCollection<SequenceBlockVm> _blocks = new();
     [ObservableProperty] private ObservableCollection<ConnectionVm> _connections = new();
     [ObservableProperty] private SequenceBlockVm? _selectedBlock;
-    [ObservableProperty] private string _sequenceName = "Nowa sekwencja";
+    [ObservableProperty] private string _sequenceName = "";
     [ObservableProperty] private string _currentFilePath = string.Empty;
     [ObservableProperty] private bool _isModified;
-    [ObservableProperty] private string _sequenceStatus = "Gotowy";
+    [ObservableProperty] private string _sequenceStatus = "";
+
+    public string SequenceStatusDisplay =>
+        $"{LocalizationService.Get("StatusBar_SequenceLabel")} {SequenceStatus}";
     [ObservableProperty] private string _logText = string.Empty;
     [ObservableProperty] private bool _isRunning;
     [ObservableProperty] private bool _isPaused;
@@ -97,11 +101,21 @@ public partial class SequenceEditorViewModel : ViewModelBase
             IsRunning = state == SequenceState.Running || state == SequenceState.Paused;
             IsPaused = state == SequenceState.Paused;
             SequenceStatus = state.ToString();
+            OnPropertyChanged(nameof(SequenceStatusDisplay));
         });
         _engine.Error += (_, ex) => RunOnUi(() =>
         {
-            LogText += $"BŁĄD: {ex.Message}\n";
-            ErrorWindow.ShowException("Błąd sekwencji", ex);
+            LogText += $"{LocalizationService.Get("VM_ErrorLogPrefix")} {ex.Message}\n";
+            ErrorWindow.ShowException("Sequence error", ex);
+        });
+
+        SequenceName = LocalizationService.Get("VM_NewSequenceName");
+        SequenceStatus = LocalizationService.Get("VM_SeqStatus_Ready");
+
+        LocalizationService.LanguageChanged += (_, _) => RunOnUi(() =>
+        {
+            OnPropertyChanged(nameof(IsPaused));
+            OnPropertyChanged(nameof(SequenceStatusDisplay));
         });
     }
 
@@ -216,10 +230,10 @@ public partial class SequenceEditorViewModel : ViewModelBase
     private string? ValidateSequence()
     {
         if (!Blocks.Any())
-            return "Sekwencja jest pusta. Dodaj bloki z panelu BLOKI.";
+            return LocalizationService.Get("VM_SequenceEmpty");
 
         if (!Blocks.Any(b => b.BlockType == "StartBlock"))
-            return "Brak bloku Start. Dodaj blok 'Start' do sekwencji.";
+            return LocalizationService.Get("VM_SequenceNoStart");
 
         return null;
     }
@@ -237,7 +251,7 @@ public partial class SequenceEditorViewModel : ViewModelBase
     private void NewSequence()
     {
         Blocks.Clear(); Connections.Clear();
-        SequenceName = "Nowa sekwencja";
+        SequenceName = LocalizationService.Get("VM_NewSequenceName");
         CurrentFilePath = string.Empty;
         LogText = string.Empty;
         IsModified = false;
@@ -260,7 +274,7 @@ public partial class SequenceEditorViewModel : ViewModelBase
     {
         var dlg = new Microsoft.Win32.SaveFileDialog
         {
-            Filter = "Sekwencje InstrumentControl (*.iseq)|*.iseq|Wszystkie pliki (*.*)|*.*",
+            Filter = LocalizationService.Get("VM_FilterSeq"),
             DefaultExt = ".iseq",
             FileName = SequenceName
         };
@@ -277,13 +291,13 @@ public partial class SequenceEditorViewModel : ViewModelBase
     {
         var dlg = new Microsoft.Win32.OpenFileDialog
         {
-            Filter = "Sekwencje InstrumentControl (*.iseq)|*.iseq|Wszystkie pliki (*.*)|*.*"
+            Filter = LocalizationService.Get("VM_FilterSeq")
         };
         if (dlg.ShowDialog() != true) return;
 
         var json = File.ReadAllText(dlg.FileName);
         var def = SequenceDefinition.FromJson(json);
-        if (def == null) { MessageBox.Show("Nie można wczytać pliku sekwencji."); return; }
+        if (def == null) { MessageBox.Show(LocalizationService.Get("VM_SeqLoadError")); return; }
 
         LoadDefinition(def);
         CurrentFilePath = dlg.FileName;

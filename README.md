@@ -19,6 +19,7 @@ Built with .NET 8 WPF, a plugin DLL architecture, and a visual Scratch-like sequ
 - **Simulation mode** — runs without NI-VISA installed; great for UI development
 - **Plugin architecture** — each instrument is an independent DLL, loaded at runtime
 - **Data viewer** — live charts and tables from sequence runs
+- **UI language** — English and Polish; switch any time from the About dialog, no restart required; choice is saved to `%LocalAppData%\InstrumentControl\settings.json`
 - **About dialog** — version, author and GitHub link accessible via the toolbar
 
 ## Supported Instruments
@@ -31,6 +32,33 @@ Built with .NET 8 WPF, a plugin DLL architecture, and a visual Scratch-like sequ
 | ITECH IT6922B | DC Power Supply (60 V / 5 A) | VISA (USB/LAN/GPIB) | SetVoltage, SetCurrent, SetOutput, MeasureVoltage, MeasureCurrent, MeasurePower, SetOVP, SetOCP |
 | R&S RTB2004 | 4-channel oscilloscope 300 MHz | VISA (LAN/USB) | SetChannel, SetTimebase, SetTrigger, Run, Stop, Single, Autoscale, Measure, ReadWaveform |
 | CTS T-40/50 | Environmental chamber (−75 … +185 °C) | RS-232 (non-VISA, binary ASCII protocol) | SetTemperature, SetRamp, ChamberStart, ChamberStop, ChamberPause, ReadTemperature, WaitForTemperature |
+
+## Language / UI Localization
+
+The application UI is available in **English** and **Polish**.
+
+To change the language:
+
+1. Click **About** (the info icon in the toolbar)
+2. Select **English** or **Polski** from the language drop-down
+3. The entire UI switches instantly — no restart required
+
+The selected language is saved in `%LocalAppData%\InstrumentControl\settings.json` and restored on the next launch. English is the default when the file does not exist.
+
+### For Developers
+
+UI strings are stored in XAML resource dictionaries inside `src/InstrumentControl.App/Resources/`:
+
+| File | Language |
+|---|---|
+| `Strings.en.xaml` | English (134 entries) |
+| `Strings.pl.xaml` | Polish (134 entries) |
+
+All XAML bindings use `{DynamicResource Key}` so the switch is live. `LocalizationService` (singleton, initialized in `App.xaml.cs`) handles loading the saved language on startup and swapping the active resource dictionary when the user changes the setting.
+
+To add a third language, create `Strings.xx.xaml` with the same 134 keys and register `"xx"` as a supported code in `LocalizationService.SetLanguage()`.
+
+---
 
 ## Requirements
 

@@ -7,9 +7,9 @@
         <Grid x:Name="NoInstrumentPanel" Visibility="Visible">
             <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
                 <TextBlock Text="⚡" FontSize="64" HorizontalAlignment="Center" Foreground="#BDC3C7"/>
-                <TextBlock Text="Brak podłączonego przyrządu" FontSize="18" Foreground="#95A5A6"
+                <TextBlock Text="{DynamicResource FrontPanel_NoInstrument}" FontSize="18" Foreground="#95A5A6"
                            HorizontalAlignment="Center" Margin="0,12,0,0"/>
-                <TextBlock Text="Kliknij 'Dodaj przyrząd' aby połączyć się z urządzeniem"
+                <TextBlock Text="{DynamicResource FrontPanel_NoInstrumentHint}"
                            FontSize="13" Foreground="#BDC3C7" HorizontalAlignment="Center" Margin="0,6,0,0"/>
             </StackPanel>
         </Grid>
@@ -24,10 +24,14 @@
                                    VerticalAlignment="Center" Margin="0,0,12,0"/>
                         <TextBlock x:Name="InstrumentResource" FontSize="11" Foreground="#7F8C8D"
                                    VerticalAlignment="Center" Margin="0,0,16,0"/>
-                        <Button Content="Rozłącz" Style="{StaticResource DangerButtonStyle}"
-                                x:Name="DisconnectButton" Margin="4,0"/>
-                        <Button Content="Reset" Style="{StaticResource PrimaryButtonStyle}"
-                                x:Name="ResetButton" Margin="4,0"/>
+                        <Button Style="{StaticResource DangerButtonStyle}"
+                                x:Name="DisconnectButton" Margin="4,0">
+                            <TextBlock Text="{DynamicResource FrontPanel_Disconnect}"/>
+                        </Button>
+                        <Button Style="{StaticResource PrimaryButtonStyle}"
+                                x:Name="ResetButton" Margin="4,0">
+                            <TextBlock Text="{DynamicResource FrontPanel_Reset}"/>
+                        </Button>
                     </StackPanel>
                 </Border>
 

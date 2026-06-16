@@ -16,20 +16,32 @@
     <DockPanel>
         <!-- Top Menu -->
         <Menu DockPanel.Dock="Top" Background="{StaticResource PrimaryBrush}" Foreground="White">
-            <MenuItem Header="_Plik" Foreground="White">
-                <MenuItem Header="Nowa sekwencja" Command="{Binding SeqVm.NewSequenceCommand}"/>
-                <MenuItem Header="Otwórz sekwencję..." Command="{Binding SeqVm.OpenSequenceCommand}"/>
-                <MenuItem Header="Zapisz sekwencję" Command="{Binding SeqVm.SaveSequenceCommand}"/>
-                <MenuItem Header="Zapisz sekwencję jako..." Command="{Binding SeqVm.SaveSequenceAsCommand}"/>
+            <Menu.Resources>
+                <!-- Sub-items would inherit Foreground=White and be invisible on white popup bg.
+                     Override: only TopLevelHeader keeps White, sub-items use dark text. -->
+                <Style TargetType="{x:Type MenuItem}">
+                    <Setter Property="Foreground" Value="#212121"/>
+                    <Style.Triggers>
+                        <Trigger Property="Role" Value="TopLevelHeader">
+                            <Setter Property="Foreground" Value="White"/>
+                        </Trigger>
+                    </Style.Triggers>
+                </Style>
+            </Menu.Resources>
+            <MenuItem Header="{DynamicResource Menu_File}">
+                <MenuItem Header="{DynamicResource Menu_File_NewSequence}" Command="{Binding SeqVm.NewSequenceCommand}"/>
+                <MenuItem Header="{DynamicResource Menu_File_OpenSequence}" Command="{Binding SeqVm.OpenSequenceCommand}"/>
+                <MenuItem Header="{DynamicResource Menu_File_SaveSequence}" Command="{Binding SeqVm.SaveSequenceCommand}"/>
+                <MenuItem Header="{DynamicResource Menu_File_SaveSequenceAs}" Command="{Binding SeqVm.SaveSequenceAsCommand}"/>
                 <Separator/>
-                <MenuItem Header="Wyjście" Click="MenuExit_Click"/>
+                <MenuItem Header="{DynamicResource Menu_File_Exit}" Click="MenuExit_Click"/>
             </MenuItem>
-            <MenuItem Header="_Instrument" Foreground="White">
-                <MenuItem Header="Dodaj przyrząd..." Click="MenuAddInstrument_Click"/>
+            <MenuItem Header="{DynamicResource Menu_Instrument}">
+                <MenuItem Header="{DynamicResource Menu_Instrument_Add}" Click="MenuAddInstrument_Click"/>
             </MenuItem>
-            <MenuItem Header="_Dane" Foreground="White">
-                <MenuItem Header="Wyczyść dane" Command="{Binding DataVm.ClearDataCommand}"/>
-                <MenuItem Header="Eksport CSV..." Command="{Binding DataVm.ExportCsvCommand}"/>
+            <MenuItem Header="{DynamicResource Menu_Data}">
+                <MenuItem Header="{DynamicResource Menu_Data_Clear}" Command="{Binding DataVm.ClearDataCommand}"/>
+                <MenuItem Header="{DynamicResource Menu_Data_ExportCsv}" Command="{Binding DataVm.ExportCsvCommand}"/>
             </MenuItem>
         </Menu>
 
@@ -41,36 +53,34 @@
             </Grid.ColumnDefinitions>
             <ToolBar Grid.Column="0" Background="#F8F9FA" Height="40">
                 <Button Style="{StaticResource AccentButtonStyle}" Margin="2,0"
-                        Click="MenuAddInstrument_Click" ToolTip="Dodaj przyrząd (Ctrl+N)">
-                    ➕ Dodaj przyrząd
-                </Button>
+                        Click="MenuAddInstrument_Click"
+                        Content="{DynamicResource Toolbar_AddInstrument}"
+                        ToolTip="{DynamicResource Toolbar_AddInstrumentTip}"/>
                 <Separator/>
                 <Button Style="{StaticResource SuccessButtonStyle}" Margin="2,0"
-                        Command="{Binding SeqVm.RunSequenceCommand}" ToolTip="Uruchom sekwencję (F5)">
-                    ▶ Uruchom
-                </Button>
+                        Command="{Binding SeqVm.RunSequenceCommand}"
+                        Content="{DynamicResource Toolbar_Run}"
+                        ToolTip="{DynamicResource Toolbar_RunTip}"/>
                 <Button Style="{StaticResource PrimaryButtonStyle}" Margin="2,0"
                         Command="{Binding SeqVm.PauseSequenceCommand}">
-                    <TextBlock Text="{Binding SeqVm.IsPaused, Converter={StaticResource PauseResumeConverter}}"/>
+                    <TextBlock Text="{Binding SeqVm.IsPaused, Converter={StaticResource PauseResumeConverter}}"
+                               Foreground="White"/>
                 </Button>
                 <Button Style="{StaticResource DangerButtonStyle}" Margin="2,0"
-                        Command="{Binding SeqVm.StopSequenceCommand}" IsEnabled="{Binding SeqVm.IsRunning}">
-                    ■ Stop
-                </Button>
+                        Command="{Binding SeqVm.StopSequenceCommand}" IsEnabled="{Binding SeqVm.IsRunning}"
+                        Content="{DynamicResource Toolbar_Stop}"/>
                 <Separator/>
                 <Button Style="{StaticResource BaseButtonStyle}" Background="White" Margin="2,0"
-                        Command="{Binding SeqVm.OpenSequenceCommand}">
-                    📂 Otwórz
-                </Button>
+                        Command="{Binding SeqVm.OpenSequenceCommand}"
+                        Content="{DynamicResource Toolbar_Open}"/>
                 <Button Style="{StaticResource BaseButtonStyle}" Background="White" Margin="2,0"
-                        Command="{Binding SeqVm.SaveSequenceCommand}">
-                    💾 Zapisz
-                </Button>
+                        Command="{Binding SeqVm.SaveSequenceCommand}"
+                        Content="{DynamicResource Toolbar_Save}"/>
             </ToolBar>
             <Button Grid.Column="1" Click="AboutButton_Click"
                     Background="Transparent" BorderThickness="0"
                     Margin="0,0,8,0" Padding="10,0" Cursor="Hand"
-                    ToolTip="O programie" VerticalAlignment="Stretch"
+                    ToolTip="{DynamicResource About_Title}" VerticalAlignment="Stretch"
                     Foreground="#7F8C8D" FontSize="13">
                 <Button.Template>
                     <ControlTemplate TargetType="Button">
@@ -85,7 +95,7 @@
                         </ControlTemplate.Triggers>
                     </ControlTemplate>
                 </Button.Template>
-                ℹ O programie
+                <TextBlock Text="{DynamicResource Toolbar_About}"/>
             </Button>
         </Grid>
 
@@ -96,13 +106,7 @@
             </StatusBarItem>
             <Separator/>
             <StatusBarItem>
-                <TextBlock FontSize="12">
-                    <TextBlock.Text>
-                        <MultiBinding StringFormat="Sekwencja: {0}">
-                            <Binding Path="SeqVm.SequenceStatus"/>
-                        </MultiBinding>
-                    </TextBlock.Text>
-                </TextBlock>
+                <TextBlock Text="{Binding SeqVm.SequenceStatusDisplay}" FontSize="12"/>
             </StatusBarItem>
             <Separator/>
             <StatusBarItem HorizontalAlignment="Right">
@@ -122,12 +126,12 @@
             <!-- Sidebar: Connected Instruments -->
             <DockPanel Grid.Column="0" Background="{StaticResource SidebarBrush}">
                 <Border DockPanel.Dock="Top" Background="#2C3E50" Padding="10,8">
-                    <TextBlock Text="PRZYRZĄDY" FontSize="11" FontWeight="Bold"
+                    <TextBlock Text="{DynamicResource Sidebar_Instruments}" FontSize="11" FontWeight="Bold"
                                Foreground="#95A5A6"/>
                 </Border>
                 <Button DockPanel.Dock="Bottom" Margin="8" Style="{StaticResource AccentButtonStyle}"
                         Click="MenuAddInstrument_Click">
-                    + Dodaj przyrząd
+                    <TextBlock Text="{DynamicResource Sidebar_AddInstrument}"/>
                 </Button>
                 <ScrollViewer VerticalScrollBarVisibility="Auto">
                     <ItemsControl ItemsSource="{Binding MainVm.ConnectedInstruments}">
@@ -170,19 +174,19 @@
             <TabControl Grid.Column="2" x:Name="MainTabControl"
                         Background="{StaticResource BackgroundBrush}"
                         BorderThickness="0">
-                <TabItem Header="🖥  Panel frontowy">
+                <TabItem Header="{DynamicResource Tab_FrontPanel}">
                     <views:FrontPanelView x:Name="FrontPanelView"
                                           DataContext="{Binding MainVm.SelectedInstrument}"/>
                 </TabItem>
-                <TabItem Header="⚙  Edytor sekwencji">
+                <TabItem Header="{DynamicResource Tab_SequenceEditor}">
                     <views:SequenceEditorView x:Name="SeqEditorView"
                                               DataContext="{Binding SeqVm}"/>
                 </TabItem>
-                <TabItem Header="📊  Dane / Wykresy">
+                <TabItem Header="{DynamicResource Tab_Data}">
                     <views:DataViewerView x:Name="DataViewerView"
                                           DataContext="{Binding DataVm}"/>
                 </TabItem>
-                <TabItem Header="📋  Log">
+                <TabItem Header="{DynamicResource Tab_Log}">
                     <Border Padding="8" Background="White">
                         <ScrollViewer x:Name="LogScroll" VerticalScrollBarVisibility="Auto">
                             <TextBox x:Name="LogBox" IsReadOnly="True"

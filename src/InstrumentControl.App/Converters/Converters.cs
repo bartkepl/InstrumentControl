@@ -27,7 +27,9 @@ public class PauseResumeConverter : IValueConverter
 {
     public static PauseResumeConverter Instance { get; } = new();
     public object Convert(object v, Type t, object p, CultureInfo c) =>
-        v is bool b && b ? "▶ Wznów" : "⏸ Pauza";
+        v is bool b && b
+            ? Application.Current?.Resources["Converter_Resume"] as string ?? "▶ Resume"
+            : Application.Current?.Resources["Converter_Pause"] as string ?? "⏸ Pause";
     public object ConvertBack(object v, Type t, object p, CultureInfo c) => Binding.DoNothing;
 }
 
@@ -36,7 +38,9 @@ public class SimModeConverter : IValueConverter
 {
     public static SimModeConverter Instance { get; } = new();
     public object Convert(object v, Type t, object p, CultureInfo c) =>
-        v is bool b && b ? "⚠ TRYB SYMULACJI" : "● VISA AKTYWNE";
+        v is bool b && b
+            ? Application.Current?.Resources["StatusBar_SimMode"] as string ?? "⚠ SIM"
+            : Application.Current?.Resources["StatusBar_VisaActive"] as string ?? "● VISA";
     public object ConvertBack(object v, Type t, object p, CultureInfo c) => Binding.DoNothing;
 }
 
