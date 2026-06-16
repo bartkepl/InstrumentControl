@@ -6,21 +6,21 @@
              mc:Ignorable="d"
              d:DesignHeight="700" d:DesignWidth="780"
              MinWidth="660" MinHeight="560"
-             Background="#1A1E2E">
+             Background="#262A3E">
 
     <UserControl.Resources>
         <BooleanToVisibilityConverter x:Key="BoolToVis"/>
 
-        <SolidColorBrush x:Key="PanelBg"        Color="#1A1E2E"/>
-        <SolidColorBrush x:Key="BezelBg"         Color="#12162A"/>
+        <SolidColorBrush x:Key="PanelBg"        Color="#262A3E"/>
+        <SolidColorBrush x:Key="BezelBg"         Color="#1E2240"/>
         <SolidColorBrush x:Key="DisplayBg"       Color="#000000"/>
         <SolidColorBrush x:Key="DisplayGreen"    Color="#00FF7F"/>
         <SolidColorBrush x:Key="DisplayDimGreen" Color="#003A1A"/>
-        <SolidColorBrush x:Key="SectionBg"       Color="#242840"/>
-        <SolidColorBrush x:Key="BorderColor"     Color="#3A4060"/>
-        <SolidColorBrush x:Key="LabelFg"         Color="#A0A8C0"/>
+        <SolidColorBrush x:Key="SectionBg"       Color="#323658"/>
+        <SolidColorBrush x:Key="BorderColor"     Color="#505880"/>
+        <SolidColorBrush x:Key="LabelFg"         Color="#B0BAD8"/>
         <SolidColorBrush x:Key="ItechBlue"       Color="#0066CC"/>
-        <SolidColorBrush x:Key="StatusBg"        Color="#10142A"/>
+        <SolidColorBrush x:Key="StatusBg"        Color="#1E2240"/>
 
         <Style x:Key="FieldLabel" TargetType="TextBlock">
             <Setter Property="Foreground" Value="{StaticResource LabelFg}"/>
@@ -33,12 +33,12 @@
             <Setter Property="Height" Value="26"/>
             <Setter Property="FontFamily" Value="Consolas"/>
             <Setter Property="FontSize" Value="12"/>
-            <Setter Property="Background" Value="#0C1020"/>
-            <Setter Property="Foreground" Value="#80C0FF"/>
+            <Setter Property="Background" Value="#1C2038"/>
+            <Setter Property="Foreground" Value="#90C8FF"/>
             <Setter Property="BorderBrush" Value="{StaticResource BorderColor}"/>
             <Setter Property="BorderThickness" Value="1"/>
             <Setter Property="Padding" Value="4,2"/>
-            <Setter Property="CaretBrush" Value="#80C0FF"/>
+            <Setter Property="CaretBrush" Value="#90C8FF"/>
         </Style>
 
         <Style x:Key="ActionBtn" TargetType="Button">
@@ -102,7 +102,7 @@
             </Grid.RowDefinitions>
 
             <!-- ── Brand strip ─────────────────────────────────────────────── -->
-            <Border Grid.Row="0" Background="#0A0E1E" CornerRadius="5,5,0,0" Padding="14,8">
+            <Border Grid.Row="0" Background="#161A2E" CornerRadius="5,5,0,0" Padding="14,8">
                 <Grid>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="Auto"/>
@@ -440,7 +440,7 @@
                     <ComboBox Grid.Column="4"
                               ItemsSource="{Binding Intervals}"
                               SelectedItem="{Binding SelectedInterval}"
-                              Height="26" Background="#0C1020" Foreground="#80C0FF"
+                              Height="26" Background="#1C2038" Foreground="#90C8FF"
                               BorderBrush="{StaticResource BorderColor}"
                               FontFamily="Consolas"/>
                     <TextBlock Grid.Column="5" Text="ms"

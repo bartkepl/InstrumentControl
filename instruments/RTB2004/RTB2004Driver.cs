@@ -198,6 +198,29 @@ public class RTB2004Driver : InstrumentDriverBase
         RaiseStatus($"Przebiegi CH{channel} zapisane: {filePath}");
     }
 
+    // ── Screenshot ────────────────────────────────────────────────────────
+
+    public async Task<byte[]> TakeScreenshotAsync()
+    {
+        if (Connection == null) throw new InvalidOperationException("Brak połączenia");
+        await Connection.WriteAsync("HCOP:DEV:LANG PNG");
+        await Connection.WriteAsync("HCOP:DATA?");
+        var raw = await Connection.ReadRawAsync(5_000_000);
+        return ParseIeeeBinaryBlock(raw);
+    }
+
+    private static byte[] ParseIeeeBinaryBlock(byte[] raw)
+    {
+        if (raw.Length < 3 || raw[0] != (byte)'#') return raw;
+        int nDigits = raw[1] - '0';
+        if (nDigits <= 0 || nDigits > 9 || raw.Length < 2 + nDigits) return raw;
+        var lenStr = System.Text.Encoding.ASCII.GetString(raw, 2, nDigits);
+        if (!int.TryParse(lenStr, out int dataLen)) return raw;
+        int dataStart = 2 + nDigits;
+        if (raw.Length < dataStart + dataLen) return raw[dataStart..];
+        return raw[dataStart..(dataStart + dataLen)];
+    }
+
     // ── Plugin interface ──────────────────────────────────────────────────────
 
     public override FrameworkElement CreateFrontPanel() =>

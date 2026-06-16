@@ -1,27 +1,66 @@
 using System.Globalization;
+using System.IO;
+using System.Text.Json;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using InstrumentControl.Core.Views;
+using Microsoft.Win32;
+using OxyPlot;
+using OxyPlot.Axes;
+using OxyPlot.Series;
 
 namespace RTB2004.Views;
+
+// ─── Preset model ────────────────────────────────────────────────────────────
+
+public class RTB2004ChannelPreset
+{
+    public bool   Enabled  { get; set; }
+    public string Scale    { get; set; } = "1";
+    public string Offset   { get; set; } = "0.0";
+    public string Coupling { get; set; } = "DC";
+    public string Probe    { get; set; } = "10";
+}
+
+public class RTB2004MeasPreset
+{
+    public string Source { get; set; } = "CH1";
+    public string Type   { get; set; } = "FREQ";
+}
+
+public class RTB2004Preset
+{
+    public RTB2004ChannelPreset[] Channels      { get; set; } = new RTB2004ChannelPreset[4];
+    public string                 Timebase      { get; set; } = "0.001";
+    public string                 TriggerSource { get; set; } = "CH1";
+    public string                 TriggerLevel  { get; set; } = "0.0";
+    public string                 TriggerSlope  { get; set; } = "POS";
+    public string                 TriggerMode   { get; set; } = "AUTO";
+    public RTB2004MeasPreset[]    Measurements  { get; set; } = new RTB2004MeasPreset[4];
+}
+
+// ─── ViewModel ───────────────────────────────────────────────────────────────
 
 public partial class RTB2004FrontPanelViewModel : ObservableObject
 {
     private readonly RTB2004Driver _driver;
+    private          PlotModel     _scopeModel = null!;
+    public           PlotModel     ScopeModel  => _scopeModel;
 
-    // ── State ────────────────────────────────────────────────────────────────
+    // ── State ──────────────────────────────────────────────────────────────
     [ObservableProperty] private bool   _isConnected;
-    [ObservableProperty] private string _statusText = "Brak połączenia";
+    [ObservableProperty] private string _statusText       = "Brak połączenia";
     [ObservableProperty] private string _acquisitionState = "STOP";
+    [ObservableProperty] private bool   _isCapturing;
 
-    // ── Status bar display ────────────────────────────────────────────────────
-    [ObservableProperty] private string _ch1Label = "CH1 ■";
-    [ObservableProperty] private string _ch2Label = "CH2 □";
-    [ObservableProperty] private string _ch3Label = "CH3 □";
-    [ObservableProperty] private string _ch4Label = "CH4 □";
+    // ── Status bar display ─────────────────────────────────────────────────
+    [ObservableProperty] private string _ch1Label        = "CH1 ■";
+    [ObservableProperty] private string _ch2Label        = "CH2 □";
+    [ObservableProperty] private string _ch3Label        = "CH3 □";
+    [ObservableProperty] private string _ch4Label        = "CH4 □";
     [ObservableProperty] private string _timescaleDisplay = "1ms/dz";
 
-    // ── Channel settings ─────────────────────────────────────────────────────
+    // ── Channel settings ───────────────────────────────────────────────────
     [ObservableProperty] private bool   _ch1Enabled  = true;
     [ObservableProperty] private string _ch1Scale    = "1";
     [ObservableProperty] private string _ch1Offset   = "0.0";
@@ -46,16 +85,16 @@ public partial class RTB2004FrontPanelViewModel : ObservableObject
     [ObservableProperty] private string _ch4Coupling = "DC";
     [ObservableProperty] private string _ch4Probe    = "10";
 
-    // ── Timebase ─────────────────────────────────────────────────────────────
+    // ── Timebase ───────────────────────────────────────────────────────────
     [ObservableProperty] private string _selectedTimescale = "0.001";
 
-    // ── Trigger ───────────────────────────────────────────────────────────────
+    // ── Trigger ────────────────────────────────────────────────────────────
     [ObservableProperty] private string _triggerSource = "CH1";
     [ObservableProperty] private string _triggerLevel  = "0.0";
     [ObservableProperty] private string _triggerSlope  = "POS";
     [ObservableProperty] private string _triggerMode   = "AUTO";
 
-    // ── Measurement slots ────────────────────────────────────────────────────
+    // ── Measurement slots ──────────────────────────────────────────────────
     [ObservableProperty] private string _m1Source = "CH1";
     [ObservableProperty] private string _m1Type   = "FREQ";
     [ObservableProperty] private string _m1Result = "---";
@@ -76,7 +115,7 @@ public partial class RTB2004FrontPanelViewModel : ObservableObject
     [ObservableProperty] private string _m4Result = "---";
     [ObservableProperty] private string _m4Unit   = "V";
 
-    // ── Option lists ─────────────────────────────────────────────────────────
+    // ── Option lists ───────────────────────────────────────────────────────
     public List<string> ScaleOptions { get; } = new()
     {
         "0.001","0.002","0.005","0.01","0.02","0.05",
@@ -98,7 +137,6 @@ public partial class RTB2004FrontPanelViewModel : ObservableObject
     public List<string> TriggerSources { get; } = new() { "CH1","CH2","CH3","CH4","EXT" };
     public List<string> TriggerSlopes  { get; } = new() { "POS","NEG","EITH" };
     public List<string> TriggerModes   { get; } = new() { "AUTO","NORM" };
-
     public List<string> ChannelSources { get; } = new() { "CH1","CH2","CH3","CH4" };
 
     public List<string> MeasTypes { get; } = new()
@@ -117,9 +155,82 @@ public partial class RTB2004FrontPanelViewModel : ObservableObject
 
         driver.StatusChanged += OnStatusChanged;
         driver.ErrorOccurred += OnErrorOccurred;
+
+        InitializeScopeModel();
     }
 
-    // ── Event handlers ────────────────────────────────────────────────────────
+    // ── Oscilloscope display model ─────────────────────────────────────────
+    private void InitializeScopeModel()
+    {
+        _scopeModel = new PlotModel
+        {
+            Background              = OxyColors.Transparent,
+            PlotAreaBackground      = OxyColor.FromRgb(4, 7, 18),
+            PlotAreaBorderColor     = OxyColor.FromRgb(38, 58, 100),
+            PlotAreaBorderThickness = new OxyThickness(1),
+            Padding                 = new OxyThickness(4, 4, 4, 4),
+            IsLegendVisible         = false,
+        };
+
+        _scopeModel.Axes.Add(new LinearAxis
+        {
+            Position           = AxisPosition.Bottom,
+            AxislineStyle      = LineStyle.Solid,
+            AxislineColor      = OxyColor.FromRgb(48, 70, 115),
+            TicklineColor      = OxyColor.FromRgb(48, 70, 115),
+            TextColor          = OxyColor.FromRgb(120, 155, 205),
+            FontSize           = 8,
+            MajorGridlineStyle = LineStyle.Solid,
+            MajorGridlineColor = OxyColor.FromRgb(26, 40, 68),
+            MinorGridlineStyle = LineStyle.Dot,
+            MinorGridlineColor = OxyColor.FromRgb(16, 24, 42),
+            MajorStep          = 0.5,
+            MinorStep          = 0.1,
+            Minimum            = -2.5,
+            Maximum            =  2.5,
+            StringFormat       = "0.##",
+        });
+
+        _scopeModel.Axes.Add(new LinearAxis
+        {
+            Position           = AxisPosition.Left,
+            AxislineStyle      = LineStyle.Solid,
+            AxislineColor      = OxyColor.FromRgb(48, 70, 115),
+            TicklineColor      = OxyColor.FromRgb(48, 70, 115),
+            TextColor          = OxyColor.FromRgb(120, 155, 205),
+            FontSize           = 8,
+            MajorGridlineStyle = LineStyle.Solid,
+            MajorGridlineColor = OxyColor.FromRgb(26, 40, 68),
+            MinorGridlineStyle = LineStyle.Dot,
+            MinorGridlineColor = OxyColor.FromRgb(16, 24, 42),
+            MajorStep          = 1.0,
+            MinorStep          = 0.2,
+            Minimum            = -4.0,
+            Maximum            =  4.0,
+            StringFormat       = "0.##",
+        });
+
+        OxyColor[] chColors =
+        {
+            OxyColor.FromRgb(255, 255,   0),  // CH1 yellow
+            OxyColor.FromRgb(  0, 255, 255),  // CH2 cyan
+            OxyColor.FromRgb(255, 102, 255),  // CH3 magenta
+            OxyColor.FromRgb(102, 255, 102),  // CH4 green
+        };
+
+        for (int i = 0; i < 4; i++)
+            _scopeModel.Series.Add(new LineSeries
+            {
+                Color           = chColors[i],
+                StrokeThickness = 1.2,
+                IsVisible       = false,
+                Title           = $"CH{i + 1}",
+            });
+
+        OnPropertyChanged(nameof(ScopeModel));
+    }
+
+    // ── Event handlers ─────────────────────────────────────────────────────
     private void OnStatusChanged(object? sender, string status)
     {
         System.Windows.Application.Current.Dispatcher.InvokeAsync(() =>
@@ -137,7 +248,7 @@ public partial class RTB2004FrontPanelViewModel : ObservableObject
         });
     }
 
-    // ── Property change reactions ─────────────────────────────────────────────
+    // ── Property change reactions ──────────────────────────────────────────
     partial void OnSelectedTimescaleChanged(string value)
     {
         if (double.TryParse(value, NumberStyles.Float, CultureInfo.InvariantCulture, out double s))
@@ -154,7 +265,7 @@ public partial class RTB2004FrontPanelViewModel : ObservableObject
     partial void OnM3TypeChanged(string value) => M3Unit = GetUnit(value);
     partial void OnM4TypeChanged(string value) => M4Unit = GetUnit(value);
 
-    // ── Commands ──────────────────────────────────────────────────────────────
+    // ── Commands ───────────────────────────────────────────────────────────
     [RelayCommand]
     private async Task RunAsync()
     {
@@ -296,6 +407,145 @@ public partial class RTB2004FrontPanelViewModel : ObservableObject
     }
 
     [RelayCommand]
+    private async Task CaptureWaveformAsync()
+    {
+        if (!_driver.IsConnected) { StatusText = "Nie połączono"; return; }
+        IsCapturing = true;
+        try
+        {
+            StatusText = "Odczyt przebiegów...";
+            bool[] enabled = { Ch1Enabled, Ch2Enabled, Ch3Enabled, Ch4Enabled };
+            bool anyRead = false;
+
+            for (int i = 0; i < 4; i++)
+            {
+                var series = (LineSeries)_scopeModel.Series[i];
+                if (!enabled[i]) { series.IsVisible = false; continue; }
+
+                var (voltages, xStart, xInc) = await _driver.ReadWaveformAsync(i + 1);
+                series.Points.Clear();
+                int stride = Math.Max(1, voltages.Length / 5000);
+                for (int j = 0; j < voltages.Length; j += stride)
+                    series.Points.Add(new DataPoint(xStart + j * xInc, voltages[j]));
+                series.IsVisible = true;
+                anyRead = true;
+            }
+
+            if (anyRead) _scopeModel.ResetAllAxes();
+            _scopeModel.InvalidatePlot(true);
+            StatusText = $"Przebiegi wczytane  {DateTime.Now:HH:mm:ss.fff}";
+        }
+        catch (Exception ex) { StatusText = $"Błąd odczytu przebiegu: {ex.Message}"; }
+        finally { IsCapturing = false; }
+    }
+
+    [RelayCommand]
+    private async Task TakeScreenshotAsync()
+    {
+        if (!_driver.IsConnected) { StatusText = "Nie połączono"; return; }
+        var dlg = new SaveFileDialog
+        {
+            Title      = "Zapisz screenshot oscyloskopu",
+            Filter     = "PNG (*.png)|*.png|BMP (*.bmp)|*.bmp|Wszystkie pliki (*.*)|*.*",
+            DefaultExt = ".png",
+            FileName   = $"RTB2004_{DateTime.Now:yyyyMMdd_HHmmss}",
+        };
+        if (dlg.ShowDialog() != true) return;
+        try
+        {
+            StatusText = "Pobieranie screenshota...";
+            byte[] data = await _driver.TakeScreenshotAsync();
+            if (data.Length == 0) { StatusText = "Screenshot: brak danych (tryb symulacji?)"; return; }
+            await File.WriteAllBytesAsync(dlg.FileName, data);
+            StatusText = $"Screenshot zapisany: {Path.GetFileName(dlg.FileName)}";
+        }
+        catch (Exception ex) { StatusText = $"Błąd screenshot: {ex.Message}"; }
+    }
+
+    [RelayCommand]
+    private async Task SavePresetAsync()
+    {
+        var dlg = new SaveFileDialog
+        {
+            Title      = "Zapisz preset oscyloskopu",
+            Filter     = "Preset JSON (*.json)|*.json",
+            DefaultExt = ".json",
+            FileName   = $"RTB2004_preset_{DateTime.Now:yyyyMMdd_HHmmss}",
+        };
+        if (dlg.ShowDialog() != true) return;
+        var preset = BuildPreset();
+        string json = JsonSerializer.Serialize(preset, new JsonSerializerOptions { WriteIndented = true });
+        await File.WriteAllTextAsync(dlg.FileName, json);
+        StatusText = $"Preset zapisany: {Path.GetFileName(dlg.FileName)}";
+    }
+
+    [RelayCommand]
+    private async Task LoadPresetAsync()
+    {
+        var dlg = new OpenFileDialog
+        {
+            Title  = "Wczytaj preset oscyloskopu",
+            Filter = "Preset JSON (*.json)|*.json|Wszystkie pliki (*.*)|*.*",
+        };
+        if (dlg.ShowDialog() != true) return;
+        try
+        {
+            string json = await File.ReadAllTextAsync(dlg.FileName);
+            var preset  = JsonSerializer.Deserialize<RTB2004Preset>(json);
+            if (preset == null) { StatusText = "Błąd: nieprawidłowy plik presetu"; return; }
+            ApplyPreset(preset);
+            StatusText = $"Preset wczytany: {Path.GetFileName(dlg.FileName)}";
+            if (_driver.IsConnected)
+            {
+                await ApplyChannelsAsync();
+                await ApplyTimescaleAsync();
+                await ApplyTriggerAsync();
+            }
+        }
+        catch (Exception ex) { StatusText = $"Błąd wczytywania presetu: {ex.Message}"; }
+    }
+
+    private RTB2004Preset BuildPreset() => new()
+    {
+        Channels = new[]
+        {
+            new RTB2004ChannelPreset { Enabled = Ch1Enabled, Scale = Ch1Scale, Offset = Ch1Offset, Coupling = Ch1Coupling, Probe = Ch1Probe },
+            new RTB2004ChannelPreset { Enabled = Ch2Enabled, Scale = Ch2Scale, Offset = Ch2Offset, Coupling = Ch2Coupling, Probe = Ch2Probe },
+            new RTB2004ChannelPreset { Enabled = Ch3Enabled, Scale = Ch3Scale, Offset = Ch3Offset, Coupling = Ch3Coupling, Probe = Ch3Probe },
+            new RTB2004ChannelPreset { Enabled = Ch4Enabled, Scale = Ch4Scale, Offset = Ch4Offset, Coupling = Ch4Coupling, Probe = Ch4Probe },
+        },
+        Timebase      = SelectedTimescale,
+        TriggerSource = TriggerSource,
+        TriggerLevel  = TriggerLevel,
+        TriggerSlope  = TriggerSlope,
+        TriggerMode   = TriggerMode,
+        Measurements  = new[]
+        {
+            new RTB2004MeasPreset { Source = M1Source, Type = M1Type },
+            new RTB2004MeasPreset { Source = M2Source, Type = M2Type },
+            new RTB2004MeasPreset { Source = M3Source, Type = M3Type },
+            new RTB2004MeasPreset { Source = M4Source, Type = M4Type },
+        },
+    };
+
+    private void ApplyPreset(RTB2004Preset p)
+    {
+        if (p.Channels?.Length >= 1) { var c = p.Channels[0]; Ch1Enabled = c.Enabled; Ch1Scale = c.Scale; Ch1Offset = c.Offset; Ch1Coupling = c.Coupling; Ch1Probe = c.Probe; }
+        if (p.Channels?.Length >= 2) { var c = p.Channels[1]; Ch2Enabled = c.Enabled; Ch2Scale = c.Scale; Ch2Offset = c.Offset; Ch2Coupling = c.Coupling; Ch2Probe = c.Probe; }
+        if (p.Channels?.Length >= 3) { var c = p.Channels[2]; Ch3Enabled = c.Enabled; Ch3Scale = c.Scale; Ch3Offset = c.Offset; Ch3Coupling = c.Coupling; Ch3Probe = c.Probe; }
+        if (p.Channels?.Length >= 4) { var c = p.Channels[3]; Ch4Enabled = c.Enabled; Ch4Scale = c.Scale; Ch4Offset = c.Offset; Ch4Coupling = c.Coupling; Ch4Probe = c.Probe; }
+        SelectedTimescale = p.Timebase      ?? SelectedTimescale;
+        TriggerSource     = p.TriggerSource ?? TriggerSource;
+        TriggerLevel      = p.TriggerLevel  ?? TriggerLevel;
+        TriggerSlope      = p.TriggerSlope  ?? TriggerSlope;
+        TriggerMode       = p.TriggerMode   ?? TriggerMode;
+        if (p.Measurements?.Length >= 1) { M1Source = p.Measurements[0].Source; M1Type = p.Measurements[0].Type; }
+        if (p.Measurements?.Length >= 2) { M2Source = p.Measurements[1].Source; M2Type = p.Measurements[1].Type; }
+        if (p.Measurements?.Length >= 3) { M3Source = p.Measurements[2].Source; M3Type = p.Measurements[2].Type; }
+        if (p.Measurements?.Length >= 4) { M4Source = p.Measurements[3].Source; M4Type = p.Measurements[3].Type; }
+    }
+
+    [RelayCommand]
     private void OpenLiveWindow()
     {
         if (_liveWindow != null && _liveWindow.IsLoaded)
@@ -322,21 +572,21 @@ public partial class RTB2004FrontPanelViewModel : ObservableObject
         catch (Exception ex) { StatusText = $"Błąd resetu: {ex.Message}"; }
     }
 
-    // ── Helpers ───────────────────────────────────────────────────────────────
+    // ── Helpers ────────────────────────────────────────────────────────────
     private static string FormatValue(double v, string type)
     {
         if (double.IsNaN(v) || double.IsInfinity(v)) return "OL";
         string unit = GetUnit(type);
         return unit switch
         {
-            "Hz"  => v >= 1e6 ? $"{v/1e6:F4} M" : v >= 1e3 ? $"{v/1e3:F3} k" : $"{v:F4}",
-            "s"   => v >= 1e-3 ? $"{v*1e3:F4} m" : v >= 1e-6 ? $"{v*1e6:F3} µ" : $"{v:G5}",
-            "%"   => $"{v:F2}",
-            "°"   => $"{v:F2}",
-            _     => Math.Abs(v) >= 1e3 ? $"{v/1e3:F4} k"
-                   : Math.Abs(v) >= 1    ? $"{v:F6}"
-                   : Math.Abs(v) >= 1e-3 ? $"{v*1e3:F4} m"
-                   : $"{v:G5}",
+            "Hz" => v >= 1e6 ? $"{v/1e6:F4} M" : v >= 1e3 ? $"{v/1e3:F3} k" : $"{v:F4}",
+            "s"  => v >= 1e-3 ? $"{v*1e3:F4} m" : v >= 1e-6 ? $"{v*1e6:F3} µ" : $"{v:G5}",
+            "%"  => $"{v:F2}",
+            "°"  => $"{v:F2}",
+            _    => Math.Abs(v) >= 1e3 ? $"{v/1e3:F4} k"
+                 : Math.Abs(v) >= 1    ? $"{v:F6}"
+                 : Math.Abs(v) >= 1e-3 ? $"{v*1e3:F4} m"
+                 : $"{v:G5}",
         };
     }
 

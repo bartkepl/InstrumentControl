@@ -6,21 +6,21 @@
              mc:Ignorable="d"
              d:DesignHeight="680" d:DesignWidth="700"
              MinWidth="580" MinHeight="560"
-             Background="#1A1C2A">
+             Background="#252840">
 
     <UserControl.Resources>
         <BooleanToVisibilityConverter x:Key="BoolToVis"/>
 
-        <SolidColorBrush x:Key="PanelBg"      Color="#1A1C2A"/>
-        <SolidColorBrush x:Key="SectionBg"    Color="#232540"/>
-        <SolidColorBrush x:Key="BorderColor"  Color="#3A4060"/>
-        <SolidColorBrush x:Key="LabelFg"      Color="#A0A8C0"/>
+        <SolidColorBrush x:Key="PanelBg"      Color="#252840"/>
+        <SolidColorBrush x:Key="SectionBg"    Color="#303355"/>
+        <SolidColorBrush x:Key="BorderColor"  Color="#505880"/>
+        <SolidColorBrush x:Key="LabelFg"      Color="#B0BAD8"/>
         <SolidColorBrush x:Key="DisplayBg"    Color="#000000"/>
         <SolidColorBrush x:Key="AmberFg"      Color="#FF9900"/>
         <SolidColorBrush x:Key="GreenFg"      Color="#00FF7F"/>
         <SolidColorBrush x:Key="DimAmber"     Color="#402800"/>
         <SolidColorBrush x:Key="DimGreen"     Color="#003A1A"/>
-        <SolidColorBrush x:Key="StatusBg"     Color="#10122A"/>
+        <SolidColorBrush x:Key="StatusBg"     Color="#1E2040"/>
         <SolidColorBrush x:Key="CTSOrange"    Color="#E05A00"/>
 
         <Style x:Key="FieldLabel" TargetType="TextBlock">
@@ -34,7 +34,7 @@
             <Setter Property="Height" Value="26"/>
             <Setter Property="FontFamily" Value="Consolas"/>
             <Setter Property="FontSize" Value="12"/>
-            <Setter Property="Background" Value="#0C1020"/>
+            <Setter Property="Background" Value="#1C2038"/>
             <Setter Property="Foreground" Value="#80C0FF"/>
             <Setter Property="BorderBrush" Value="{StaticResource BorderColor}"/>
             <Setter Property="BorderThickness" Value="1"/>
@@ -77,7 +77,7 @@
             <Setter Property="FontFamily" Value="Segoe UI"/>
             <Setter Property="FontSize" Value="10"/>
             <Setter Property="FontWeight" Value="SemiBold"/>
-            <Setter Property="Foreground" Value="#6070A0"/>
+            <Setter Property="Foreground" Value="#8898C8"/>
             <Setter Property="Margin" Value="0,0,0,6"/>
         </Style>
 
@@ -95,7 +95,7 @@
         </Grid.RowDefinitions>
 
         <!-- ── Header ──────────────────────────────────────────────────────── -->
-        <Border Grid.Row="0" Background="#12142A" CornerRadius="6" Padding="12,8" Margin="0,0,0,8">
+        <Border Grid.Row="0" Background="#1E2040" CornerRadius="6" Padding="12,8" Margin="0,0,0,8">
             <Grid>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="Auto"/>
@@ -344,7 +344,7 @@
                     <ComboBox Grid.Column="3" Height="26"
                               ItemsSource="{Binding Intervals}"
                               SelectedItem="{Binding SelectedInterval}"
-                              Background="#0C1020" Foreground="#80C0FF"
+                              Background="#1C2038" Foreground="#90C8FF"
                               BorderBrush="{StaticResource BorderColor}"
                               FontFamily="Consolas" FontSize="12"/>
 
