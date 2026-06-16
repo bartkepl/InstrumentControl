@@ -14,6 +14,7 @@ Built with .NET 8 WPF, a plugin DLL architecture, and a visual Scratch-like sequ
 - **Live Data window** — floating OxyPlot chart + measurement table, one window per instrument
 - **Visual sequence editor** — drag-and-drop block programming (Start → Measure → Loop → Save CSV → End)
 - **VISA auto-discovery** — scans USB, GPIB, TCPIP and serial for connected instruments
+- **Non-VISA serial support** — custom RS-232 devices with proprietary binary protocols are handled via `IConnectionProvider` implementations inside the plugin (e.g. CTS chamber binary ASCII framing)
 - **Instrument auto-detection** — sends `*IDN?` to the selected resource and highlights the matching driver automatically
 - **Simulation mode** — runs without NI-VISA installed; great for UI development
 - **Plugin architecture** — each instrument is an independent DLL, loaded at runtime
@@ -22,11 +23,14 @@ Built with .NET 8 WPF, a plugin DLL architecture, and a visual Scratch-like sequ
 
 ## Supported Instruments
 
-| Instrument | Type | Measurement functions |
-|---|---|---|
-| HP 34401A | 6½-digit DMM | DCV, ACV, DCI, ACI, Ω 2W/4W, Frequency, Period, Diode, Continuity |
-| Agilent 34970A | DAQ / Switch Unit | 34901A multiplexer scan, 34907A DAC + digital I/O, temperature TC |
-| Keithley 2000 | 6½-digit DMM | DCV, ACV, DCI, ACI, Ω 2W/4W, Frequency, Period, Diode, Cont, TEMP (thermocouple) |
+| Instrument | Type | Interface | Sequence blocks |
+|---|---|---|---|
+| HP 34401A | 6½-digit DMM | VISA (GPIB/USB/RS-232) | MeasureDCV, MeasureACV, MeasureDCI, MeasureACI, MeasureResistance, MeasureFrequency, MeasurePeriod, MeasureTemperature |
+| Agilent 34970A | DAQ / Switch Unit | VISA (GPIB/USB) | ScanChannels, SetDAC, SetDigitalOutput, MeasureTemperature, MeasureVoltage |
+| Keithley 2000 | 6½-digit DMM | VISA (GPIB/USB) | MeasureDCV, MeasureACV, MeasureDCI, MeasureACI, MeasureResistance, MeasureFrequency, MeasurePeriod, MeasureTemperature |
+| ITECH IT6922B | DC Power Supply (60 V / 5 A) | VISA (USB/LAN/GPIB) | SetVoltage, SetCurrent, SetOutput, MeasureVoltage, MeasureCurrent, MeasurePower, SetOVP, SetOCP |
+| R&S RTB2004 | 4-channel oscilloscope 300 MHz | VISA (LAN/USB) | SetChannel, SetTimebase, SetTrigger, Run, Stop, Single, Autoscale, Measure, ReadWaveform |
+| CTS T-40/50 | Environmental chamber (−75 … +185 °C) | RS-232 (non-VISA, binary ASCII protocol) | SetTemperature, SetRamp, ChamberStart, ChamberStop, ChamberPause, ReadTemperature, WaitForTemperature |
 
 ## Requirements
 
@@ -101,6 +105,9 @@ bin\Release\
     HP34401A.dll
     Agilent34970A.dll
     Keithley2000.dll
+    ItechIT6922B.dll
+    RTB2004.dll
+    CTSChamber.dll
   ... (.NET 8 runtime + WPF files — self-contained, no separate runtime install needed)
 ```
 
@@ -129,11 +136,18 @@ InstrumentControl.sln
 │       └── Views/                     # XAML views and windows
 └── instruments/
     ├── HP34401A/                      # HP 34401A plugin DLL
-    │   ├── HP34401ADriver.cs          # SCPI driver + 8 sequence blocks
-    │   ├── HP34401ABlocks.cs
+    │   ├── HP34401ADriver.cs          # SCPI driver
+    │   ├── HP34401ABlocks.cs          # 8 sequence blocks
     │   └── Views/                     # Front panel XAML + ViewModel
     ├── Agilent34970A/                 # Agilent 34970A plugin DLL
-    └── Keithley2000/                  # Keithley 2000 plugin DLL
+    ├── Keithley2000/                  # Keithley 2000 plugin DLL
+    ├── ItechIT6922B/                  # ITECH IT6922B DC power supply plugin DLL
+    ├── RTB2004/                       # R&S RTB2004 oscilloscope plugin DLL
+    └── CTSChamber/                    # CTS T-40/50 environmental chamber plugin DLL
+        ├── CTSSerialConnectionProvider.cs  # Custom IConnectionProvider — CTS binary ASCII framing
+        ├── CTSChamberDriver.cs             # Driver (overrides ConnectAsync to use CTS provider)
+        ├── CTSChamberBlocks.cs             # 7 sequence blocks
+        └── Views/                          # Front panel XAML + ViewModel
 ```
 
 ## Adding a New Instrument Plugin
@@ -177,6 +191,25 @@ public class YourDriver : InstrumentDriverBase
 4. Build — copy `YourInstrument.dll` into the `instruments/` subfolder next to `InstrumentControl.exe`.
 
 The plugin is discovered automatically on the next launch.
+
+### Non-VISA serial devices (RS-232 with proprietary protocols)
+
+Instruments that use a custom binary protocol over COM port (e.g. CTS environmental chambers) implement a custom `IConnectionProvider` inside the plugin and override `ConnectAsync` in the driver to swap out the generic provider:
+
+```csharp
+public override async Task ConnectAsync(IConnectionProvider connection)
+{
+    string port = connection.ResourceName;  // e.g. "COM3"
+    connection.Dispose();                   // discard generic provider
+
+    var custom = new MyCustomSerialProvider(port);  // 19200 baud, odd parity, ...
+    Connection = custom;
+    await custom.OpenAsync();
+    // ...
+}
+```
+
+`SupportedResourcePatterns = new[] { "COM?*" }` makes the driver appear in the connection manager for COM ports. The custom provider implements the binary framing in `QueryAsync`/`WriteAsync`, keeping the driver code clean (standard base class helpers work unchanged).
 
 ## Built-in Sequence Blocks
 

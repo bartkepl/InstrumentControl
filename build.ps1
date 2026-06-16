@@ -41,7 +41,22 @@ dotnet build (jp $Root "instruments" "Keithley2000" "Keithley2000.csproj") -c $C
 if ($LASTEXITCODE -ne 0) { Write-Error "Blad budowania Keithley2000!"; exit 1 }
 Write-Host "   OK" -ForegroundColor Green
 
-Write-Host "5. Budowanie i publikowanie aplikacji WPF..." -ForegroundColor Yellow
+Write-Host "5. Budowanie ItechIT6922B..." -ForegroundColor Yellow
+dotnet build (jp $Root "instruments" "ItechIT6922B" "ItechIT6922B.csproj") -c $Configuration --nologo -v q
+if ($LASTEXITCODE -ne 0) { Write-Error "Blad budowania ItechIT6922B!"; exit 1 }
+Write-Host "   OK" -ForegroundColor Green
+
+Write-Host "6. Budowanie RTB2004..." -ForegroundColor Yellow
+dotnet build (jp $Root "instruments" "RTB2004" "RTB2004.csproj") -c $Configuration --nologo -v q
+if ($LASTEXITCODE -ne 0) { Write-Error "Blad budowania RTB2004!"; exit 1 }
+Write-Host "   OK" -ForegroundColor Green
+
+Write-Host "7. Budowanie CTSChamber..." -ForegroundColor Yellow
+dotnet build (jp $Root "instruments" "CTSChamber" "CTSChamber.csproj") -c $Configuration --nologo -v q
+if ($LASTEXITCODE -ne 0) { Write-Error "Blad budowania CTSChamber!"; exit 1 }
+Write-Host "   OK" -ForegroundColor Green
+
+Write-Host "8. Budowanie i publikowanie aplikacji WPF..." -ForegroundColor Yellow
 dotnet publish (jp $Root "src" "InstrumentControl.App" "InstrumentControl.App.csproj") `
     -c $Configuration -r win-x64 --self-contained true -o $OutDir --nologo -v q
 if ($LASTEXITCODE -ne 0) { Write-Error "Blad publikowania!"; exit 1 }
@@ -67,6 +82,24 @@ $k2 = jp $Root "instruments" "Keithley2000" "bin" $Configuration "net8.0-windows
 if (Test-Path $k2) {
     Copy-Item $k2 $InstrumentsOut -Force
     Write-Host "   Skopiowano: Keithley2000.dll" -ForegroundColor Green
+}
+
+$it = jp $Root "instruments" "ItechIT6922B" "bin" $Configuration "net8.0-windows" "ItechIT6922B.dll"
+if (Test-Path $it) {
+    Copy-Item $it $InstrumentsOut -Force
+    Write-Host "   Skopiowano: ItechIT6922B.dll" -ForegroundColor Green
+}
+
+$rtb = jp $Root "instruments" "RTB2004" "bin" $Configuration "net8.0-windows" "RTB2004.dll"
+if (Test-Path $rtb) {
+    Copy-Item $rtb $InstrumentsOut -Force
+    Write-Host "   Skopiowano: RTB2004.dll" -ForegroundColor Green
+}
+
+$cts = jp $Root "instruments" "CTSChamber" "bin" $Configuration "net8.0-windows" "CTSChamber.dll"
+if (Test-Path $cts) {
+    Copy-Item $cts $InstrumentsOut -Force
+    Write-Host "   Skopiowano: CTSChamber.dll" -ForegroundColor Green
 }
 
 $exe = jp $OutDir "InstrumentControl.exe"

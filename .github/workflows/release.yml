@@ -61,6 +61,24 @@ jobs:
           -c Release --nologo -v q
           -p:Version=${{ steps.ver.outputs.version }}
 
+      - name: Build ItechIT6922B
+        run: >
+          dotnet build instruments/ItechIT6922B/ItechIT6922B.csproj
+          -c Release --nologo -v q
+          -p:Version=${{ steps.ver.outputs.version }}
+
+      - name: Build RTB2004
+        run: >
+          dotnet build instruments/RTB2004/RTB2004.csproj
+          -c Release --nologo -v q
+          -p:Version=${{ steps.ver.outputs.version }}
+
+      - name: Build CTSChamber
+        run: >
+          dotnet build instruments/CTSChamber/CTSChamber.csproj
+          -c Release --nologo -v q
+          -p:Version=${{ steps.ver.outputs.version }}
+
       # ── Publish ───────────────────────────────────────────────────────────────
       - name: Publish app
         run: >
@@ -77,6 +95,9 @@ jobs:
           Copy-Item "instruments/HP34401A/bin/Release/net8.0-windows/HP34401A.dll"           $dest
           Copy-Item "instruments/Agilent34970A/bin/Release/net8.0-windows/Agilent34970A.dll" $dest
           Copy-Item "instruments/Keithley2000/bin/Release/net8.0-windows/Keithley2000.dll"   $dest
+          Copy-Item "instruments/ItechIT6922B/bin/Release/net8.0-windows/ItechIT6922B.dll" $dest
+          Copy-Item "instruments/RTB2004/bin/Release/net8.0-windows/RTB2004.dll"           $dest
+          Copy-Item "instruments/CTSChamber/bin/Release/net8.0-windows/CTSChamber.dll"   $dest
 
       - name: Create release archive
         shell: pwsh
