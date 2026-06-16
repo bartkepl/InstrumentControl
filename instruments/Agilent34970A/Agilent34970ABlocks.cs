@@ -49,7 +49,6 @@ public class A34970A_ScanChannels : SequenceBlockBase
 
             foreach (var result in results)
             {
-                context.AddResult(result);
                 string varName = $"{prefix}_{result.ChannelId}";
                 context.SetVariable(varName, result.Value);
                 context.Log?.Invoke($"  Kanał {result.ChannelId}: {result.Value:G6} {result.Unit} → {varName}");
@@ -117,7 +116,6 @@ public class A34970A_MeasureChannel : SequenceBlockBase
                 return BlockExecutionResult.Fail("Brak wyników pomiaru.");
 
             var first = results[0];
-            context.AddResult(first);
             context.SetVariable(outVar, first.Value);
             context.Log?.Invoke($"  Kanał {first.ChannelId}: {first.Value:G6} {first.Unit} → {outVar}");
 

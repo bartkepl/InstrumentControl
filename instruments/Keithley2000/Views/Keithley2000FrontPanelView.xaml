@@ -514,7 +514,7 @@
                              Padding="4,2"
                              MaxLength="12"/>
 
-                    <Button Grid.Column="6" Content="Wyślij" Width="52" Height="24"
+                    <Button Grid.Column="6" Content="{DynamicResource FP_Send}" Width="52" Height="24"
                             Background="#CC0000" Foreground="White" FontSize="10"
                             Command="{Binding SendDisplayTextCommand}">
                         <Button.Template>
@@ -605,7 +605,7 @@
                              Height="24" Width="44" FontFamily="Consolas" FontSize="11"
                              Background="#E0DCE0" Foreground="#101010"
                              BorderBrush="#9A9694" BorderThickness="1" Padding="4,2"/>
-                    <TextBlock Grid.Column="8" Text="próbek"
+                    <TextBlock Grid.Column="8" Text="{DynamicResource FP_Samples}"
                                Foreground="#505050" FontSize="9"
                                FontFamily="Consolas" VerticalAlignment="Center"/>
                     <Button Grid.Column="10" Content="▶ BURST" Height="24" Width="70"
@@ -757,7 +757,7 @@
                         </Button.Style>
                     </Button>
 
-                    <TextBlock Grid.Column="2" Text="Interwał:"
+                    <TextBlock Grid.Column="2" Text="{DynamicResource FP_Interval}"
                                Foreground="{StaticResource LabelFg}" FontSize="11"
                                VerticalAlignment="Center"/>
 

@@ -14,7 +14,7 @@ public class MathBlock : SequenceBlockBase
         "Oblicza wyrażenie matematyczne i zapisuje wynik do zmiennej. " +
         "Zmienne: {nazwa}. Funkcje: sqrt, abs, pow, sin, cos, tan, log, round, min, max, ...";
     public override Color BlockColor => Color.FromRgb(0x1A, 0xBC, 0x9C);
-    public override string Category => "Dane";
+    public override string Category => "Data";
 
     public override IEnumerable<BlockPropertyDefinition> PropertyDefinitions =>
     [

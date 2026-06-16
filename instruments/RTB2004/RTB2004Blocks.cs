@@ -360,13 +360,6 @@ public class RTB2004_Measure : SequenceBlockBase
             double value = await scope.MeasureChannelAsync(channel, measType);
             context.SetVariable(outVar, value);
             context.Log?.Invoke($"RTB2004 CH{channel} {measType}: {value:G6} → '{outVar}'");
-            context.AddResult(new MeasurementResult
-            {
-                Function = measType, Value = value,
-                InstrumentName = instrName,
-                ChannelId = $"CH{channel}",
-                ParameterName = outVar,
-            });
             return BlockExecutionResult.Ok(NextBlockId, value);
         }
         catch (Exception ex) { return BlockExecutionResult.Fail($"Błąd Measure: {ex.Message}"); }

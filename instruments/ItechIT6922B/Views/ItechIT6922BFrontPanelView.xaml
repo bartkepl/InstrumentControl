@@ -435,7 +435,7 @@
                         </Button.Style>
                     </Button>
 
-                    <TextBlock Grid.Column="2" Text="Interwał:"
+                    <TextBlock Grid.Column="2" Text="{DynamicResource FP_Interval}"
                                Style="{StaticResource FieldLabel}"/>
                     <ComboBox Grid.Column="4"
                               ItemsSource="{Binding Intervals}"

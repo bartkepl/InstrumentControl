@@ -3,6 +3,7 @@ using System.IO;
 using System.Text.Json;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using InstrumentControl.Core.Services;
 using InstrumentControl.Core.Views;
 using Microsoft.Win32;
 using OxyPlot;
@@ -151,10 +152,14 @@ public partial class RTB2004FrontPanelViewModel : ObservableObject
     {
         _driver      = driver;
         _isConnected = driver.IsConnected;
-        _statusText  = driver.IsConnected ? "Połączono" : "Brak połączenia";
+        _statusText  = FpConnected(driver.IsConnected);
 
         driver.StatusChanged += OnStatusChanged;
         driver.ErrorOccurred += OnErrorOccurred;
+
+        AppLocalization.LanguageChanged += (_, _) =>
+            System.Windows.Application.Current?.Dispatcher.InvokeAsync(() =>
+                StatusText = FpConnected(IsConnected));
 
         InitializeScopeModel();
     }
@@ -613,4 +618,8 @@ public partial class RTB2004FrontPanelViewModel : ObservableObject
       : secs >= 1e-3 ? $"{secs*1e3:G3} ms"
       : secs >= 1e-6 ? $"{secs*1e6:G3} µs"
                      : $"{secs*1e9:G3} ns";
+
+    private static string FpConnected(bool connected) => connected
+        ? System.Windows.Application.Current?.TryFindResource("FP_Connected") as string ?? "Connected"
+        : System.Windows.Application.Current?.TryFindResource("FP_NotConnected") as string ?? "Not connected";
 }

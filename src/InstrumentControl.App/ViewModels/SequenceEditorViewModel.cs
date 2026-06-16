@@ -1,4 +1,4 @@
-using System.Collections.ObjectModel;
+﻿using System.Collections.ObjectModel;
 using System.IO;
 using System.Windows;
 using CommunityToolkit.Mvvm.ComponentModel;
@@ -21,7 +21,9 @@ public partial class SequenceBlockVm : ObservableObject
     [ObservableProperty] private bool _isSelected;
     [ObservableProperty] private bool _isExecuting;
 
-    public string DisplayName => Block.DisplayName;
+    public string DisplayName =>
+        System.Windows.Application.Current?.TryFindResource($"Block_{Block.BlockType}") as string
+        ?? Block.DisplayName;
     public string BlockType => Block.BlockType;
     public string Category => Block.Category;
     public System.Windows.Media.Color Color => Block.BlockColor;
@@ -49,7 +51,7 @@ public class ConnectionVm
 public partial class SequenceEditorViewModel : ViewModelBase
 {
     private static readonly HashSet<string> _builtinCategories =
-        new(StringComparer.OrdinalIgnoreCase) { "Sterowanie", "Ogólne", "Dane" };
+        new(StringComparer.OrdinalIgnoreCase) { "Control", "General", "Data" };
 
     private readonly SequenceEngine _engine;
     private readonly DataManager _dataManager;
@@ -173,6 +175,11 @@ public partial class SequenceEditorViewModel : ViewModelBase
                 b.Block.NextBlockId = null;
             if (b.Block is IHasBodyOutput bbo && bbo.BodyBlockId == vm.Block.BlockId)
                 bbo.BodyBlockId = null;
+            if (b.Block is IHasConditionOutputs cond)
+            {
+                if (cond.TrueBlockId == vm.Block.BlockId) cond.TrueBlockId = null;
+                if (cond.FalseBlockId == vm.Block.BlockId) cond.FalseBlockId = null;
+            }
         }
         Blocks.Remove(vm);
         if (SelectedBlock == vm) SelectedBlock = null;
@@ -188,6 +195,10 @@ public partial class SequenceEditorViewModel : ViewModelBase
 
         if (portType == "Body" && from.Block is IHasBodyOutput bodyBlock)
             bodyBlock.BodyBlockId = toId;
+        else if (portType == "True" && from.Block is IHasConditionOutputs trueBlock)
+            trueBlock.TrueBlockId = toId;
+        else if (portType == "False" && from.Block is IHasConditionOutputs falseBlock)
+            falseBlock.FalseBlockId = toId;
         else
             from.Block.NextBlockId = toId;
 
@@ -202,6 +213,10 @@ public partial class SequenceEditorViewModel : ViewModelBase
 
         if (portType == "Body" && from.Block is IHasBodyOutput bbo)
             bbo.BodyBlockId = null;
+        else if (portType == "True" && from.Block is IHasConditionOutputs trueBlock)
+            trueBlock.TrueBlockId = null;
+        else if (portType == "False" && from.Block is IHasConditionOutputs falseBlock)
+            falseBlock.FalseBlockId = null;
         else
             from.Block.NextBlockId = null;
 
@@ -323,13 +338,24 @@ public partial class SequenceEditorViewModel : ViewModelBase
             block.Deserialize(bd);
             Blocks.Add(new SequenceBlockVm(block, bd.X, bd.Y));
 
-            if (bd.NextBlockId != null)
+            // ConditionBlock uses True/False ports â€” skip creating "Next" for it
+            if (bd.NextBlockId != null && block is not IHasConditionOutputs)
                 Connections.Add(new ConnectionVm
                     { FromBlockId = bd.BlockId, ToBlockId = bd.NextBlockId, PortType = "Next" });
 
             if (block is IHasBodyOutput bbo && bbo.BodyBlockId != null)
                 Connections.Add(new ConnectionVm
                     { FromBlockId = bd.BlockId, ToBlockId = bbo.BodyBlockId, PortType = "Body" });
+
+            if (block is IHasConditionOutputs cond)
+            {
+                if (cond.TrueBlockId != null)
+                    Connections.Add(new ConnectionVm
+                        { FromBlockId = bd.BlockId, ToBlockId = cond.TrueBlockId, PortType = "True" });
+                if (cond.FalseBlockId != null)
+                    Connections.Add(new ConnectionVm
+                        { FromBlockId = bd.BlockId, ToBlockId = cond.FalseBlockId, PortType = "False" });
+            }
         }
     }
 
@@ -343,3 +369,4 @@ public partial class SequenceEditorViewModel : ViewModelBase
         return BuildDefinition();
     }
 }
+

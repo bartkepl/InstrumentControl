@@ -131,4 +131,222 @@
     <sys:String x:Key="VM_ExportTitle">Eksport CSV</sys:String>
     <sys:String x:Key="VM_SeqLoadError">Nie można wczytać pliku sekwencji.</sys:String>
 
+    <!-- Sequence editor toolbox -->
+    <sys:String x:Key="SeqEditor_NoBlocks">Brak bloków.&#x0a;Uruchom aplikację z instrumentami.</sys:String>
+    <sys:String x:Key="SeqEditor_NotConnected">Instrument '{0}' nie jest podłączony</sys:String>
+
+    <!-- Front panel common -->
+    <sys:String x:Key="FP_Connected">Połączono</sys:String>
+    <sys:String x:Key="FP_NotConnected">Brak połączenia</sys:String>
+    <sys:String x:Key="FP_Ready">Gotowy</sys:String>
+    <sys:String x:Key="FP_Interval">Interwał:</sys:String>
+    <sys:String x:Key="FP_Send">Wyślij</sys:String>
+    <sys:String x:Key="FP_Samples">próbek</sys:String>
+
+    <!-- Block names — Core -->
+    <sys:String x:Key="Block_StartBlock">Start</sys:String>
+    <sys:String x:Key="Block_EndBlock">Koniec</sys:String>
+    <sys:String x:Key="Block_WaitBlock">Czekaj</sys:String>
+    <sys:String x:Key="Block_LoopBlock">Pętla</sys:String>
+    <sys:String x:Key="Block_EndLoopBlock">Koniec pętli</sys:String>
+    <sys:String x:Key="Block_MathBlock">Matematyka</sys:String>
+    <sys:String x:Key="Block_LogMessageBlock">Loguj wiadomość</sys:String>
+    <sys:String x:Key="Block_SetVariableBlock">Ustaw zmienną</sys:String>
+    <sys:String x:Key="Block_ConditionBlock">Warunek</sys:String>
+    <sys:String x:Key="Block_AddToChartBlock">Dodaj do wykresu</sys:String>
+    <sys:String x:Key="Block_SaveCsvBlock">Zapisz CSV</sys:String>
+
+    <!-- Block names — HP34401A -->
+    <sys:String x:Key="Block_HP34401A_MeasureDCV">Zmierz DCV</sys:String>
+    <sys:String x:Key="Block_HP34401A_MeasureACV">Zmierz ACV</sys:String>
+    <sys:String x:Key="Block_HP34401A_MeasureResistance">Zmierz Rezystancję</sys:String>
+    <sys:String x:Key="Block_HP34401A_MeasureCurrent">Zmierz Prąd</sys:String>
+    <sys:String x:Key="Block_HP34401A_MeasureFrequency">Zmierz Częstotliwość</sys:String>
+    <sys:String x:Key="Block_HP34401A_MeasurePeriod">Zmierz Okres</sys:String>
+    <sys:String x:Key="Block_HP34401A_MeasureDiode">Test Diody</sys:String>
+    <sys:String x:Key="Block_HP34401A_MeasureContinuity">Test Ciągłości</sys:String>
+
+    <!-- Block names — Agilent34970A -->
+    <sys:String x:Key="Block_A34970A_ScanChannels">Skanuj kanały</sys:String>
+    <sys:String x:Key="Block_A34970A_MeasureChannel">Zmierz kanał</sys:String>
+    <sys:String x:Key="Block_A34970A_SetDAC">Ustaw DAC</sys:String>
+    <sys:String x:Key="Block_A34970A_SetDigitalOutput">Cyfrowe wyjście</sys:String>
+    <sys:String x:Key="Block_A34970A_ReadDigitalInput">Cyfrowe wejście</sys:String>
+
+    <!-- Block names — Keithley2000 -->
+    <sys:String x:Key="Block_K2000_MeasureDCV">K2000 Zmierz DCV</sys:String>
+    <sys:String x:Key="Block_K2000_MeasureACV">K2000 Zmierz ACV</sys:String>
+    <sys:String x:Key="Block_K2000_MeasureResistance">K2000 Zmierz Rezystancję</sys:String>
+    <sys:String x:Key="Block_K2000_MeasureCurrent">K2000 Zmierz Prąd</sys:String>
+    <sys:String x:Key="Block_K2000_MeasureFrequency">K2000 Zmierz Częstotliwość</sys:String>
+    <sys:String x:Key="Block_K2000_MeasurePeriod">K2000 Zmierz Okres</sys:String>
+    <sys:String x:Key="Block_K2000_MeasureDiode">K2000 Test Diody</sys:String>
+    <sys:String x:Key="Block_K2000_MeasureContinuity">K2000 Test Ciągłości</sys:String>
+    <sys:String x:Key="Block_K2000_MeasureTemperature">K2000 Zmierz Temperaturę</sys:String>
+
+    <!-- Block names — ItechIT6922B -->
+    <sys:String x:Key="Block_IT6922B_SetVoltage">Ustaw Napięcie</sys:String>
+    <sys:String x:Key="Block_IT6922B_SetCurrent">Ustaw Limit Prądu</sys:String>
+    <sys:String x:Key="Block_IT6922B_SetOutput">Włącz/Wyłącz Wyjście</sys:String>
+    <sys:String x:Key="Block_IT6922B_MeasureVoltage">Zmierz Napięcie</sys:String>
+    <sys:String x:Key="Block_IT6922B_MeasureCurrent">Zmierz Prąd</sys:String>
+    <sys:String x:Key="Block_IT6922B_MeasurePower">Zmierz Moc</sys:String>
+    <sys:String x:Key="Block_IT6922B_SetOVP">Ustaw OVP</sys:String>
+    <sys:String x:Key="Block_IT6922B_SetOCP">Ustaw OCP</sys:String>
+
+    <!-- Block names — CTSChamber -->
+    <sys:String x:Key="Block_CTS_SetTemperature">CTS: Ustaw temperaturę</sys:String>
+    <sys:String x:Key="Block_CTS_SetRamp">CTS: Ustaw gradient</sys:String>
+    <sys:String x:Key="Block_CTS_ChamberStart">CTS: Uruchom komorę</sys:String>
+    <sys:String x:Key="Block_CTS_ChamberStop">CTS: Zatrzymaj komorę</sys:String>
+    <sys:String x:Key="Block_CTS_ChamberPause">CTS: Wstrzymaj komorę</sys:String>
+    <sys:String x:Key="Block_CTS_ReadTemperature">CTS: Odczytaj temperaturę</sys:String>
+    <sys:String x:Key="Block_CTS_WaitForTemperature">CTS: Czekaj na temperaturę</sys:String>
+
+    <!-- Block names — RTB2004 -->
+    <sys:String x:Key="Block_RTB2004_SetChannel">Konfiguruj Kanał</sys:String>
+    <sys:String x:Key="Block_RTB2004_SetTimebase">Ustaw Podstawę Czasu</sys:String>
+    <sys:String x:Key="Block_RTB2004_SetTrigger">Ustaw Wyzwalanie</sys:String>
+    <sys:String x:Key="Block_RTB2004_Run">Start (RUN)</sys:String>
+    <sys:String x:Key="Block_RTB2004_Stop">Stop</sys:String>
+    <sys:String x:Key="Block_RTB2004_Single">Pojedyncza Akwizycja</sys:String>
+    <sys:String x:Key="Block_RTB2004_Autoscale">Autoskalowanie</sys:String>
+    <sys:String x:Key="Block_RTB2004_Measure">Pomiar Parametru</sys:String>
+    <sys:String x:Key="Block_RTB2004_ReadWaveform">Zapisz Przebieg do CSV</sys:String>
+
+    <!-- Block categories -->
+    <sys:String x:Key="Category_Control">Sterowanie</sys:String>
+    <sys:String x:Key="Category_General">Ogólne</sys:String>
+    <sys:String x:Key="Category_Data">Dane</sys:String>
+
+    <!-- Block descriptions (toolbox tooltips) — Core blocks -->
+    <sys:String x:Key="BlockDesc_StartBlock">Punkt startowy sekwencji</sys:String>
+    <sys:String x:Key="BlockDesc_EndBlock">Kończy sekwencję</sys:String>
+    <sys:String x:Key="BlockDesc_WaitBlock">Czeka podany czas przed przejściem do następnego bloku</sys:String>
+    <sys:String x:Key="BlockDesc_LoopBlock">Powtarza ciało pętli N razy, następnie przechodzi do kolejnego bloku</sys:String>
+    <sys:String x:Key="BlockDesc_EndLoopBlock">Oznacza koniec ciała pętli</sys:String>
+    <sys:String x:Key="BlockDesc_MathBlock">Oblicza wyrażenie matematyczne i zapisuje wynik do zmiennej</sys:String>
+    <sys:String x:Key="BlockDesc_LogMessageBlock">Wyświetla wiadomość w logu sekwencji</sys:String>
+    <sys:String x:Key="BlockDesc_SetVariableBlock">Ustawia wartość zmiennej w kontekście sekwencji</sys:String>
+    <sys:String x:Key="BlockDesc_ConditionBlock">Rozgałęzienie: jeśli warunek prawdziwy → True, inaczej → False</sys:String>
+    <sys:String x:Key="BlockDesc_AddToChartBlock">Przekazuje wartość zmiennej do wykresu na żywo</sys:String>
+    <sys:String x:Key="BlockDesc_SaveCsvBlock">Zapisuje wyniki pomiarów do pliku CSV</sys:String>
+
+    <!-- Error window -->
+    <sys:String x:Key="Error_WindowTitle">Błąd — </sys:String>
+    <sys:String x:Key="Error_CopyDetails">Kopiuj szczegóły</sys:String>
+    <sys:String x:Key="Error_Copied">Skopiowano ✓</sys:String>
+    <sys:String x:Key="Error_Close">Zamknij</sys:String>
+
+    <!-- Block canvas UI -->
+    <sys:String x:Key="Canvas_InputPortTip">Wejście</sys:String>
+    <sys:String x:Key="Canvas_OutputPortTip">Wyjście (następny blok)</sys:String>
+    <sys:String x:Key="Canvas_TruePortTip">Wyjście prawda (True)</sys:String>
+    <sys:String x:Key="Canvas_BodyPortLabel">↓ ciało</sys:String>
+    <sys:String x:Key="Canvas_BodyPortTip">Ciało pętli — przeciągnij do pierwszego bloku w pętli</sys:String>
+    <sys:String x:Key="Canvas_FalsePortLabel">↓ fałsz (False)</sys:String>
+    <sys:String x:Key="Canvas_FalsePortTip">Wyjście fałsz (False)</sys:String>
+    <sys:String x:Key="Canvas_DeleteBlock">Usuń blok</sys:String>
+    <sys:String x:Key="Canvas_DisconnectAll">Odłącz połączenia</sys:String>
+    <sys:String x:Key="Canvas_DeleteConnection">Usuń połączenie</sys:String>
+
+    <!-- Block properties editor UI -->
+    <sys:String x:Key="Props_SelectBlock">Zaznacz blok na canvasie</sys:String>
+    <sys:String x:Key="Props_NoProperties">(brak właściwości)</sys:String>
+    <sys:String x:Key="Props_AllFiles">Wszystkie pliki|*.*</sys:String>
+
+    <!-- Common block property labels -->
+    <sys:String x:Key="Prop_Common_OutputVariable">Zmienna wyjściowa</sys:String>
+    <sys:String x:Key="Prop_Common_Range">Zakres</sys:String>
+    <sys:String x:Key="Prop_Common_Function">Funkcja</sys:String>
+    <sys:String x:Key="Prop_Common_WireMode">Tryb pomiaru</sys:String>
+    <sys:String x:Key="Prop_Common_ACMode">Tryb AC</sys:String>
+    <sys:String x:Key="Prop_Common_Temperature">Temperatura [°C]</sys:String>
+
+    <!-- Block property labels — Core: WaitBlock -->
+    <sys:String x:Key="Prop_WaitBlock_DelayMs">Czas oczekiwania [ms]</sys:String>
+
+    <!-- Block property labels — Core: LoopBlock -->
+    <sys:String x:Key="Prop_LoopBlock_Iterations">Liczba powtórzeń</sys:String>
+    <sys:String x:Key="Prop_LoopBlock_CounterVariable">Zmienna licznika (opcjonalna)</sys:String>
+    <sys:String x:Key="Prop_LoopBlock_DelayBetweenMs">Opóźnienie między iteracjami [ms]</sys:String>
+
+    <!-- Block property labels — Core: MathBlock -->
+    <sys:String x:Key="Prop_MathBlock_Expression">Wyrażenie</sys:String>
+    <sys:String x:Key="Prop_MathBlock_ResultVariable">Wynik → zmienna</sys:String>
+
+    <!-- Block property labels — Core: SaveCsvBlock -->
+    <sys:String x:Key="Prop_SaveCsvBlock_FilePath">Ścieżka pliku CSV</sys:String>
+    <sys:String x:Key="Prop_SaveCsvBlock_AppendMode">Dopisuj do istniejącego</sys:String>
+    <sys:String x:Key="Prop_SaveCsvBlock_SaveAll">Zapisz wszystkie wyniki (nie tylko nowe)</sys:String>
+
+    <!-- Block property labels — Core: AddToChartBlock -->
+    <sys:String x:Key="Prop_AddToChartBlock_ValueVariable">Zmienna z wartością</sys:String>
+    <sys:String x:Key="Prop_AddToChartBlock_SeriesName">Nazwa serii</sys:String>
+    <sys:String x:Key="Prop_AddToChartBlock_Unit">Jednostka</sys:String>
+
+    <!-- Block property labels — Core: LogMessageBlock -->
+    <sys:String x:Key="Prop_LogMessageBlock_Message">Wiadomość</sys:String>
+
+    <!-- Block property labels — Core: SetVariableBlock -->
+    <sys:String x:Key="Prop_SetVariableBlock_VariableName">Nazwa zmiennej</sys:String>
+    <sys:String x:Key="Prop_SetVariableBlock_Value">Wartość</sys:String>
+
+    <!-- Block property labels — Core: ConditionBlock -->
+    <sys:String x:Key="Prop_ConditionBlock_Variable">Zmienna</sys:String>
+    <sys:String x:Key="Prop_ConditionBlock_Operator">Operator</sys:String>
+    <sys:String x:Key="Prop_ConditionBlock_CompareValue">Wartość porównania</sys:String>
+
+    <!-- Block property labels — Agilent34970A -->
+    <sys:String x:Key="Prop_A34970A_ScanChannels_ChannelList">Lista kanałów (SCPI)</sys:String>
+    <sys:String x:Key="Prop_A34970A_ScanChannels_OutputPrefix">Prefiks zmiennej wyjściowej</sys:String>
+    <sys:String x:Key="Prop_A34970A_MeasureChannel_Channel">Kanał (1-20)</sys:String>
+    <sys:String x:Key="Prop_A34970A_SetDAC_DacChannel">Kanał DAC</sys:String>
+    <sys:String x:Key="Prop_A34970A_SetDAC_Voltage">Napięcie [V]</sys:String>
+    <sys:String x:Key="Prop_A34970A_SetDAC_VoltageVariable">Zmienna napięcia (opcjonalne)</sys:String>
+    <sys:String x:Key="Prop_A34970A_SetDigitalOutput_Value">Wartość (0-255)</sys:String>
+    <sys:String x:Key="Prop_A34970A_SetDigitalOutput_ValueVariable">Zmienna wartości (opcjonalne)</sys:String>
+
+    <!-- Block property labels — ItechIT6922B -->
+    <sys:String x:Key="Prop_IT6922B_SetVoltage_Voltage">Napięcie [V]</sys:String>
+    <sys:String x:Key="Prop_IT6922B_SetCurrent_Current">Prąd [A]</sys:String>
+    <sys:String x:Key="Prop_IT6922B_SetOutput_Enable">Włącz wyjście</sys:String>
+    <sys:String x:Key="Prop_IT6922B_SetOVP_Level">Próg OVP [V]</sys:String>
+    <sys:String x:Key="Prop_IT6922B_SetOVP_Enable">Włącz OVP</sys:String>
+    <sys:String x:Key="Prop_IT6922B_SetOCP_Level">Próg OCP [A]</sys:String>
+    <sys:String x:Key="Prop_IT6922B_SetOCP_Enable">Włącz OCP</sys:String>
+
+    <!-- Block property labels — CTSChamber -->
+    <sys:String x:Key="Prop_CTS_SetTemperature_Temperature">Temperatura [°C]</sys:String>
+    <sys:String x:Key="Prop_CTS_SetRamp_RampUp">Gradient wzrostu [K/min]</sys:String>
+    <sys:String x:Key="Prop_CTS_SetRamp_RampDown">Gradient spadku [K/min]</sys:String>
+    <sys:String x:Key="Prop_CTS_ChamberPause_Action">Akcja</sys:String>
+    <sys:String x:Key="Prop_CTS_ReadTemperature_OutputActual">Zmienna — temperatura aktualna</sys:String>
+    <sys:String x:Key="Prop_CTS_ReadTemperature_OutputSetpoint">Zmienna — temperatura zadana</sys:String>
+    <sys:String x:Key="Prop_CTS_WaitForTemperature_Tolerance">Tolerancja [°C]</sys:String>
+    <sys:String x:Key="Prop_CTS_WaitForTemperature_TimeoutS">Limit czasu [s]</sys:String>
+    <sys:String x:Key="Prop_CTS_WaitForTemperature_PollMs">Interwał sprawdzania [ms]</sys:String>
+
+    <!-- Block property labels — RTB2004 -->
+    <sys:String x:Key="Prop_RTB2004_SetChannel_Channel">Kanał</sys:String>
+    <sys:String x:Key="Prop_RTB2004_SetChannel_Enabled">Włącz kanał</sys:String>
+    <sys:String x:Key="Prop_RTB2004_SetChannel_Scale">Skala [V/dz]</sys:String>
+    <sys:String x:Key="Prop_RTB2004_SetChannel_Offset">Offset [V]</sys:String>
+    <sys:String x:Key="Prop_RTB2004_SetChannel_Coupling">Sprzężenie</sys:String>
+    <sys:String x:Key="Prop_RTB2004_SetChannel_Probe">Sonda [x]</sys:String>
+    <sys:String x:Key="Prop_RTB2004_SetTimebase_SecsPerDiv">Czas [s/dz]</sys:String>
+    <sys:String x:Key="Prop_RTB2004_SetTrigger_Source">Źródło</sys:String>
+    <sys:String x:Key="Prop_RTB2004_SetTrigger_Level">Poziom [V]</sys:String>
+    <sys:String x:Key="Prop_RTB2004_SetTrigger_Slope">Zbocze</sys:String>
+    <sys:String x:Key="Prop_RTB2004_SetTrigger_Mode">Tryb</sys:String>
+    <sys:String x:Key="Prop_RTB2004_Single_WaitMs">Czas oczekiwania [ms]</sys:String>
+    <sys:String x:Key="Prop_RTB2004_Measure_Channel">Kanał</sys:String>
+    <sys:String x:Key="Prop_RTB2004_Measure_MeasType">Typ pomiaru</sys:String>
+    <sys:String x:Key="Prop_RTB2004_ReadWaveform_Channel">Kanał</sys:String>
+    <sys:String x:Key="Prop_RTB2004_ReadWaveform_FilePath">Plik CSV</sys:String>
+    <sys:String x:Key="Prop_RTB2004_ReadWaveform_PointsVariable">Liczba próbek → zmienna</sys:String>
+
+    <!-- Block property labels — Keithley2000 -->
+    <sys:String x:Key="Prop_K2000_MeasureTemperature_TCType">Typ TC</sys:String>
+
 </ResourceDictionary>

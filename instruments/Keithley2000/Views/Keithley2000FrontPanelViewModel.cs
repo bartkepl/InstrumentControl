@@ -2,6 +2,7 @@ using System.Collections.ObjectModel;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using InstrumentControl.Core.Models;
+using InstrumentControl.Core.Services;
 using InstrumentControl.Core.Views;
 
 namespace Keithley2000.Views;
@@ -91,11 +92,15 @@ public partial class Keithley2000FrontPanelViewModel : ObservableObject
     {
         _driver = driver;
         _isConnected = driver.IsConnected;
-        _statusText = driver.IsConnected ? "Połączono" : "Brak połączenia";
+        _statusText = FpConnected(driver.IsConnected);
 
         driver.MeasurementReceived += OnMeasurementReceived;
         driver.StatusChanged += OnStatusChanged;
         driver.ErrorOccurred += OnErrorOccurred;
+
+        AppLocalization.LanguageChanged += (_, _) =>
+            System.Windows.Application.Current?.Dispatcher.InvokeAsync(() =>
+                StatusText = FpConnected(IsConnected));
     }
 
     // ── Event handlers ───────────────────────────────────────────────────────
@@ -439,4 +444,8 @@ public partial class Keithley2000FrontPanelViewModel : ObservableObject
         "TEMP"   => "°C",
         _        => "",
     };
+
+    private static string FpConnected(bool connected) => connected
+        ? System.Windows.Application.Current?.TryFindResource("FP_Connected") as string ?? "Connected"
+        : System.Windows.Application.Current?.TryFindResource("FP_NotConnected") as string ?? "Not connected";
 }

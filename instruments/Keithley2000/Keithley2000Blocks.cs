@@ -44,8 +44,6 @@ public class K2000_MeasureDCV : SequenceBlockBase
             double value = await dmm.MeasureDCV(MapRange(range), nplc);
             context.SetVariable(outVar, value);
             context.Log?.Invoke($"K2000 DCV: {value:G6} V → '{outVar}'");
-            context.AddResult(new MeasurementResult { Function = "DCV", Unit = "V", Value = value,
-                InstrumentName = instrName, ChannelId = "CH1", ParameterName = outVar });
             return BlockExecutionResult.Ok(NextBlockId, value);
         }
         catch (Exception ex) { return BlockExecutionResult.Fail($"Błąd pomiaru DCV: {ex.Message}"); }
@@ -97,8 +95,6 @@ public class K2000_MeasureACV : SequenceBlockBase
             double value = await dmm.MeasureACV(MapRange(range), nplc);
             context.SetVariable(outVar, value);
             context.Log?.Invoke($"K2000 ACV: {value:G6} V AC → '{outVar}'");
-            context.AddResult(new MeasurementResult { Function = "ACV", Unit = "V AC", Value = value,
-                InstrumentName = instrName, ChannelId = "CH1", ParameterName = outVar });
             return BlockExecutionResult.Ok(NextBlockId, value);
         }
         catch (Exception ex) { return BlockExecutionResult.Fail($"Błąd pomiaru ACV: {ex.Message}"); }
@@ -155,11 +151,6 @@ public class K2000_MeasureResistance : SequenceBlockBase
                 : await dmm.MeasureResistance2W(scpiRange, nplc);
             context.SetVariable(outVar, value);
             context.Log?.Invoke($"K2000 RES ({wireMode}): {value:G6} Ω → '{outVar}'");
-            context.AddResult(new MeasurementResult
-            {
-                Function = wireMode == "4W" ? "RES4W" : "RES2W", Unit = "Ω", Value = value,
-                InstrumentName = instrName, ChannelId = "CH1", ParameterName = outVar
-            });
             return BlockExecutionResult.Ok(NextBlockId, value);
         }
         catch (Exception ex) { return BlockExecutionResult.Fail($"Błąd pomiaru rezystancji: {ex.Message}"); }
@@ -217,8 +208,6 @@ public class K2000_MeasureCurrent : SequenceBlockBase
                 : await dmm.MeasureDCI(MapRange(range), nplc);
             context.SetVariable(outVar, value);
             context.Log?.Invoke($"K2000 {(acMode ? "ACI" : "DCI")}: {value:G6} {unit} → '{outVar}'");
-            context.AddResult(new MeasurementResult { Function = acMode ? "ACI" : "DCI", Unit = unit, Value = value,
-                InstrumentName = instrName, ChannelId = "CH1", ParameterName = outVar });
             return BlockExecutionResult.Ok(NextBlockId, value);
         }
         catch (Exception ex) { return BlockExecutionResult.Fail($"Błąd pomiaru prądu: {ex.Message}"); }
@@ -263,8 +252,6 @@ public class K2000_MeasureFrequency : SequenceBlockBase
             double value = await dmm.MeasureFrequency();
             context.SetVariable(outVar, value);
             context.Log?.Invoke($"K2000 FREQ: {value:G6} Hz → '{outVar}'");
-            context.AddResult(new MeasurementResult { Function = "FREQ", Unit = "Hz", Value = value,
-                InstrumentName = instrName, ChannelId = "CH1", ParameterName = outVar });
             return BlockExecutionResult.Ok(NextBlockId, value);
         }
         catch (Exception ex) { return BlockExecutionResult.Fail($"Błąd pomiaru częstotliwości: {ex.Message}"); }
@@ -304,8 +291,6 @@ public class K2000_MeasurePeriod : SequenceBlockBase
             double value = await dmm.MeasurePeriod();
             context.SetVariable(outVar, value);
             context.Log?.Invoke($"K2000 PERIOD: {value:G6} s → '{outVar}'");
-            context.AddResult(new MeasurementResult { Function = "PERIOD", Unit = "s", Value = value,
-                InstrumentName = instrName, ChannelId = "CH1", ParameterName = outVar });
             return BlockExecutionResult.Ok(NextBlockId, value);
         }
         catch (Exception ex) { return BlockExecutionResult.Fail($"Błąd pomiaru okresu: {ex.Message}"); }
@@ -345,8 +330,6 @@ public class K2000_MeasureDiode : SequenceBlockBase
             double value = await dmm.MeasureDiode();
             context.SetVariable(outVar, value);
             context.Log?.Invoke($"K2000 DIODE: {value:G6} V → '{outVar}'");
-            context.AddResult(new MeasurementResult { Function = "DIODE", Unit = "V", Value = value,
-                InstrumentName = instrName, ChannelId = "CH1", ParameterName = outVar });
             return BlockExecutionResult.Ok(NextBlockId, value);
         }
         catch (Exception ex) { return BlockExecutionResult.Fail($"Błąd testu diody: {ex.Message}"); }
@@ -386,8 +369,6 @@ public class K2000_MeasureContinuity : SequenceBlockBase
             double value = await dmm.MeasureContinuity();
             context.SetVariable(outVar, value);
             context.Log?.Invoke($"K2000 CONT: {value:G6} Ω → '{outVar}'");
-            context.AddResult(new MeasurementResult { Function = "CONT", Unit = "Ω", Value = value,
-                InstrumentName = instrName, ChannelId = "CH1", ParameterName = outVar });
             return BlockExecutionResult.Ok(NextBlockId, value);
         }
         catch (Exception ex) { return BlockExecutionResult.Fail($"Błąd testu ciągłości: {ex.Message}"); }
@@ -434,8 +415,6 @@ public class K2000_MeasureTemperature : SequenceBlockBase
             double value = await dmm.MeasureTemperature(tcType, nplc);
             context.SetVariable(outVar, value);
             context.Log?.Invoke($"K2000 TEMP TC-{tcType}: {value:F2} °C → '{outVar}'");
-            context.AddResult(new MeasurementResult { Function = "TEMP", Unit = "°C", Value = value,
-                InstrumentName = instrName, ChannelId = "CH1", ParameterName = outVar });
             return BlockExecutionResult.Ok(NextBlockId, value);
         }
         catch (Exception ex) { return BlockExecutionResult.Fail($"Błąd pomiaru temperatury: {ex.Message}"); }

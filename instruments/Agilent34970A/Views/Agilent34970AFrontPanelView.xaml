@@ -348,7 +348,7 @@
                                         </Button.Command>
                                     </Button>
                                     <TextBlock Grid.Column="4"
-                                               Text="Interwał:" Foreground="{StaticResource TextMuted}"
+                                               Text="{DynamicResource FP_Interval}" Foreground="{StaticResource TextMuted}"
                                                FontSize="11" VerticalAlignment="Center" HorizontalAlignment="Right"/>
                                     <ComboBox Grid.Column="5"
                                               ItemsSource="{Binding ScanIntervals}"
@@ -718,7 +718,7 @@
                                         </Button.Command>
                                     </Button>
                                     <TextBlock Grid.Column="4"
-                                               Text="Interwał:" Foreground="{StaticResource TextMuted}"
+                                               Text="{DynamicResource FP_Interval}" Foreground="{StaticResource TextMuted}"
                                                FontSize="11" VerticalAlignment="Center" HorizontalAlignment="Right"/>
                                     <ComboBox Grid.Column="5"
                                               ItemsSource="{Binding ScanIntervals}"

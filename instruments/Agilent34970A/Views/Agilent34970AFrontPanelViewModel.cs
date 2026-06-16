@@ -4,6 +4,7 @@ using Agilent34970A.Cards;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using InstrumentControl.Core.Models;
+using InstrumentControl.Core.Services;
 
 namespace Agilent34970A.Views;
 
@@ -313,7 +314,7 @@ public partial class Agilent34970AFrontPanelViewModel : ObservableObject
     }
 
     // ── General ───────────────────────────────────────────────────────────────
-    [ObservableProperty] private string _statusText = "Gotowy";
+    [ObservableProperty] private string _statusText = "Ready";
 
     [RelayCommand]
     private async Task ResetAsync()
@@ -343,6 +344,10 @@ public partial class Agilent34970AFrontPanelViewModel : ObservableObject
     public Agilent34970AFrontPanelViewModel(Agilent34970ADriver driver)
     {
         _driver = driver;
+        _statusText = System.Windows.Application.Current?.TryFindResource("FP_Ready") as string ?? "Ready";
+        AppLocalization.LanguageChanged += (_, _) =>
+            System.Windows.Application.Current?.Dispatcher.InvokeAsync(() =>
+                StatusText = System.Windows.Application.Current?.TryFindResource("FP_Ready") as string ?? "Ready");
 
         // Sync card type comboboxes from already-configured cards
         if (driver.Cards.TryGetValue(100, out var c100))

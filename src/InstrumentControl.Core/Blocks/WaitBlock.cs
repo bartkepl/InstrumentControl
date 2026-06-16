@@ -11,7 +11,7 @@ public class WaitBlock : SequenceBlockBase
     public override string DisplayName => "Czekaj";
     public override string Description => "Czeka podany czas przed przejściem do następnego bloku";
     public override Color BlockColor => Color.FromRgb(0x95, 0xA5, 0xA6);
-    public override string Category => "Ogólne";
+    public override string Category => "General";
 
     public override IEnumerable<BlockPropertyDefinition> PropertyDefinitions =>
     [

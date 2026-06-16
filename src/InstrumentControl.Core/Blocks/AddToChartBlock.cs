@@ -11,7 +11,7 @@ public class AddToChartBlock : SequenceBlockBase
     public override string DisplayName => "Dodaj do wykresu";
     public override string Description => "Przekazuje wartość zmiennej do wykresu na żywo";
     public override Color BlockColor => Color.FromRgb(0x8E, 0x44, 0xAD);
-    public override string Category => "Dane";
+    public override string Category => "Data";
 
     public override IEnumerable<BlockPropertyDefinition> PropertyDefinitions =>
     [

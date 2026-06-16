@@ -12,7 +12,7 @@ public abstract class SequenceBlockBase : ISequenceBlock
     public abstract string DisplayName { get; }
     public abstract string Description { get; }
     public abstract Color BlockColor { get; }
-    public virtual string Category => "Ogólne";
+    public virtual string Category => "General";
 
     public double X { get; set; } = 50;
     public double Y { get; set; } = 50;

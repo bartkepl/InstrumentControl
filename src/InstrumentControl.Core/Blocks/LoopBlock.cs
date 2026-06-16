@@ -12,7 +12,7 @@ public class LoopBlock : SequenceBlockBase, IHasBodyOutput
     public override string DisplayName => "Pętla";
     public override string Description => "Powtarza ciało pętli N razy, następnie przechodzi do kolejnego bloku";
     public override Color BlockColor => Color.FromRgb(0xE6, 0x7E, 0x22);
-    public override string Category => "Sterowanie";
+    public override string Category => "Control";
 
     public string? BodyBlockId { get; set; }
 

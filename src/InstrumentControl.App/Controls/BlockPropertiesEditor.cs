@@ -1,5 +1,6 @@
 using System.Windows;
 using System.Windows.Controls;
+using InstrumentControl.App.Services;
 using InstrumentControl.App.ViewModels;
 using InstrumentControl.Core.Models;
 
@@ -27,8 +28,26 @@ public class BlockPropertiesEditor : ContentControl
         set => SetValue(InstrumentNamesProperty, value);
     }
 
+    public BlockPropertiesEditor()
+    {
+        LocalizationService.LanguageChanged += (_, _) => RebuildEditor();
+    }
+
     private static void OnRebuild(DependencyObject d, DependencyPropertyChangedEventArgs e)
         => ((BlockPropertiesEditor)d).RebuildEditor();
+
+    private string GetLocalizedPropName(string blockType, string propName, string fallback)
+    {
+        string key = $"Prop_{blockType}_{propName}";
+        string result = LocalizationService.Get(key);
+        if (result != key) return result;
+
+        string commonKey = $"Prop_Common_{propName}";
+        result = LocalizationService.Get(commonKey);
+        if (result != commonKey) return result;
+
+        return fallback;
+    }
 
     private void RebuildEditor()
     {
@@ -36,7 +55,7 @@ public class BlockPropertiesEditor : ContentControl
         {
             Content = new TextBlock
             {
-                Text = "Zaznacz blok na canvasie",
+                Text = LocalizationService.Get("Props_SelectBlock"),
                 Foreground = System.Windows.Media.Brushes.Gray,
                 FontSize = 12,
                 VerticalAlignment = VerticalAlignment.Center,
@@ -52,7 +71,7 @@ public class BlockPropertiesEditor : ContentControl
         {
             Content = new TextBlock
             {
-                Text = $"Blok '{block.DisplayName}'\n(brak właściwości)",
+                Text = $"'{SelectedBlock.DisplayName}'\n{LocalizationService.Get("Props_NoProperties")}",
                 FontSize = 12, Foreground = System.Windows.Media.Brushes.Gray,
                 TextAlignment = TextAlignment.Center,
                 VerticalAlignment = VerticalAlignment.Center,
@@ -71,7 +90,7 @@ public class BlockPropertiesEditor : ContentControl
         };
         headerBorder.Child = new TextBlock
         {
-            Text = block.DisplayName,
+            Text = SelectedBlock.DisplayName,
             Foreground = System.Windows.Media.Brushes.White,
             FontWeight = FontWeights.SemiBold,
             FontSize = 13
@@ -87,13 +106,14 @@ public class BlockPropertiesEditor : ContentControl
         {
             propsGrid.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto });
 
+            string displayName = GetLocalizedPropName(block.BlockType, propDef.Name, propDef.DisplayName);
             var label = new TextBlock
             {
-                Text = propDef.DisplayName + ":",
+                Text = displayName + ":",
                 FontSize = 11,
                 VerticalAlignment = VerticalAlignment.Center,
                 Margin = new Thickness(0, 2, 8, 2),
-                ToolTip = propDef.DisplayName
+                ToolTip = displayName
             };
             Grid.SetRow(label, rowIndex);
             Grid.SetColumn(label, 0);
@@ -140,8 +160,9 @@ public class BlockPropertiesEditor : ContentControl
                 if (!string.IsNullOrEmpty(strVal) && !names.Contains(strVal))
                     cb.Items.Insert(0, strVal);
                 foreach (var n in names) cb.Items.Add(n);
-                cb.SelectedItem = !string.IsNullOrEmpty(strVal) ? strVal : names.FirstOrDefault();
+                // Subscribe BEFORE setting SelectedItem so the initial default selection is also persisted
                 cb.SelectionChanged += (_, _) => block.Properties[propName] = cb.SelectedItem?.ToString();
+                cb.SelectedItem = !string.IsNullOrEmpty(strVal) ? strVal : names.FirstOrDefault();
                 return cb;
             }
 
@@ -149,8 +170,9 @@ public class BlockPropertiesEditor : ContentControl
             {
                 var cb = new ComboBox { FontSize = 11, Height = 22, Padding = new Thickness(4, 0, 0, 0) };
                 foreach (var opt in propDef.Options) cb.Items.Add(opt);
-                cb.SelectedItem = propDef.Options.Contains(strVal) ? strVal : propDef.Options.FirstOrDefault();
+                // Subscribe BEFORE setting SelectedItem so the initial default selection is also persisted
                 cb.SelectionChanged += (_, _) => block.Properties[propName] = cb.SelectedItem?.ToString();
+                cb.SelectedItem = propDef.Options.Contains(strVal) ? strVal : propDef.Options.FirstOrDefault();
                 return cb;
             }
 
@@ -196,7 +218,10 @@ public class BlockPropertiesEditor : ContentControl
                 };
                 btn.Click += (_, _) =>
                 {
-                    var dlg = new Microsoft.Win32.SaveFileDialog { Filter = "CSV|*.csv|Wszystkie|*.*" };
+                    var dlg = new Microsoft.Win32.SaveFileDialog
+                    {
+                        Filter = $"CSV|*.csv|{LocalizationService.Get("Props_AllFiles")}"
+                    };
                     if (dlg.ShowDialog() == true) { tb.Text = dlg.FileName; block.Properties[propName] = dlg.FileName; }
                 };
                 fp.Children.Add(tb);

@@ -154,11 +154,6 @@ public class IT6922B_MeasureVoltage : SequenceBlockBase
             double v = await psu.MeasureVoltageAsync();
             context.SetVariable(outVar, v);
             context.Log?.Invoke($"IT6922B VOLT: {v:G6} V → '{outVar}'");
-            context.AddResult(new MeasurementResult
-            {
-                Function = "VOLT", Unit = "V", Value = v,
-                InstrumentName = instrName, ChannelId = "OUT1", ParameterName = outVar,
-            });
             return BlockExecutionResult.Ok(NextBlockId, v);
         }
         catch (Exception ex) { return BlockExecutionResult.Fail($"Błąd MeasureVoltage: {ex.Message}"); }
@@ -199,11 +194,6 @@ public class IT6922B_MeasureCurrent : SequenceBlockBase
             double v = await psu.MeasureCurrentAsync();
             context.SetVariable(outVar, v);
             context.Log?.Invoke($"IT6922B CURR: {v:G6} A → '{outVar}'");
-            context.AddResult(new MeasurementResult
-            {
-                Function = "CURR", Unit = "A", Value = v,
-                InstrumentName = instrName, ChannelId = "OUT1", ParameterName = outVar,
-            });
             return BlockExecutionResult.Ok(NextBlockId, v);
         }
         catch (Exception ex) { return BlockExecutionResult.Fail($"Błąd MeasureCurrent: {ex.Message}"); }
@@ -244,11 +234,6 @@ public class IT6922B_MeasurePower : SequenceBlockBase
             double v = await psu.MeasurePowerAsync();
             context.SetVariable(outVar, v);
             context.Log?.Invoke($"IT6922B POW: {v:G6} W → '{outVar}'");
-            context.AddResult(new MeasurementResult
-            {
-                Function = "POW", Unit = "W", Value = v,
-                InstrumentName = instrName, ChannelId = "OUT1", ParameterName = outVar,
-            });
             return BlockExecutionResult.Ok(NextBlockId, v);
         }
         catch (Exception ex) { return BlockExecutionResult.Fail($"Błąd MeasurePower: {ex.Message}"); }

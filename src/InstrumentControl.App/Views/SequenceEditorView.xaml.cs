@@ -1,6 +1,7 @@
 using System.Windows;
 using System.Windows.Controls;
 using InstrumentControl.App.Controls;
+using InstrumentControl.App.Services;
 using InstrumentControl.App.ViewModels;
 using InstrumentControl.Core.Interfaces;
 
@@ -10,17 +11,23 @@ public partial class SequenceEditorView : UserControl
 {
     private StackPanel? _toolboxPanel;
     private bool _toolboxRebuildPending;
+    private SequenceEditorViewModel? _vm;
 
     public SequenceEditorView()
     {
         InitializeComponent();
         DataContextChanged += OnDataContextChanged;
+        LocalizationService.LanguageChanged += (_, _) =>
+        {
+            if (_vm != null) ScheduleToolboxRebuild(_vm);
+        };
     }
 
     private void OnDataContextChanged(object sender, DependencyPropertyChangedEventArgs e)
     {
         if (e.NewValue is SequenceEditorViewModel vm)
         {
+            _vm = vm;
             BuildToolbox(vm);
             vm.AvailableBlockTemplates.CollectionChanged += (_, _) => ScheduleToolboxRebuild(vm);
             vm.PropertyChanged += (_, args) =>
@@ -56,7 +63,7 @@ public partial class SequenceEditorView : UserControl
         {
             _toolboxPanel.Children.Add(new TextBlock
             {
-                Text = "Brak bloków.\nUruchom aplikację z instrumentami.",
+                Text = LocalizationService.Get("SeqEditor_NoBlocks"),
                 Foreground = System.Windows.Media.Brushes.Gray,
                 TextAlignment = TextAlignment.Center,
                 Margin = new Thickness(8, 16, 8, 8),
@@ -70,14 +77,16 @@ public partial class SequenceEditorView : UserControl
             .GroupBy(b => b.Category)
             .OrderBy(g => g.Key switch
             {
-                "Sterowanie" => 0,
-                "Ogólne" => 1,
-                "Dane" => 2,
+                "Control" => 0,
+                "General" => 1,
+                "Data"    => 2,
                 _ => 99
             });
 
         foreach (var group in grouped)
         {
+            string categoryLabel = System.Windows.Application.Current?
+                .TryFindResource($"Category_{group.Key}") as string ?? group.Key;
             var header = new Border
             {
                 Background = System.Windows.Media.Brushes.WhiteSmoke,
@@ -86,7 +95,7 @@ public partial class SequenceEditorView : UserControl
             };
             header.Child = new TextBlock
             {
-                Text = group.Key.ToUpperInvariant(),
+                Text = categoryLabel.ToUpperInvariant(),
                 FontSize = 10,
                 FontWeight = FontWeights.Bold,
                 Foreground = System.Windows.Media.Brushes.Gray
@@ -117,13 +126,14 @@ public partial class SequenceEditorView : UserControl
                 ? System.Windows.Input.Cursors.Hand
                 : System.Windows.Input.Cursors.No,
             ToolTip = connected
-                ? block.Description
-                : $"Instrument '{block.Category}' nie jest podłączony"
+                ? (System.Windows.Application.Current?.TryFindResource($"BlockDesc_{block.BlockType}") as string ?? block.Description)
+                : string.Format(LocalizationService.Get("SeqEditor_NotConnected"), block.Category)
         };
 
         border.Child = new TextBlock
         {
-            Text = block.DisplayName,
+            Text = System.Windows.Application.Current?.TryFindResource($"Block_{block.BlockType}") as string
+                   ?? block.DisplayName,
             Foreground = System.Windows.Media.Brushes.White,
             FontSize = 12,
             FontWeight = FontWeights.SemiBold

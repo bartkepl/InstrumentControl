@@ -5,6 +5,7 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Shapes;
+using InstrumentControl.App.Services;
 using InstrumentControl.App.ViewModels;
 using InstrumentControl.Core.Interfaces;
 
@@ -121,6 +122,8 @@ public class BlockCanvas : Border
 
         Drop += Canvas_Drop;
         DragOver += (_, e) => { e.Effects = DragDropEffects.Copy; e.Handled = true; };
+
+        LocalizationService.LanguageChanged += (_, _) => RebuildAll();
     }
 
     // ── Dependency property callbacks ──────────────────────────────────────
@@ -195,7 +198,7 @@ public class BlockCanvas : Border
         // Header drag
         bv.Root.MouseLeftButtonDown += (s, e) =>
         {
-            if (e.Source == bv.OutputPort || e.Source == bv.BodyPort) return;
+            if (e.Source == bv.OutputPort || e.Source == bv.BodyPort || e.Source == bv.FalsePort) return;
             _dragging = bv;
             _dragOffset = e.GetPosition(bv.Root);
             bv.Root.CaptureMouse();
@@ -208,14 +211,17 @@ public class BlockCanvas : Border
         // Right-click context menu
         bv.Root.MouseRightButtonDown += (s, e) => ShowContextMenu(bv, e);
 
-        // Output port (Next) → start connection
-        bv.OutputPort.MouseLeftButtonDown += (s, e) =>
+        // Output port (Next or True for ConditionBlock) → start connection
+        if (bv.OutputPort != null)
         {
-            _connectingFromId = vm.Block.BlockId;
-            _connectingPortType = "Next";
-            StartTempLine(bv.GetOutputPortCenter(_canvas));
-            e.Handled = true;
-        };
+            bv.OutputPort.MouseLeftButtonDown += (s, e) =>
+            {
+                _connectingFromId = vm.Block.BlockId;
+                _connectingPortType = vm.Block is IHasConditionOutputs ? "True" : "Next";
+                StartTempLine(bv.GetOutputPortCenter(_canvas));
+                e.Handled = true;
+            };
+        }
 
         // Body port (Loop body) → start connection
         if (bv.BodyPort != null)
@@ -228,14 +234,32 @@ public class BlockCanvas : Border
                 e.Handled = true;
             };
         }
+
+        // False port (Condition block) → start connection
+        if (bv.FalsePort != null)
+        {
+            bv.FalsePort.MouseLeftButtonDown += (s, e) =>
+            {
+                _connectingFromId = vm.Block.BlockId;
+                _connectingPortType = "False";
+                StartTempLine(bv.GetFalsePortCenter(_canvas));
+                e.Handled = true;
+            };
+        }
     }
 
     private void StartTempLine(Point from)
     {
+        Brush strokeBrush = _connectingPortType switch
+        {
+            "Body" => Brushes.Orange,
+            "False" => new SolidColorBrush(Color.FromRgb(0xE7, 0x4C, 0x3C)),
+            _ => Brushes.Yellow
+        };
         _tempLine = new Line
         {
             X1 = from.X, Y1 = from.Y, X2 = from.X, Y2 = from.Y,
-            Stroke = _connectingPortType == "Body" ? Brushes.Orange : Brushes.Yellow,
+            Stroke = strokeBrush,
             StrokeThickness = 2,
             StrokeDashArray = new DoubleCollection { 4, 2 }
         };
@@ -294,6 +318,7 @@ public class BlockCanvas : Border
             foreach (var kv in _blockVisuals)
             {
                 if (kv.Key == _connectingFromId) continue;
+                if (!kv.Value.HasInputPort) continue;
                 var pt = kv.Value.GetInputPortCenter(_canvas);
                 if (Math.Abs(pos.X - pt.X) < 24 && Math.Abs(pos.Y - pt.Y) < 24)
                 {
@@ -310,15 +335,16 @@ public class BlockCanvas : Border
     private void ShowContextMenu(BlockVisual bv, MouseButtonEventArgs e)
     {
         var menu = new ContextMenu();
-        var del = new MenuItem { Header = "Usuń blok" };
+        var del = new MenuItem { Header = LocalizationService.Get("Canvas_DeleteBlock") };
         del.Click += (_, _) => BlockDeleted?.Invoke(this, new BlockDeletedEventArgs(bv.Vm.Block.BlockId));
         menu.Items.Add(del);
 
-        var disc = new MenuItem { Header = "Odłącz połączenia" };
+        var disc = new MenuItem { Header = LocalizationService.Get("Canvas_DisconnectAll") };
         disc.Click += (_, _) =>
         {
             bv.Vm.Block.NextBlockId = null;
             if (bv.Vm.Block is IHasBodyOutput bbo) bbo.BodyBlockId = null;
+            if (bv.Vm.Block is IHasConditionOutputs cond) { cond.TrueBlockId = null; cond.FalseBlockId = null; }
             Connections?.RemoveWhere(c => c.FromBlockId == bv.Vm.Block.BlockId);
             RedrawConnections();
         };
@@ -370,13 +396,20 @@ public class BlockCanvas : Border
             if (!_blockVisuals.TryGetValue(conn.FromBlockId, out var from)) continue;
             if (!_blockVisuals.TryGetValue(conn.ToBlockId, out var to)) continue;
 
-            var fromPt = conn.PortType == "Body"
-                ? from.GetBodyPortCenter(_canvas)
-                : from.GetOutputPortCenter(_canvas);
+            var fromPt = conn.PortType switch
+            {
+                "Body" => from.GetBodyPortCenter(_canvas),
+                "False" => from.GetFalsePortCenter(_canvas),
+                _ => from.GetOutputPortCenter(_canvas)
+            };
 
-            var lineColor = conn.PortType == "Body"
-                ? Color.FromRgb(0xE6, 0x7E, 0x22)   // orange for loop body
-                : Color.FromRgb(80, 200, 120);        // green for next
+            var lineColor = conn.PortType switch
+            {
+                "Body" => Color.FromRgb(0xE6, 0x7E, 0x22),   // orange for loop body
+                "True" => Color.FromRgb(0x2E, 0xCC, 0x71),   // green for condition true
+                "False" => Color.FromRgb(0xE7, 0x4C, 0x3C),  // red for condition false
+                _ => Color.FromRgb(80, 200, 120)              // green for next
+            };
 
             var cv = new ConnectionVisual(fromPt, to.GetInputPortCenter(_canvas), lineColor, conn.PortType);
             cv.DeleteRequested += (_, _) =>
@@ -418,8 +451,11 @@ internal class BlockVisual
 {
     public SequenceBlockVm Vm { get; }
     public Border Root { get; }
-    public Border OutputPort { get; }
+    public Border? OutputPort { get; }
     public Border? BodyPort { get; }
+    public Border? FalsePort { get; }
+
+    public bool HasInputPort => Vm.Block is not INoInputPort;
 
     public BlockVisual(SequenceBlockVm vm)
     {
@@ -429,31 +465,45 @@ internal class BlockVisual
         var darkBrush = new SolidColorBrush(
             Color.FromRgb((byte)(col.R * 0.6), (byte)(col.G * 0.6), (byte)(col.B * 0.6)));
 
-        // Input port (left circle)
-        var inputPort = new Ellipse
+        bool noInput = vm.Block is INoInputPort;
+        bool noOutput = vm.Block is INoOutputPort;
+        bool hasCondition = vm.Block is IHasConditionOutputs;
+
+        // Input port (left circle) — omitted for StartBlock
+        var inputPort = noInput ? null : new Ellipse
         {
             Width = 11, Height = 11,
             Fill = Brushes.White, Stroke = brush, StrokeThickness = 2,
             HorizontalAlignment = HorizontalAlignment.Left,
             VerticalAlignment = VerticalAlignment.Center,
             Margin = new Thickness(-7, 0, 0, 0),
-            ToolTip = "Wejście"
+            ToolTip = LocalizationService.Get("Canvas_InputPortTip")
         };
 
-        // Output port (right circle) — exit / next
-        OutputPort = new Border
+        // Output port (right circle) — omitted for EndBlock; green for ConditionBlock True output
+        if (!noOutput)
         {
-            Width = 11, Height = 11, CornerRadius = new CornerRadius(6),
-            Background = brush, BorderBrush = darkBrush, BorderThickness = new Thickness(2),
-            HorizontalAlignment = HorizontalAlignment.Right,
-            VerticalAlignment = VerticalAlignment.Center,
-            Margin = new Thickness(0, 0, -7, 0),
-            Cursor = Cursors.Cross,
-            ToolTip = "Wyjście (następny blok)"
-        };
+            var outBrush = hasCondition
+                ? new SolidColorBrush(Color.FromRgb(0x2E, 0xCC, 0x71))
+                : brush;
+            var outDarkBrush = hasCondition
+                ? new SolidColorBrush(Color.FromRgb(0x1A, 0x7A, 0x45))
+                : darkBrush;
+
+            OutputPort = new Border
+            {
+                Width = 11, Height = 11, CornerRadius = new CornerRadius(6),
+                Background = outBrush, BorderBrush = outDarkBrush, BorderThickness = new Thickness(2),
+                HorizontalAlignment = HorizontalAlignment.Right,
+                VerticalAlignment = VerticalAlignment.Center,
+                Margin = new Thickness(0, 0, -7, 0),
+                Cursor = Cursors.Cross,
+                ToolTip = hasCondition ? LocalizationService.Get("Canvas_TruePortTip") : LocalizationService.Get("Canvas_OutputPortTip")
+            };
+        }
 
         var header = new Grid { Height = 30 };
-        header.Children.Add(inputPort);
+        if (inputPort != null) header.Children.Add(inputPort);
         header.Children.Add(new TextBlock
         {
             Text = vm.DisplayName,
@@ -464,7 +514,7 @@ internal class BlockVisual
             VerticalAlignment = VerticalAlignment.Center,
             Margin = new Thickness(14, 0, 14, 0)
         });
-        header.Children.Add(OutputPort);
+        if (OutputPort != null) header.Children.Add(OutputPort);
 
         var headerBorder = new Border
         {
@@ -473,11 +523,11 @@ internal class BlockVisual
             Child = header
         };
 
-        // Body section — category label + optional body port for loop blocks
+        // Body section — category label + optional body port (loop) + optional false port (condition)
         var bodyStack = new StackPanel();
         bodyStack.Children.Add(new TextBlock
         {
-            Text = vm.Block.Category,
+            Text = Application.Current?.TryFindResource($"Category_{vm.Block.Category}") as string ?? vm.Block.Category,
             FontSize = 9,
             Foreground = new SolidColorBrush(Color.FromRgb(140, 140, 150)),
             HorizontalAlignment = HorizontalAlignment.Center
@@ -491,7 +541,7 @@ internal class BlockVisual
 
             bodyStack.Children.Add(new TextBlock
             {
-                Text = "↓ ciało",
+                Text = LocalizationService.Get("Canvas_BodyPortLabel"),
                 FontSize = 8,
                 Foreground = loopBrush,
                 HorizontalAlignment = HorizontalAlignment.Center,
@@ -505,17 +555,43 @@ internal class BlockVisual
                 HorizontalAlignment = HorizontalAlignment.Center,
                 Margin = new Thickness(0, 2, 0, 0),
                 Cursor = Cursors.Cross,
-                ToolTip = "Ciało pętli — przeciągnij do pierwszego bloku w pętli"
+                ToolTip = LocalizationService.Get("Canvas_BodyPortTip")
             };
             bodyStack.Children.Add(BodyPort);
+        }
+
+        if (hasCondition)
+        {
+            var falseBrush = new SolidColorBrush(Color.FromRgb(0xE7, 0x4C, 0x3C));
+            var falseDarkBrush = new SolidColorBrush(Color.FromRgb(0x90, 0x28, 0x20));
+
+            bodyStack.Children.Add(new TextBlock
+            {
+                Text = LocalizationService.Get("Canvas_FalsePortLabel"),
+                FontSize = 8,
+                Foreground = falseBrush,
+                HorizontalAlignment = HorizontalAlignment.Center,
+                Margin = new Thickness(0, 4, 0, 0)
+            });
+
+            FalsePort = new Border
+            {
+                Width = 11, Height = 11, CornerRadius = new CornerRadius(6),
+                Background = falseBrush, BorderBrush = falseDarkBrush, BorderThickness = new Thickness(2),
+                HorizontalAlignment = HorizontalAlignment.Center,
+                Margin = new Thickness(0, 2, 0, 0),
+                Cursor = Cursors.Cross,
+                ToolTip = LocalizationService.Get("Canvas_FalsePortTip")
+            };
+            bodyStack.Children.Add(FalsePort);
         }
 
         var body = new Border
         {
             Background = new SolidColorBrush(Color.FromRgb(42, 42, 48)),
             CornerRadius = new CornerRadius(0, 0, 5, 5),
-            Padding = hasBodyPort
-                ? new Thickness(8, 4, 8, 8)   // extra bottom padding for body port
+            Padding = (hasBodyPort || hasCondition)
+                ? new Thickness(8, 4, 8, 8)
                 : new Thickness(8, 4, 8, 4),
             Child = bodyStack
         };
@@ -572,6 +648,16 @@ internal class BlockVisual
         double top = Canvas.GetTop(Root);
         return new Point(left + Root.Width / 2.0, top + (Root.ActualHeight > 10 ? Root.ActualHeight : 68));
     }
+
+    public Point GetFalsePortCenter(Canvas canvas)
+    {
+        if (FalsePort != null)
+            return FalsePort.TranslatePoint(new Point(5.5, 5.5), canvas);
+
+        double left = Canvas.GetLeft(Root);
+        double top = Canvas.GetTop(Root);
+        return new Point(left + Root.Width / 2.0, top + (Root.ActualHeight > 10 ? Root.ActualHeight : 80));
+    }
 }
 
 // ── ConnectionVisual ─────────────────────────────────────────────────────────
@@ -589,9 +675,9 @@ internal class ConnectionVisual
 
         // Direction-aware bezier control points
         Point cp1, cp2;
-        if (portType == "Body")
+        if (portType == "Body" || portType == "False")
         {
-            // Body port exits downward; use vertical first control, horizontal approach to target
+            // Port exits downward; use vertical first control, horizontal approach to target
             double vOff = Math.Max(60.0, Math.Abs(to.Y - from.Y) * 0.5);
             double hOff = Math.Max(50.0, Math.Abs(to.X - from.X) * 0.4);
             cp1 = new Point(from.X, from.Y + vOff);
@@ -599,7 +685,7 @@ internal class ConnectionVisual
         }
         else
         {
-            // Next port exits to the right; S-curve that works for all relative positions
+            // Next/True port exits to the right; S-curve that works for all relative positions
             double hOff = Math.Max(80.0, Math.Abs(to.X - from.X) * 0.5);
             cp1 = new Point(from.X + hOff, from.Y);
             cp2 = new Point(to.X - hOff, to.Y);
@@ -660,7 +746,7 @@ internal class ConnectionVisual
         };
 
         var menu = new ContextMenu();
-        var del = new MenuItem { Header = "Usuń połączenie" };
+        var del = new MenuItem { Header = LocalizationService.Get("Canvas_DeleteConnection") };
         del.Click += (_, _) => DeleteRequested?.Invoke(this, EventArgs.Empty);
         menu.Items.Add(del);
         HitPath.ContextMenu = menu;

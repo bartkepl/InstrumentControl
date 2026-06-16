@@ -47,17 +47,6 @@ public class HP34401A_MeasureDCV : SequenceBlockBase
             double value = await dmm.MeasureDCV(scpiRange, nplc);
             context.SetVariable(outVar, value);
             context.Log?.Invoke($"HP34401A DCV: {value:G6} V → '{outVar}'");
-
-            context.AddResult(new MeasurementResult
-            {
-                Function = "DCV",
-                Unit = "V",
-                Value = value,
-                InstrumentName = instrName,
-                ChannelId = "CH1",
-                ParameterName = outVar,
-            });
-
             return BlockExecutionResult.Ok(NextBlockId, value);
         }
         catch (Exception ex)
@@ -121,17 +110,6 @@ public class HP34401A_MeasureACV : SequenceBlockBase
             double value = await dmm.MeasureACV(scpiRange, nplc);
             context.SetVariable(outVar, value);
             context.Log?.Invoke($"HP34401A ACV: {value:G6} V AC → '{outVar}'");
-
-            context.AddResult(new MeasurementResult
-            {
-                Function = "ACV",
-                Unit = "V AC",
-                Value = value,
-                InstrumentName = instrName,
-                ChannelId = "CH1",
-                ParameterName = outVar,
-            });
-
             return BlockExecutionResult.Ok(NextBlockId, value);
         }
         catch (Exception ex)
@@ -200,17 +178,6 @@ public class HP34401A_MeasureResistance : SequenceBlockBase
 
             context.SetVariable(outVar, value);
             context.Log?.Invoke($"HP34401A RES ({wireMode}): {value:G6} Ω → '{outVar}'");
-
-            context.AddResult(new MeasurementResult
-            {
-                Function = wireMode == "4W" ? "RES4W" : "RES2W",
-                Unit = "Ω",
-                Value = value,
-                InstrumentName = instrName,
-                ChannelId = "CH1",
-                ParameterName = outVar,
-            });
-
             return BlockExecutionResult.Ok(NextBlockId, value);
         }
         catch (Exception ex)
@@ -282,17 +249,6 @@ public class HP34401A_MeasureCurrent : SequenceBlockBase
 
             context.SetVariable(outVar, value);
             context.Log?.Invoke($"HP34401A {(acMode ? "ACI" : "DCI")}: {value:G6} {unit} → '{outVar}'");
-
-            context.AddResult(new MeasurementResult
-            {
-                Function = acMode ? "ACI" : "DCI",
-                Unit = unit,
-                Value = value,
-                InstrumentName = instrName,
-                ChannelId = "CH1",
-                ParameterName = outVar,
-            });
-
             return BlockExecutionResult.Ok(NextBlockId, value);
         }
         catch (Exception ex)
@@ -346,17 +302,6 @@ public class HP34401A_MeasureFrequency : SequenceBlockBase
             double value = await dmm.MeasureFrequency();
             context.SetVariable(outVar, value);
             context.Log?.Invoke($"HP34401A FREQ: {value:G6} Hz → '{outVar}'");
-
-            context.AddResult(new MeasurementResult
-            {
-                Function = "FREQ",
-                Unit = "Hz",
-                Value = value,
-                InstrumentName = instrName,
-                ChannelId = "CH1",
-                ParameterName = outVar,
-            });
-
             return BlockExecutionResult.Ok(NextBlockId, value);
         }
         catch (Exception ex)
@@ -401,11 +346,6 @@ public class HP34401A_MeasurePeriod : SequenceBlockBase
             double value = await dmm.MeasurePeriod();
             context.SetVariable(outVar, value);
             context.Log?.Invoke($"HP34401A PERIOD: {value:G6} s → '{outVar}'");
-            context.AddResult(new MeasurementResult
-            {
-                Function = "PERIOD", Unit = "s", Value = value,
-                InstrumentName = instrName, ChannelId = "CH1", ParameterName = outVar,
-            });
             return BlockExecutionResult.Ok(NextBlockId, value);
         }
         catch (Exception ex)
@@ -450,11 +390,6 @@ public class HP34401A_MeasureDiode : SequenceBlockBase
             double value = await dmm.MeasureDiode();
             context.SetVariable(outVar, value);
             context.Log?.Invoke($"HP34401A DIODE: {value:G6} V → '{outVar}'");
-            context.AddResult(new MeasurementResult
-            {
-                Function = "DIODE", Unit = "V", Value = value,
-                InstrumentName = instrName, ChannelId = "CH1", ParameterName = outVar,
-            });
             return BlockExecutionResult.Ok(NextBlockId, value);
         }
         catch (Exception ex)
@@ -499,11 +434,6 @@ public class HP34401A_MeasureContinuity : SequenceBlockBase
             double value = await dmm.MeasureContinuity();
             context.SetVariable(outVar, value);
             context.Log?.Invoke($"HP34401A CONT: {value:G6} Ω → '{outVar}'");
-            context.AddResult(new MeasurementResult
-            {
-                Function = "CONT", Unit = "Ω", Value = value,
-                InstrumentName = instrName, ChannelId = "CH1", ParameterName = outVar,
-            });
             return BlockExecutionResult.Ok(NextBlockId, value);
         }
         catch (Exception ex)

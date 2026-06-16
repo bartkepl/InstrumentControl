@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Windows;
 using Velopack;
 using Velopack.Sources;
@@ -12,8 +12,8 @@ public static class Program
     [STAThread]
     public static void Main(string[] args)
     {
-        // MUSI być pierwsza linia — obsługuje install/uninstall/update hooks
-        // i kończy proces natychmiast gdy wywołany przez instalator
+        // MUSI byÄ‡ pierwsza linia â€” obsĹ‚uguje install/uninstall/update hooks
+        // i koĹ„czy proces natychmiast gdy wywoĹ‚any przez instalator
         VelopackApp.Build().Run();
 
         CheckAndApplyUpdateBeforeStart();
@@ -30,7 +30,7 @@ public static class Program
             var source  = new GithubSource(RepoUrl, null, false);
             var manager = new UpdateManager(source);
 
-            // false gdy uruchomione poza instalacją Velopack (np. F5 w IDE)
+            // false gdy uruchomione poza instalacjÄ… Velopack (np. F5 w IDE)
             if (!manager.IsInstalled)
                 return;
 
@@ -40,10 +40,10 @@ public static class Program
 
             var version = updateInfo.TargetFullRelease.Version;
 
-            // System.Windows.MessageBox działa na wątku STA bez uruchomionej App
+            // System.Windows.MessageBox dziaĹ‚a na wÄ…tku STA bez uruchomionej App
             var result = MessageBox.Show(
-                $"Dostępna jest nowa wersja: {version}\n\nCzy chcesz zaktualizować teraz?\n(Aplikacja uruchomi się ponownie po aktualizacji)",
-                "Aktualizacja dostępna",
+                $"DostÄ™pna jest nowa wersja: {version}\n\nCzy chcesz zaktualizowaÄ‡ teraz?\n(Aplikacja uruchomi siÄ™ ponownie po aktualizacji)",
+                "Aktualizacja dostÄ™pna",
                 MessageBoxButton.YesNo,
                 MessageBoxImage.Information);
 
@@ -52,11 +52,12 @@ public static class Program
 
             manager.DownloadUpdatesAsync(updateInfo).GetAwaiter().GetResult();
             manager.ApplyUpdatesAndRestart(updateInfo);
-            // ApplyUpdatesAndRestart kończy ten proces — kod poniżej nie wykona się
+            // ApplyUpdatesAndRestart koĹ„czy ten proces â€” kod poniĹĽej nie wykona siÄ™
         }
         catch
         {
-            // Cicha porażka — błąd sieci/API nie może blokować startu aplikacji
+            // Cicha poraĹĽka â€” bĹ‚Ä…d sieci/API nie moĹĽe blokowaÄ‡ startu aplikacji
         }
     }
 }
+

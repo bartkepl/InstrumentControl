@@ -1,6 +1,7 @@
 using System.IO;
 using System.Text.RegularExpressions;
 using System.Windows;
+using InstrumentControl.Core.Services;
 
 namespace InstrumentControl.App.Services;
 
@@ -31,6 +32,7 @@ public static class LocalizationService
         Apply(languageCode);
         SaveLanguage(languageCode);
         LanguageChanged?.Invoke(null, EventArgs.Empty);
+        AppLocalization.RaiseLanguageChanged();
     }
 
     public static string Get(string key) =>

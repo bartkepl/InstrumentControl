@@ -11,7 +11,7 @@ public class SaveCsvBlock : SequenceBlockBase
     public override string DisplayName => "Zapisz CSV";
     public override string Description => "Zapisuje wyniki pomiarów do pliku CSV";
     public override Color BlockColor => Color.FromRgb(0x29, 0x80, 0xB9);
-    public override string Category => "Dane";
+    public override string Category => "Data";
 
     public override IEnumerable<BlockPropertyDefinition> PropertyDefinitions =>
     [

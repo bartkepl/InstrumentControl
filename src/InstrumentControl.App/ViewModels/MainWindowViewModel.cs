@@ -80,9 +80,6 @@ public partial class MainWindowViewModel : ViewModelBase
         var vm = new ConnectedInstrumentVm(driver);
         ConnectedInstruments.Add(vm);
         SelectedInstrument = vm;
-
-        // Forward all measurements from front panel to DataManager (→ chart/data view)
-        driver.MeasurementReceived += (_, r) => _dataManager.AddResult(r);
     }
 
     public Dictionary<string, IInstrumentDriver> GetInstrumentsDictionary()
