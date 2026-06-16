@@ -12,13 +12,13 @@
         <meta name="author" content="Bartek">
       
       
-        <link rel="canonical" href="https://bartkepl.github.io/InstrumentControl/user-guide/instruments/cts-chamber/">
+        <link rel="canonical" href="https://bartkepl.github.io/InstrumentControl/user-guide/instruments/rigol-ds1000z/">
       
       
-        <link rel="prev" href="../rtb2004/">
+        <link rel="prev" href="../cts-chamber/">
       
       
-        <link rel="next" href="../rigol-ds1000z/">
+        <link rel="next" href="../../../developer-guide/architecture/">
       
       
         
@@ -29,7 +29,7 @@
     
     
       
-        <title>CTS Chamber - InstrumentControl</title>
+        <title>Rigol DS1054Z/DS1104Z (Oscilloscope) - InstrumentControl</title>
       
     
     
@@ -80,7 +80,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#cts-t-4050-environmental-chamber" class="md-skip">
+        <a href="#rigol-ds1000z-4-channel-oscilloscope" class="md-skip">
           Skip to content
         </a>
       
@@ -120,7 +120,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              CTS Chamber
+              Rigol DS1054Z/DS1104Z (Oscilloscope)
             
           </span>
         </div>
@@ -842,6 +842,34 @@
                 
   
   
+  
+  
+    <li class="md-nav__item">
+      <a href="../cts-chamber/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    CTS Chamber
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
     
   
   
@@ -861,7 +889,7 @@
   <span class="md-ellipsis">
     
   
-    CTS Chamber
+    Rigol DS1054Z/DS1104Z (Oscilloscope)
   
 
     
@@ -879,7 +907,7 @@
   <span class="md-ellipsis">
     
   
-    CTS Chamber
+    Rigol DS1054Z/DS1104Z (Oscilloscope)
   
 
     
@@ -916,32 +944,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#serial-connection-settings" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Serial Connection Settings
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
   <a href="#connecting" class="md-nav__link">
     <span class="md-ellipsis">
       
         Connecting
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#protocol-details" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Protocol Details
       
     </span>
   </a>
@@ -972,10 +978,10 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#ctschamber_settemperature" class="md-nav__link">
+  <a href="#rigolds1000z_setchannel" class="md-nav__link">
     <span class="md-ellipsis">
       
-        CTSChamber_SetTemperature
+        RigolDS1000Z_SetChannel
       
     </span>
   </a>
@@ -983,10 +989,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#ctschamber_setramp" class="md-nav__link">
+  <a href="#rigolds1000z_settimebase" class="md-nav__link">
     <span class="md-ellipsis">
       
-        CTSChamber_SetRamp
+        RigolDS1000Z_SetTimebase
       
     </span>
   </a>
@@ -994,10 +1000,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#ctschamber_start" class="md-nav__link">
+  <a href="#rigolds1000z_settrigger" class="md-nav__link">
     <span class="md-ellipsis">
       
-        CTSChamber_Start
+        RigolDS1000Z_SetTrigger
       
     </span>
   </a>
@@ -1005,10 +1011,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#ctschamber_stop" class="md-nav__link">
+  <a href="#rigolds1000z_setacquire" class="md-nav__link">
     <span class="md-ellipsis">
       
-        CTSChamber_Stop
+        RigolDS1000Z_SetAcquire
       
     </span>
   </a>
@@ -1016,10 +1022,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#ctschamber_pause" class="md-nav__link">
+  <a href="#rigolds1000z_run" class="md-nav__link">
     <span class="md-ellipsis">
       
-        CTSChamber_Pause
+        RigolDS1000Z_Run
       
     </span>
   </a>
@@ -1027,10 +1033,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#ctschamber_readtemperature" class="md-nav__link">
+  <a href="#rigolds1000z_stop" class="md-nav__link">
     <span class="md-ellipsis">
       
-        CTSChamber_ReadTemperature
+        RigolDS1000Z_Stop
       
     </span>
   </a>
@@ -1038,10 +1044,76 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#ctschamber_waitfortemperature" class="md-nav__link">
+  <a href="#rigolds1000z_single" class="md-nav__link">
     <span class="md-ellipsis">
       
-        CTSChamber_WaitForTemperature
+        RigolDS1000Z_Single
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#rigolds1000z_autoscale" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        RigolDS1000Z_AutoScale
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#rigolds1000z_measurevoltage" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        RigolDS1000Z_MeasureVoltage
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#rigolds1000z_measuretime" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        RigolDS1000Z_MeasureTime
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#rigolds1000z_measureduty" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        RigolDS1000Z_MeasureDuty
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#rigolds1000z_readwaveform" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        RigolDS1000Z_ReadWaveform
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#rigolds1000z_mathsetup" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        RigolDS1000Z_MathSetup
       
     </span>
   </a>
@@ -1054,10 +1126,21 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#example-sequence-temperature-profile-test" class="md-nav__link">
+  <a href="#example-sequence-single-shot-capture-with-measurement" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Example Sequence — Temperature Profile Test
+        Example Sequence — Single-Shot Capture with Measurement
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#example-sequence-fft-analysis" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Example Sequence — FFT Analysis
       
     </span>
   </a>
@@ -1068,34 +1151,6 @@
   
 </nav>
       
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../rigol-ds1000z/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Rigol DS1054Z/DS1104Z (Oscilloscope)
-  
-
-    
-  </span>
-  
-  
-
-      </a>
     </li>
   
 
@@ -1355,32 +1410,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#serial-connection-settings" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Serial Connection Settings
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
   <a href="#connecting" class="md-nav__link">
     <span class="md-ellipsis">
       
         Connecting
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#protocol-details" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Protocol Details
       
     </span>
   </a>
@@ -1411,10 +1444,10 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#ctschamber_settemperature" class="md-nav__link">
+  <a href="#rigolds1000z_setchannel" class="md-nav__link">
     <span class="md-ellipsis">
       
-        CTSChamber_SetTemperature
+        RigolDS1000Z_SetChannel
       
     </span>
   </a>
@@ -1422,10 +1455,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#ctschamber_setramp" class="md-nav__link">
+  <a href="#rigolds1000z_settimebase" class="md-nav__link">
     <span class="md-ellipsis">
       
-        CTSChamber_SetRamp
+        RigolDS1000Z_SetTimebase
       
     </span>
   </a>
@@ -1433,10 +1466,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#ctschamber_start" class="md-nav__link">
+  <a href="#rigolds1000z_settrigger" class="md-nav__link">
     <span class="md-ellipsis">
       
-        CTSChamber_Start
+        RigolDS1000Z_SetTrigger
       
     </span>
   </a>
@@ -1444,10 +1477,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#ctschamber_stop" class="md-nav__link">
+  <a href="#rigolds1000z_setacquire" class="md-nav__link">
     <span class="md-ellipsis">
       
-        CTSChamber_Stop
+        RigolDS1000Z_SetAcquire
       
     </span>
   </a>
@@ -1455,10 +1488,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#ctschamber_pause" class="md-nav__link">
+  <a href="#rigolds1000z_run" class="md-nav__link">
     <span class="md-ellipsis">
       
-        CTSChamber_Pause
+        RigolDS1000Z_Run
       
     </span>
   </a>
@@ -1466,10 +1499,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#ctschamber_readtemperature" class="md-nav__link">
+  <a href="#rigolds1000z_stop" class="md-nav__link">
     <span class="md-ellipsis">
       
-        CTSChamber_ReadTemperature
+        RigolDS1000Z_Stop
       
     </span>
   </a>
@@ -1477,10 +1510,76 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#ctschamber_waitfortemperature" class="md-nav__link">
+  <a href="#rigolds1000z_single" class="md-nav__link">
     <span class="md-ellipsis">
       
-        CTSChamber_WaitForTemperature
+        RigolDS1000Z_Single
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#rigolds1000z_autoscale" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        RigolDS1000Z_AutoScale
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#rigolds1000z_measurevoltage" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        RigolDS1000Z_MeasureVoltage
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#rigolds1000z_measuretime" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        RigolDS1000Z_MeasureTime
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#rigolds1000z_measureduty" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        RigolDS1000Z_MeasureDuty
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#rigolds1000z_readwaveform" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        RigolDS1000Z_ReadWaveform
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#rigolds1000z_mathsetup" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        RigolDS1000Z_MathSetup
       
     </span>
   </a>
@@ -1493,10 +1592,21 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#example-sequence-temperature-profile-test" class="md-nav__link">
+  <a href="#example-sequence-single-shot-capture-with-measurement" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Example Sequence — Temperature Profile Test
+        Example Sequence — Single-Shot Capture with Measurement
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#example-sequence-fft-analysis" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Example Sequence — FFT Analysis
       
     </span>
   </a>
@@ -1523,9 +1633,9 @@
   
 
 
-<h1 id="cts-t-4050-environmental-chamber">CTS T-40/50 — Environmental Chamber<a class="headerlink" href="#cts-t-4050-environmental-chamber" title="Permanent link">&para;</a></h1>
+<h1 id="rigol-ds1000z-4-channel-oscilloscope">Rigol DS1000Z — 4-Channel Oscilloscope<a class="headerlink" href="#rigol-ds1000z-4-channel-oscilloscope" title="Permanent link">&para;</a></h1>
 <h2 id="overview">Overview<a class="headerlink" href="#overview" title="Permanent link">&para;</a></h2>
-<p>The CTS T-40/50 is an environmental test chamber for temperature and humidity testing. It uses a proprietary binary ASCII protocol over RS-232 — not VISA/SCPI.</p>
+<p>The Rigol DS1054Z and DS1104Z are 4-channel digital oscilloscopes with 50 MHz and 100 MHz bandwidth respectively. They connect via LAN (TCPIP), USB, or GPIB and communicate over standard VISA.</p>
 <table>
 <thead>
 <tr>
@@ -1536,85 +1646,39 @@
 <tbody>
 <tr>
 <td>Type</td>
-<td>Environmental Test Chamber</td>
+<td>Digital Oscilloscope</td>
 </tr>
 <tr>
-<td>Temperature range</td>
-<td>−75 … +185 °C</td>
+<td>Models</td>
+<td>DS1054Z (50 MHz), DS1104Z (100 MHz)</td>
+</tr>
+<tr>
+<td>Channels</td>
+<td>4 analog</td>
 </tr>
 <tr>
 <td>Interface</td>
-<td>RS-232 (COM port), 19200 baud, 8N1 with odd parity</td>
-</tr>
-<tr>
-<td>Protocol</td>
-<td>Custom binary ASCII framing (STX / ADR / DATA / CHK / ETX)</td>
+<td>LAN (TCPIP), USB-TMC, GPIB</td>
 </tr>
 <tr>
 <td>Driver name</td>
-<td><code>CTSChamber</code></td>
+<td><code>RigolDS1000Z</code></td>
 </tr>
 <tr>
 <td>Resource patterns</td>
-<td><code>COM?*</code></td>
-</tr>
-</tbody>
-</table>
-<hr />
-<h2 id="serial-connection-settings">Serial Connection Settings<a class="headerlink" href="#serial-connection-settings" title="Permanent link">&para;</a></h2>
-<p>The CTS chamber does <strong>not</strong> use VISA. The driver uses a custom <code>IConnectionProvider</code> that opens a COM port directly:</p>
-<table>
-<thead>
-<tr>
-<th>Parameter</th>
-<th>Value</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>Baud rate</td>
-<td>19200</td>
-</tr>
-<tr>
-<td>Data bits</td>
-<td>8</td>
-</tr>
-<tr>
-<td>Parity</td>
-<td>Odd</td>
-</tr>
-<tr>
-<td>Stop bits</td>
-<td>1</td>
-</tr>
-<tr>
-<td>Flow control</td>
-<td>None</td>
+<td><code>TCPIP?*::?*::INSTR</code>, <code>TCPIP?*::hislip?*::INSTR</code>, <code>USB?*::0x1AB1::?*::INSTR</code>, <code>GPIB?*::?*::INSTR</code></td>
 </tr>
 </tbody>
 </table>
 <hr />
 <h2 id="connecting">Connecting<a class="headerlink" href="#connecting" title="Permanent link">&para;</a></h2>
 <ol>
-<li>Connect the CTS chamber's RS-232 port to the PC (use a USB-to-RS232 adapter if needed)</li>
-<li>Note the COM port number from Device Manager</li>
-<li>Click <strong>Add Instrument</strong> and select the COM port resource (e.g. <code>COM3</code>)</li>
-<li>The Connection Manager lists COM ports automatically</li>
-<li>Select the <strong>CTSChamber</strong> driver from the drop-down (auto-detection is not possible because the chamber does not respond to <code>*IDN?</code>)</li>
+<li>Connect the DS1000Z via LAN or USB</li>
+<li>Click <strong>Add Instrument</strong> and select the resource</li>
+<li>Auto-detection parses <code>*IDN?</code> (<code>RIGOL TECHNOLOGIES,DS1054Z</code> or <code>DS1104Z</code>)</li>
 <li>Click <strong>Connect</strong></li>
 </ol>
-<div class="admonition tip">
-<p class="admonition-title">USB-to-RS232 adapters</p>
-<p>Use a high-quality adapter with a genuine FTDI or Prolific chip. Cheap adapters often lose data at 19200 baud with odd parity.</p>
-</div>
-<hr />
-<h2 id="protocol-details">Protocol Details<a class="headerlink" href="#protocol-details" title="Permanent link">&para;</a></h2>
-<p>The CTS chamber uses a proprietary binary ASCII framing scheme. Developers who need to extend the driver should read the <a href="../../../developer-guide/plugin-development/#custom-serial-protocol">CTSSerialConnectionProvider</a> documentation.</p>
-<p>Frame structure:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>STX  |  ADR  |  DATA (each byte OR&#39;d with 0x80)  |  CHK  |  ETX
-<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>0x02    0x30    0xC2 0xD4 ...                        0xHH   0x03
-</code></pre></div>
-<p>The checksum (<code>CHK</code>) is the XOR of all bytes from <code>ADR</code> to the last <code>DATA</code> byte.</p>
+<p>For LAN: find the instrument IP address in its <strong>Utility → IO Setting → LAN</strong> menu, then enter the resource manually in the Connection Manager: <code>TCPIP0::192.168.x.x::inst0::INSTR</code></p>
 <hr />
 <h2 id="front-panel">Front Panel<a class="headerlink" href="#front-panel" title="Permanent link">&para;</a></h2>
 <table>
@@ -1626,39 +1690,87 @@
 </thead>
 <tbody>
 <tr>
-<td><strong>Set Temperature (°C)</strong></td>
-<td>Target temperature</td>
+<td><strong>CH1–CH4 enable</strong></td>
+<td>Toggle to show/hide each channel</td>
 </tr>
 <tr>
-<td><strong>Set Ramp (°C/min)</strong></td>
-<td>Temperature ramp rate</td>
+<td><strong>V/div per channel</strong></td>
+<td>Vertical scale selector</td>
 </tr>
 <tr>
-<td><strong>Start</strong></td>
-<td>Start the chamber program</td>
+<td><strong>Coupling</strong></td>
+<td>DC / AC / GND per channel</td>
 </tr>
 <tr>
-<td><strong>Stop</strong></td>
-<td>Stop the chamber</td>
+<td><strong>Probe ratio</strong></td>
+<td>×0.1 … ×1000 per channel</td>
 </tr>
 <tr>
-<td><strong>Pause</strong></td>
-<td>Pause the current program</td>
+<td><strong>BW limit</strong></td>
+<td>OFF or 20 MHz bandwidth limit</td>
 </tr>
 <tr>
-<td><strong>Temperature readback</strong></td>
-<td>Current chamber temperature in °C</td>
+<td><strong>Invert</strong></td>
+<td>Invert signal polarity</td>
 </tr>
 <tr>
-<td><strong>Status</strong></td>
-<td>Chamber operating mode (Running, Paused, Idle, Error)</td>
+<td><strong>Timebase</strong></td>
+<td>Horizontal time/div selector</td>
+</tr>
+<tr>
+<td><strong>Timebase mode</strong></td>
+<td>MAIN / XY / ROLL</td>
+</tr>
+<tr>
+<td><strong>Trigger mode</strong></td>
+<td>EDGE / PULSe / SLOPe / VIDeo / PATTern / RS232 / I2C / SPI</td>
+</tr>
+<tr>
+<td><strong>Trigger source</strong></td>
+<td>CH1–CH4 or AC</td>
+</tr>
+<tr>
+<td><strong>Trigger level</strong></td>
+<td>Threshold in V</td>
+</tr>
+<tr>
+<td><strong>Trigger slope</strong></td>
+<td>Positive / Negative / Either</td>
+</tr>
+<tr>
+<td><strong>Trigger sweep</strong></td>
+<td>AUTO / NORMal / SINGle</td>
+</tr>
+<tr>
+<td><strong>Acquire type</strong></td>
+<td>Normal / Averages / Peak Detect / Hi-Res</td>
+</tr>
+<tr>
+<td><strong>Run</strong> button</td>
+<td>Start continuous acquisition</td>
+</tr>
+<tr>
+<td><strong>Stop</strong> button</td>
+<td>Freeze the display</td>
+</tr>
+<tr>
+<td><strong>Single</strong> button</td>
+<td>One-shot acquisition</td>
+</tr>
+<tr>
+<td><strong>AutoScale</strong> button</td>
+<td>Auto-configure vertical and horizontal scales</td>
+</tr>
+<tr>
+<td><strong>Math / FFT</strong></td>
+<td>Configure MATH channel and FFT analysis</td>
 </tr>
 </tbody>
 </table>
 <hr />
 <h2 id="sequence-blocks">Sequence Blocks<a class="headerlink" href="#sequence-blocks" title="Permanent link">&para;</a></h2>
-<h3 id="ctschamber_settemperature">CTSChamber_SetTemperature<a class="headerlink" href="#ctschamber_settemperature" title="Permanent link">&para;</a></h3>
-<p>Sets the target temperature set-point.</p>
+<h3 id="rigolds1000z_setchannel">RigolDS1000Z_SetChannel<a class="headerlink" href="#rigolds1000z_setchannel" title="Permanent link">&para;</a></h3>
+<p>Configures a single analog channel.</p>
 <table>
 <thead>
 <tr>
@@ -1671,17 +1783,220 @@
 <tr>
 <td><strong>Instrument</strong></td>
 <td>InstrumentSelector</td>
-<td>Connected CTS chamber instance</td>
+<td>Connected DS1000Z instance</td>
 </tr>
 <tr>
-<td><strong>Temperature (°C)</strong></td>
+<td><strong>Channel</strong></td>
+<td>Combo</td>
+<td>1, 2, 3, 4</td>
+</tr>
+<tr>
+<td><strong>Display</strong></td>
+<td>CheckBox</td>
+<td>Enable or disable the channel</td>
+</tr>
+<tr>
+<td><strong>Coupling</strong></td>
+<td>Combo</td>
+<td>DC, AC, GND</td>
+</tr>
+<tr>
+<td><strong>V/div</strong></td>
+<td>Combo</td>
+<td>Vertical scale (0.001 V … 100 V/div)</td>
+</tr>
+<tr>
+<td><strong>Offset [V]</strong></td>
+<td>Text</td>
+<td>Vertical offset</td>
+</tr>
+<tr>
+<td><strong>Probe ×</strong></td>
+<td>Combo</td>
+<td>Probe attenuation ratio (0.1 × … 1000 ×)</td>
+</tr>
+<tr>
+<td><strong>BW limit</strong></td>
+<td>Combo</td>
+<td>OFF or 20M (20 MHz limit)</td>
+</tr>
+<tr>
+<td><strong>Invert</strong></td>
+<td>CheckBox</td>
+<td>Invert channel polarity</td>
+</tr>
+</tbody>
+</table>
+<h3 id="rigolds1000z_settimebase">RigolDS1000Z_SetTimebase<a class="headerlink" href="#rigolds1000z_settimebase" title="Permanent link">&para;</a></h3>
+<p>Sets the horizontal timebase.</p>
+<table>
+<thead>
+<tr>
+<th>Property</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Instrument</strong></td>
+<td>InstrumentSelector</td>
+<td>Connected DS1000Z instance</td>
+</tr>
+<tr>
+<td><strong>s/div</strong></td>
+<td>Combo</td>
+<td>Time per division (5 ns … 50 s)</td>
+</tr>
+<tr>
+<td><strong>Time offset [s]</strong></td>
+<td>Text</td>
+<td>Horizontal offset from trigger point</td>
+</tr>
+<tr>
+<td><strong>Timebase mode</strong></td>
+<td>Combo</td>
+<td>MAIN, XY, ROLL</td>
+</tr>
+</tbody>
+</table>
+<h3 id="rigolds1000z_settrigger">RigolDS1000Z_SetTrigger<a class="headerlink" href="#rigolds1000z_settrigger" title="Permanent link">&para;</a></h3>
+<p>Configures the trigger system. Edge trigger parameters are applied when <strong>Trigger mode</strong> is EDGE.</p>
+<table>
+<thead>
+<tr>
+<th>Property</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Instrument</strong></td>
+<td>InstrumentSelector</td>
+<td>Connected DS1000Z instance</td>
+</tr>
+<tr>
+<td><strong>Trigger mode</strong></td>
+<td>Combo</td>
+<td>EDGE, PULSe, SLOPe, VIDeo, PATTern, RS232, I2C, SPI</td>
+</tr>
+<tr>
+<td><strong>Sweep</strong></td>
+<td>Combo</td>
+<td>AUTO, NORMal, SINGle</td>
+</tr>
+<tr>
+<td><strong>Source</strong></td>
+<td>Combo</td>
+<td>CH1, CH2, CH3, CH4, AC</td>
+</tr>
+<tr>
+<td><strong>Slope</strong></td>
+<td>Combo</td>
+<td>POSitive (rising), NEGative (falling), RFALl (either)</td>
+</tr>
+<tr>
+<td><strong>Level [V]</strong></td>
+<td>Text</td>
+<td>Trigger threshold voltage</td>
+</tr>
+</tbody>
+</table>
+<h3 id="rigolds1000z_setacquire">RigolDS1000Z_SetAcquire<a class="headerlink" href="#rigolds1000z_setacquire" title="Permanent link">&para;</a></h3>
+<p>Configures the acquisition mode and memory depth.</p>
+<table>
+<thead>
+<tr>
+<th>Property</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Instrument</strong></td>
+<td>InstrumentSelector</td>
+<td>Connected DS1000Z instance</td>
+</tr>
+<tr>
+<td><strong>Acquire type</strong></td>
+<td>Combo</td>
+<td>NORMal, AVERages, PEAKdetect, HRESolution</td>
+</tr>
+<tr>
+<td><strong>Averages</strong></td>
+<td>Combo</td>
+<td>2, 4, 8 … 1024 (active when type = AVERages)</td>
+</tr>
+<tr>
+<td><strong>Memory depth</strong></td>
+<td>Combo</td>
+<td>AUTO, 12 k, 120 k, 1.2 M, 12 M, 24 M points</td>
+</tr>
+</tbody>
+</table>
+<h3 id="rigolds1000z_run">RigolDS1000Z_Run<a class="headerlink" href="#rigolds1000z_run" title="Permanent link">&para;</a></h3>
+<p>Starts continuous acquisition (<code>RUN</code>).</p>
+<table>
+<thead>
+<tr>
+<th>Property</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Instrument</strong></td>
+<td>InstrumentSelector</td>
+<td>Connected DS1000Z instance</td>
+</tr>
+</tbody>
+</table>
+<h3 id="rigolds1000z_stop">RigolDS1000Z_Stop<a class="headerlink" href="#rigolds1000z_stop" title="Permanent link">&para;</a></h3>
+<p>Stops acquisition and freezes the display (<code>STOP</code>).</p>
+<table>
+<thead>
+<tr>
+<th>Property</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Instrument</strong></td>
+<td>InstrumentSelector</td>
+<td>Connected DS1000Z instance</td>
+</tr>
+</tbody>
+</table>
+<h3 id="rigolds1000z_single">RigolDS1000Z_Single<a class="headerlink" href="#rigolds1000z_single" title="Permanent link">&para;</a></h3>
+<p>Arms the oscilloscope for a single-shot acquisition (<code>SINGle</code>), then waits.</p>
+<table>
+<thead>
+<tr>
+<th>Property</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Instrument</strong></td>
+<td>InstrumentSelector</td>
+<td>Connected DS1000Z instance</td>
+</tr>
+<tr>
+<td><strong>Wait after [ms]</strong></td>
 <td>Number</td>
-<td>Target temperature</td>
+<td>Delay after sending the command (default 500 ms)</td>
 </tr>
 </tbody>
 </table>
-<h3 id="ctschamber_setramp">CTSChamber_SetRamp<a class="headerlink" href="#ctschamber_setramp" title="Permanent link">&para;</a></h3>
-<p>Sets the ramp rate between temperature set-points.</p>
+<h3 id="rigolds1000z_autoscale">RigolDS1000Z_AutoScale<a class="headerlink" href="#rigolds1000z_autoscale" title="Permanent link">&para;</a></h3>
+<p>Sends <code>:AUToset</code> to automatically configure vertical scale, timebase, and trigger.</p>
 <table>
 <thead>
 <tr>
@@ -1694,17 +2009,17 @@
 <tr>
 <td><strong>Instrument</strong></td>
 <td>InstrumentSelector</td>
-<td>Connected CTS chamber instance</td>
+<td>Connected DS1000Z instance</td>
 </tr>
 <tr>
-<td><strong>Ramp Rate (°C/min)</strong></td>
+<td><strong>Wait after [ms]</strong></td>
 <td>Number</td>
-<td>Rate of temperature change</td>
+<td>Delay to let the scope settle (default 2000 ms)</td>
 </tr>
 </tbody>
 </table>
-<h3 id="ctschamber_start">CTSChamber_Start<a class="headerlink" href="#ctschamber_start" title="Permanent link">&para;</a></h3>
-<p>Starts the chamber conditioning program.</p>
+<h3 id="rigolds1000z_measurevoltage">RigolDS1000Z_MeasureVoltage<a class="headerlink" href="#rigolds1000z_measurevoltage" title="Permanent link">&para;</a></h3>
+<p>Reads an automated voltage-domain measurement from one channel.</p>
 <table>
 <thead>
 <tr>
@@ -1717,71 +2032,27 @@
 <tr>
 <td><strong>Instrument</strong></td>
 <td>InstrumentSelector</td>
-<td>Connected CTS chamber instance</td>
-</tr>
-</tbody>
-</table>
-<h3 id="ctschamber_stop">CTSChamber_Stop<a class="headerlink" href="#ctschamber_stop" title="Permanent link">&para;</a></h3>
-<p>Stops the chamber and returns to standby.</p>
-<table>
-<thead>
-<tr>
-<th>Property</th>
-<th>Type</th>
-<th>Description</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><strong>Instrument</strong></td>
-<td>InstrumentSelector</td>
-<td>Connected CTS chamber instance</td>
-</tr>
-</tbody>
-</table>
-<h3 id="ctschamber_pause">CTSChamber_Pause<a class="headerlink" href="#ctschamber_pause" title="Permanent link">&para;</a></h3>
-<p>Pauses the current program without losing the set-point.</p>
-<table>
-<thead>
-<tr>
-<th>Property</th>
-<th>Type</th>
-<th>Description</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><strong>Instrument</strong></td>
-<td>InstrumentSelector</td>
-<td>Connected CTS chamber instance</td>
-</tr>
-</tbody>
-</table>
-<h3 id="ctschamber_readtemperature">CTSChamber_ReadTemperature<a class="headerlink" href="#ctschamber_readtemperature" title="Permanent link">&para;</a></h3>
-<p>Reads the current chamber temperature.</p>
-<table>
-<thead>
-<tr>
-<th>Property</th>
-<th>Type</th>
-<th>Description</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><strong>Instrument</strong></td>
-<td>InstrumentSelector</td>
-<td>Connected CTS chamber instance</td>
+<td>Connected DS1000Z instance</td>
 </tr>
 <tr>
-<td><strong>Variable</strong></td>
+<td><strong>Channel</strong></td>
+<td>Combo</td>
+<td>1, 2, 3, 4</td>
+</tr>
+<tr>
+<td><strong>Parameter</strong></td>
+<td>Combo</td>
+<td>VMAX, VMIN, VPP, VTOP, VBASe, VAMP, VAVG, VRMS, OVERshoot, PREShoot</td>
+</tr>
+<tr>
+<td><strong>Output variable</strong></td>
 <td>Variable</td>
-<td>Receives temperature in °C</td>
+<td>Receives the measurement value in volts</td>
 </tr>
 </tbody>
 </table>
-<h3 id="ctschamber_waitfortemperature">CTSChamber_WaitForTemperature<a class="headerlink" href="#ctschamber_waitfortemperature" title="Permanent link">&para;</a></h3>
-<p>Blocks execution until the chamber reaches a temperature within a tolerance band, or a timeout expires.</p>
+<h3 id="rigolds1000z_measuretime">RigolDS1000Z_MeasureTime<a class="headerlink" href="#rigolds1000z_measuretime" title="Permanent link">&para;</a></h3>
+<p>Reads a time-domain or frequency measurement from one channel.</p>
 <table>
 <thead>
 <tr>
@@ -1794,40 +2065,161 @@
 <tr>
 <td><strong>Instrument</strong></td>
 <td>InstrumentSelector</td>
-<td>Connected CTS chamber instance</td>
+<td>Connected DS1000Z instance</td>
 </tr>
 <tr>
-<td><strong>Target (°C)</strong></td>
-<td>Number</td>
-<td>Target temperature</td>
+<td><strong>Channel</strong></td>
+<td>Combo</td>
+<td>1, 2, 3, 4</td>
 </tr>
 <tr>
-<td><strong>Tolerance (°C)</strong></td>
-<td>Number</td>
-<td>Acceptable deviation band (e.g. <code>0.5</code> means ±0.5 °C)</td>
+<td><strong>Parameter</strong></td>
+<td>Combo</td>
+<td>FREQuency (Hz), PERiod (s), RISetime (s), FALLtime (s), PWIDth (s), NWIDth (s)</td>
 </tr>
 <tr>
-<td><strong>Timeout (s)</strong></td>
-<td>Number</td>
-<td>Maximum wait time in seconds. 0 = no timeout.</td>
+<td><strong>Output variable</strong></td>
+<td>Variable</td>
+<td>Receives the measurement value</td>
+</tr>
+</tbody>
+</table>
+<h3 id="rigolds1000z_measureduty">RigolDS1000Z_MeasureDuty<a class="headerlink" href="#rigolds1000z_measureduty" title="Permanent link">&para;</a></h3>
+<p>Reads the duty cycle of a periodic signal.</p>
+<table>
+<thead>
+<tr>
+<th>Property</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Instrument</strong></td>
+<td>InstrumentSelector</td>
+<td>Connected DS1000Z instance</td>
+</tr>
+<tr>
+<td><strong>Channel</strong></td>
+<td>Combo</td>
+<td>1, 2, 3, 4</td>
+</tr>
+<tr>
+<td><strong>Parameter</strong></td>
+<td>Combo</td>
+<td>PDUTycycle (positive), NDUTycycle (negative)</td>
+</tr>
+<tr>
+<td><strong>Output variable</strong></td>
+<td>Variable</td>
+<td>Receives the duty cycle in %</td>
+</tr>
+</tbody>
+</table>
+<h3 id="rigolds1000z_readwaveform">RigolDS1000Z_ReadWaveform<a class="headerlink" href="#rigolds1000z_readwaveform" title="Permanent link">&para;</a></h3>
+<p>Downloads the raw waveform data from one channel and saves it as a CSV file with columns <code>Czas[s]</code> and <code>Napięcie[V]</code>.</p>
+<table>
+<thead>
+<tr>
+<th>Property</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Instrument</strong></td>
+<td>InstrumentSelector</td>
+<td>Connected DS1000Z instance</td>
+</tr>
+<tr>
+<td><strong>Channel</strong></td>
+<td>Combo</td>
+<td>1, 2, 3, 4</td>
+</tr>
+<tr>
+<td><strong>Waveform mode</strong></td>
+<td>Combo</td>
+<td>NORMal (screen points), MAXimum, RAW (full memory)</td>
+</tr>
+<tr>
+<td><strong>CSV file path</strong></td>
+<td>FilePath</td>
+<td>Destination file for the waveform data</td>
+</tr>
+</tbody>
+</table>
+<h3 id="rigolds1000z_mathsetup">RigolDS1000Z_MathSetup<a class="headerlink" href="#rigolds1000z_mathsetup" title="Permanent link">&para;</a></h3>
+<p>Configures the MATH channel for arithmetic operations or FFT analysis.</p>
+<table>
+<thead>
+<tr>
+<th>Property</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Instrument</strong></td>
+<td>InstrumentSelector</td>
+<td>Connected DS1000Z instance</td>
+</tr>
+<tr>
+<td><strong>Operation</strong></td>
+<td>Combo</td>
+<td>ADD, SUBTract, MULTiply, DIVision, FFT, ANDer, ORer, XORer, NOTer, INTGral, DIFF, SQRT, LOG, LN, EXP, ABS</td>
+</tr>
+<tr>
+<td><strong>Source 1</strong></td>
+<td>Combo</td>
+<td>CH1, CH2, CH3, CH4</td>
+</tr>
+<tr>
+<td><strong>Source 2</strong></td>
+<td>Combo</td>
+<td>CH1, CH2, CH3, CH4 (ignored for unary operations)</td>
+</tr>
+<tr>
+<td><strong>Enable Math</strong></td>
+<td>CheckBox</td>
+<td>Show or hide the MATH channel on screen</td>
+</tr>
+<tr>
+<td><strong>FFT: window</strong></td>
+<td>Combo</td>
+<td>RECTangle, BLACkman, HANNing, HAMMing, FLATtop, TRIangle</td>
+</tr>
+<tr>
+<td><strong>FFT: unit</strong></td>
+<td>Combo</td>
+<td>VRMS, DB</td>
 </tr>
 </tbody>
 </table>
 <hr />
-<h2 id="example-sequence-temperature-profile-test">Example Sequence — Temperature Profile Test<a class="headerlink" href="#example-sequence-temperature-profile-test" title="Permanent link">&para;</a></h2>
+<h2 id="example-sequence-single-shot-capture-with-measurement">Example Sequence — Single-Shot Capture with Measurement<a class="headerlink" href="#example-sequence-single-shot-capture-with-measurement" title="Permanent link">&para;</a></h2>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>[Start]
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>→ [RigolDS1000Z_SetChannel, Channel=1, Coupling=DC, V/div=1, Probe×=10]
+<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>→ [RigolDS1000Z_SetTimebase, s/div=0.001, Mode=MAIN]
+<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>→ [RigolDS1000Z_SetTrigger, Mode=EDGE, Sweep=SINGle, Source=CH1, Slope=POSitive, Level=0.5]
+<a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a>→ [RigolDS1000Z_Single, WaitMs=2000]
+<a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a>→ [RigolDS1000Z_MeasureVoltage, Channel=1, Parameter=VPP, OutputVariable=vpp]
+<a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a>→ [RigolDS1000Z_MeasureTime, Channel=1, Parameter=FREQuency, OutputVariable=freq]
+<a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a>→ [LogMessage &quot;VPP={vpp} V  Freq={freq} Hz&quot;]
+<a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a>→ [RigolDS1000Z_ReadWaveform, Channel=1, WaveMode=NORMal, FilePath=C:\Data\waveform.csv]
+<a id="__codelineno-0-10" name="__codelineno-0-10" href="#__codelineno-0-10"></a>→ [SaveCsv, Path=C:\Data\results.csv]
+<a id="__codelineno-0-11" name="__codelineno-0-11" href="#__codelineno-0-11"></a>→ [End]
+</code></pre></div>
+<h2 id="example-sequence-fft-analysis">Example Sequence — FFT Analysis<a class="headerlink" href="#example-sequence-fft-analysis" title="Permanent link">&para;</a></h2>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>[Start]
-<a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>→ [CTSChamber_SetRamp, Rate=2.0]
-<a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a>→ [CTSChamber_Start]
-<a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a>→ [Loop temperatures in -40, 25, 85°C: use SetVariable]
-<a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a>    ↓
-<a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a>    [SetVariable, Name=targetTemp, Value=-40]
-<a id="__codelineno-1-7" name="__codelineno-1-7" href="#__codelineno-1-7"></a>    → [CTSChamber_SetTemperature, Temp={targetTemp}]
-<a id="__codelineno-1-8" name="__codelineno-1-8" href="#__codelineno-1-8"></a>    → [CTSChamber_WaitForTemperature, Target={targetTemp}, Tolerance=0.5, Timeout=3600]
-<a id="__codelineno-1-9" name="__codelineno-1-9" href="#__codelineno-1-9"></a>    → [Wait 300000ms]   # soak 5 minutes
-<a id="__codelineno-1-10" name="__codelineno-1-10" href="#__codelineno-1-10"></a>    → [HP34401A_MeasureDCV, Variable=voltage]
-<a id="__codelineno-1-11" name="__codelineno-1-11" href="#__codelineno-1-11"></a>    → [SaveCsv, Path=&quot;C:\Data\temp_profile.csv&quot;, Append=true]
-<a id="__codelineno-1-12" name="__codelineno-1-12" href="#__codelineno-1-12"></a>→ [CTSChamber_Stop]
-<a id="__codelineno-1-13" name="__codelineno-1-13" href="#__codelineno-1-13"></a>→ [End]
+<a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>→ [RigolDS1000Z_SetChannel, Channel=1, Coupling=DC, V/div=0.5, Probe×=1]
+<a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a>→ [RigolDS1000Z_SetTimebase, s/div=0.0001]
+<a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a>→ [RigolDS1000Z_Run]
+<a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a>→ [WaitBlock, 500]
+<a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a>→ [RigolDS1000Z_MathSetup, Operation=FFT, Source1=CH1, FFTWindow=HANNing, FFTUnit=DB, Enable=true]
+<a id="__codelineno-1-7" name="__codelineno-1-7" href="#__codelineno-1-7"></a>→ [End]
 </code></pre></div>
 
 
@@ -1864,7 +2256,7 @@
       <nav class="md-footer__inner md-grid" aria-label="Footer" >
         
           
-          <a href="../rtb2004/" class="md-footer__link md-footer__link--prev" aria-label="Previous: R&amp;S RTB2004 (Oscilloscope)">
+          <a href="../cts-chamber/" class="md-footer__link md-footer__link--prev" aria-label="Previous: CTS Chamber">
             <div class="md-footer__button md-icon">
               
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
@@ -1874,20 +2266,20 @@
                 Previous
               </span>
               <div class="md-ellipsis">
-                R&S RTB2004 (Oscilloscope)
+                CTS Chamber
               </div>
             </div>
           </a>
         
         
           
-          <a href="../rigol-ds1000z/" class="md-footer__link md-footer__link--next" aria-label="Next: Rigol DS1054Z/DS1104Z (Oscilloscope)">
+          <a href="../../../developer-guide/architecture/" class="md-footer__link md-footer__link--next" aria-label="Next: Architecture">
             <div class="md-footer__title">
               <span class="md-footer__direction">
                 Next
               </span>
               <div class="md-ellipsis">
-                Rigol DS1054Z/DS1104Z (Oscilloscope)
+                Architecture
               </div>
             </div>
             <div class="md-footer__button md-icon">
