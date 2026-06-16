@@ -34,6 +34,7 @@ AGILENT TECHNOLOGIES,34970A,...       → Agilent 34970A driver
 KEITHLEY INSTRUMENTS INC.,MODEL 2000  → Keithley 2000 driver
 ITECH ELECTRONIC,IT6922B,...          → ITECH IT6922B driver
 Rohde&Schwarz,RTB2004,...             → R&S RTB2004 driver
+RIGOL TECHNOLOGIES,DS1054Z,...        → Rigol DS1000Z driver
 ```
 
 If identification fails (the instrument does not respond to `*IDN?` or the response is not recognized), you can choose the driver manually from the drop-down.

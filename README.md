@@ -32,6 +32,7 @@ Built with .NET 8 WPF, a plugin DLL architecture, and a visual Scratch-like sequ
 | ITECH IT6922B | DC Power Supply (60 V / 5 A) | VISA (USB/LAN/GPIB) | SetVoltage, SetCurrent, SetOutput, MeasureVoltage, MeasureCurrent, MeasurePower, SetOVP, SetOCP |
 | R&S RTB2004 | 4-channel oscilloscope 300 MHz | VISA (LAN/USB) | SetChannel, SetTimebase, SetTrigger, Run, Stop, Single, Autoscale, Measure, ReadWaveform |
 | CTS T-40/50 | Environmental chamber (−75 … +185 °C) | RS-232 (non-VISA, binary ASCII protocol) | SetTemperature, SetRamp, ChamberStart, ChamberStop, ChamberPause, ReadTemperature, WaitForTemperature |
+| Rigol DS1054Z / DS1104Z | 4-channel oscilloscope 50/100 MHz | VISA (LAN/USB/GPIB) | SetChannel, SetTimebase, SetTrigger, SetAcquire, Run, Stop, Single, AutoScale, MeasureVoltage, MeasureTime, MeasureDuty, ReadWaveform, MathSetup |
 
 ## Language / UI Localization
 
@@ -136,6 +137,7 @@ bin\Release\
     ItechIT6922B.dll
     RTB2004.dll
     CTSChamber.dll
+    RigolDS1000Z.dll
   ... (.NET 8 runtime + WPF files — self-contained, no separate runtime install needed)
 ```
 
@@ -171,10 +173,14 @@ InstrumentControl.sln
     ├── Keithley2000/                  # Keithley 2000 plugin DLL
     ├── ItechIT6922B/                  # ITECH IT6922B DC power supply plugin DLL
     ├── RTB2004/                       # R&S RTB2004 oscilloscope plugin DLL
-    └── CTSChamber/                    # CTS T-40/50 environmental chamber plugin DLL
-        ├── CTSSerialConnectionProvider.cs  # Custom IConnectionProvider — CTS binary ASCII framing
-        ├── CTSChamberDriver.cs             # Driver (overrides ConnectAsync to use CTS provider)
-        ├── CTSChamberBlocks.cs             # 7 sequence blocks
+    ├── CTSChamber/                    # CTS T-40/50 environmental chamber plugin DLL
+    │   ├── CTSSerialConnectionProvider.cs  # Custom IConnectionProvider — CTS binary ASCII framing
+    │   ├── CTSChamberDriver.cs             # Driver (overrides ConnectAsync to use CTS provider)
+    │   ├── CTSChamberBlocks.cs             # 7 sequence blocks
+    │   └── Views/                          # Front panel XAML + ViewModel
+    └── RigolDS1000Z/                  # Rigol DS1054Z/DS1104Z oscilloscope plugin DLL
+        ├── RigolDS1000ZDriver.cs           # SCPI driver (channel, timebase, trigger, measure, waveform)
+        ├── RigolDS1000ZBlocks.cs           # 13 sequence blocks
         └── Views/                          # Front panel XAML + ViewModel
 ```
 

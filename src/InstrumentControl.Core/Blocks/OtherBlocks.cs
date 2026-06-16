@@ -9,14 +9,14 @@ namespace InstrumentControl.Core.Blocks;
 public class LogMessageBlock : SequenceBlockBase
 {
     public override string BlockType => "LogMessageBlock";
-    public override string DisplayName => "Loguj wiadomoĹ›Ä‡";
-    public override string Description => "WyĹ›wietla wiadomoĹ›Ä‡ w logu sekwencji";
+    public override string DisplayName => "Loguj wiadomość";
+    public override string Description => "Wyświetla wiadomość w logu sekwencji";
     public override Color BlockColor => Color.FromRgb(0xF3, 0x9C, 0x12);
     public override string Category => "General";
 
     public override IEnumerable<BlockPropertyDefinition> PropertyDefinitions =>
     [
-        BlockPropertyDefinition.Text("Message", "WiadomoĹ›Ä‡", "Punkt kontrolny"),
+        BlockPropertyDefinition.Text("Message", "Wiadomość", "Punkt kontrolny"),
     ];
 
     public override Task<BlockExecutionResult> ExecuteAsync(SequenceContext context)
@@ -32,15 +32,15 @@ public class LogMessageBlock : SequenceBlockBase
 public class SetVariableBlock : SequenceBlockBase
 {
     public override string BlockType => "SetVariableBlock";
-    public override string DisplayName => "Ustaw zmiennÄ…";
-    public override string Description => "Ustawia wartoĹ›Ä‡ zmiennej w kontekĹ›cie sekwencji";
+    public override string DisplayName => "Ustaw zmienną";
+    public override string Description => "Ustawia wartość zmiennej w kontekście sekwencji";
     public override Color BlockColor => Color.FromRgb(0x16, 0xA0, 0x85);
     public override string Category => "Data";
 
     public override IEnumerable<BlockPropertyDefinition> PropertyDefinitions =>
     [
         BlockPropertyDefinition.Variable("VariableName", "Nazwa zmiennej", "mojaZmienna"),
-        BlockPropertyDefinition.Text("Value", "WartoĹ›Ä‡", "0"),
+        BlockPropertyDefinition.Text("Value", "Wartość", "0"),
     ];
 
     public override Task<BlockExecutionResult> ExecuteAsync(SequenceContext context)
@@ -65,7 +65,7 @@ public class ConditionBlock : SequenceBlockBase, IHasConditionOutputs
 {
     public override string BlockType => "ConditionBlock";
     public override string DisplayName => "Warunek";
-    public override string Description => "RozgaĹ‚Ä™zienie: jeĹ›li warunek prawdziwy â†’ True, inaczej â†’ False";
+    public override string Description => "Rozgałęzienie: jeśli warunek prawdziwy → True, inaczej → False";
     public override Color BlockColor => Color.FromRgb(0xE7, 0x4C, 0x3C);
     public override string Category => "Control";
 
@@ -76,7 +76,7 @@ public class ConditionBlock : SequenceBlockBase, IHasConditionOutputs
     [
         BlockPropertyDefinition.Variable("Variable", "Zmienna", ""),
         BlockPropertyDefinition.Combo("Operator", "Operator", new() { ">", "<", ">=", "<=", "==", "!=" }, ">"),
-        BlockPropertyDefinition.Number("CompareValue", "WartoĹ›Ä‡ porĂłwnania", 0),
+        BlockPropertyDefinition.Number("CompareValue", "Wartość porównania", 0),
     ];
 
     public override Task<BlockExecutionResult> ExecuteAsync(SequenceContext context)
@@ -99,7 +99,7 @@ public class ConditionBlock : SequenceBlockBase, IHasConditionOutputs
         };
 
         string? next = condition ? TrueBlockId : FalseBlockId;
-        context.Log?.Invoke($"Warunek: {varName}({varVal:G6}) {op} {compareVal} â†’ {(condition ? "TRUE" : "FALSE")}");
+        context.Log?.Invoke($"Warunek: {varName}({varVal:G6}) {op} {compareVal} → {(condition ? "TRUE" : "FALSE")}");
         return Task.FromResult(BlockExecutionResult.Ok(next));
     }
 
@@ -130,8 +130,8 @@ public class ConditionBlock : SequenceBlockBase, IHasConditionOutputs
 public class EndLoopBlock : SequenceBlockBase
 {
     public override string BlockType => "EndLoopBlock";
-    public override string DisplayName => "Koniec pÄ™tli";
-    public override string Description => "Oznacza koniec ciaĹ‚a pÄ™tli";
+    public override string DisplayName => "Koniec pętli";
+    public override string Description => "Oznacza koniec ciała pętli";
     public override Color BlockColor => Color.FromRgb(0xCA, 0x60, 0x00);
     public override string Category => "Control";
 

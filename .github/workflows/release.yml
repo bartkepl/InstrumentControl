@@ -79,6 +79,12 @@ jobs:
           -c Release --nologo -v q
           -p:Version=${{ steps.ver.outputs.version }}
 
+      - name: Build RigolDS1000Z
+        run: >
+          dotnet build instruments/RigolDS1000Z/RigolDS1000Z.csproj
+          -c Release --nologo -v q
+          -p:Version=${{ steps.ver.outputs.version }}
+
       # ── Publish ───────────────────────────────────────────────────────────────
       - name: Publish app
         run: >
@@ -97,7 +103,8 @@ jobs:
           Copy-Item "instruments/Keithley2000/bin/Release/net8.0-windows/Keithley2000.dll"   $dest
           Copy-Item "instruments/ItechIT6922B/bin/Release/net8.0-windows/ItechIT6922B.dll" $dest
           Copy-Item "instruments/RTB2004/bin/Release/net8.0-windows/RTB2004.dll"           $dest
-          Copy-Item "instruments/CTSChamber/bin/Release/net8.0-windows/CTSChamber.dll"   $dest
+          Copy-Item "instruments/CTSChamber/bin/Release/net8.0-windows/CTSChamber.dll"     $dest
+          Copy-Item "instruments/RigolDS1000Z/bin/Release/net8.0-windows/RigolDS1000Z.dll" $dest
 
       - name: Create release archive
         shell: pwsh

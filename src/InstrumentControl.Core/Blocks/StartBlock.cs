@@ -25,7 +25,7 @@ public class EndBlock : SequenceBlockBase, INoOutputPort
 {
     public override string BlockType => "EndBlock";
     public override string DisplayName => "Koniec";
-    public override string Description => "KoĹ„czy sekwencjÄ™";
+    public override string Description => "Kończy sekwencję";
     public override Color BlockColor => Color.FromRgb(0x2C, 0x3E, 0x50);
     public override string Category => "Control";
     public override IEnumerable<BlockPropertyDefinition> PropertyDefinitions => Array.Empty<BlockPropertyDefinition>();

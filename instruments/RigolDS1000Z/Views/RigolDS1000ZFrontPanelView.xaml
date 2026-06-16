@@ -1,0 +1,933 @@
+<UserControl x:Class="RigolDS1000Z.Views.RigolDS1000ZFrontPanelView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:oxy="http://oxyplot.org/wpf"
+             mc:Ignorable="d"
+             d:DesignHeight="1020" d:DesignWidth="880"
+             MinWidth="760" MinHeight="740"
+             Background="#C6CACD">
+
+    <UserControl.Resources>
+        <BooleanToVisibilityConverter x:Key="BoolToVis"/>
+
+        <!-- ── Kolory: Rigol jasnoszary + żółty ─────────────────────────────── -->
+        <SolidColorBrush x:Key="PanelBg"    Color="#C6CACD"/>  <!-- jasnoszary korpus -->
+        <SolidColorBrush x:Key="HeaderBg"   Color="#A8ACB0"/>  <!-- nieco ciemniejszy nagłówek -->
+        <SolidColorBrush x:Key="SectionBg"  Color="#D4D8DA"/>  <!-- tło sekcji -->
+        <SolidColorBrush x:Key="BorderClr"  Color="#8E9296"/>  <!-- obramowania -->
+        <SolidColorBrush x:Key="LabelFg"    Color="#202428"/>  <!-- ciemny tekst -->
+        <SolidColorBrush x:Key="SubLabel"   Color="#444850"/>
+        <SolidColorBrush x:Key="InputBg"    Color="#E8EAEB"/>  <!-- tło pól -->
+        <SolidColorBrush x:Key="InputFg"    Color="#101214"/>
+        <SolidColorBrush x:Key="StatusBg"   Color="#9EA2A5"/>
+        <SolidColorBrush x:Key="RigolRed"   Color="#C8000A"/>  <!-- brand Rigol -->
+
+        <!-- CH kolory -->
+        <SolidColorBrush x:Key="Ch1Color"   Color="#FFD800"/>  <!-- żółty -->
+        <SolidColorBrush x:Key="Ch2Color"   Color="#00C8E0"/>  <!-- cyan -->
+        <SolidColorBrush x:Key="Ch3Color"   Color="#FF00CC"/>  <!-- magenta -->
+        <SolidColorBrush x:Key="Ch4Color"   Color="#40EE00"/>  <!-- zielony -->
+
+        <!-- Przyciski akcji -->
+        <SolidColorBrush x:Key="BtnRun"     Color="#00A820"/>
+        <SolidColorBrush x:Key="BtnStop"    Color="#CC1800"/>
+        <SolidColorBrush x:Key="BtnSingle"  Color="#005ABB"/>
+        <SolidColorBrush x:Key="BtnAuto"    Color="#D07800"/>
+        <SolidColorBrush x:Key="BtnGray"    Color="#707880"/>
+        <SolidColorBrush x:Key="BtnYellow"  Color="#CCA000"/>
+
+        <!-- ── Style pól i etykiet ───────────────────────────────────────────── -->
+        <Style x:Key="FieldLabel" TargetType="TextBlock">
+            <Setter Property="Foreground" Value="{StaticResource LabelFg}"/>
+            <Setter Property="FontSize" Value="10"/>
+            <Setter Property="FontFamily" Value="Segoe UI"/>
+            <Setter Property="VerticalAlignment" Value="Center"/>
+        </Style>
+
+        <Style x:Key="SecTitle" TargetType="TextBlock">
+            <Setter Property="Foreground" Value="{StaticResource SubLabel}"/>
+            <Setter Property="FontSize" Value="9"/>
+            <Setter Property="FontFamily" Value="Segoe UI"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="Margin" Value="0,0,0,3"/>
+        </Style>
+
+        <Style x:Key="ValBox" TargetType="TextBox">
+            <Setter Property="Height" Value="22"/>
+            <Setter Property="FontFamily" Value="Consolas"/>
+            <Setter Property="FontSize" Value="11"/>
+            <Setter Property="Background" Value="{StaticResource InputBg}"/>
+            <Setter Property="Foreground" Value="{StaticResource InputFg}"/>
+            <Setter Property="BorderBrush" Value="{StaticResource BorderClr}"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="Padding" Value="3,1"/>
+            <Setter Property="CaretBrush" Value="{StaticResource InputFg}"/>
+        </Style>
+
+        <Style x:Key="CbBox" TargetType="ComboBox">
+            <Setter Property="Height" Value="22"/>
+            <Setter Property="FontFamily" Value="Consolas"/>
+            <Setter Property="FontSize" Value="11"/>
+            <Setter Property="Background" Value="{StaticResource InputBg}"/>
+            <Setter Property="Foreground" Value="{StaticResource InputFg}"/>
+            <Setter Property="BorderBrush" Value="{StaticResource BorderClr}"/>
+            <Setter Property="Padding" Value="2,0"/>
+        </Style>
+
+        <Style x:Key="AcqBtn" TargetType="Button">
+            <Setter Property="Height" Value="34"/>
+            <Setter Property="FontFamily" Value="Segoe UI"/>
+            <Setter Property="FontSize" Value="12"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="bd" Background="{TemplateBinding Background}" CornerRadius="4">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="bd" Property="Opacity" Value="0.82"/>
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter TargetName="bd" Property="Opacity" Value="0.62"/>
+                            </Trigger>
+                            <Trigger Property="IsEnabled" Value="False">
+                                <Setter TargetName="bd" Property="Opacity" Value="0.38"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style x:Key="SmBtn" TargetType="Button" BasedOn="{StaticResource AcqBtn}">
+            <Setter Property="Height" Value="22"/>
+            <Setter Property="FontSize" Value="9"/>
+            <Setter Property="Padding" Value="6,0"/>
+        </Style>
+
+        <Style x:Key="MdBtn" TargetType="Button" BasedOn="{StaticResource AcqBtn}">
+            <Setter Property="Height" Value="26"/>
+            <Setter Property="FontSize" Value="10"/>
+        </Style>
+
+        <Style x:Key="ChToggle" TargetType="ToggleButton">
+            <Setter Property="Height" Value="26"/>
+            <Setter Property="FontFamily" Value="Consolas"/>
+            <Setter Property="FontSize" Value="11"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="Foreground" Value="{StaticResource LabelFg}"/>
+            <Setter Property="Background" Value="{StaticResource SectionBg}"/>
+            <Setter Property="BorderBrush" Value="{StaticResource BorderClr}"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="ToggleButton">
+                        <Border x:Name="bd" Background="{TemplateBinding Background}"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="{TemplateBinding BorderThickness}"
+                                CornerRadius="3">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="bd" Property="Opacity" Value="0.85"/>
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter TargetName="bd" Property="Opacity" Value="0.65"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style x:Key="ResultText" TargetType="TextBlock">
+            <Setter Property="FontFamily" Value="Consolas"/>
+            <Setter Property="FontSize" Value="13"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="Foreground" Value="{StaticResource LabelFg}"/>
+            <Setter Property="VerticalAlignment" Value="Center"/>
+        </Style>
+    </UserControl.Resources>
+
+    <!-- ══════════════════════════════════════════════════════════════════════
+         Zewnętrzna ramka — jasnoszary korpus Rigol
+    ══════════════════════════════════════════════════════════════════════ -->
+    <Border Background="{StaticResource PanelBg}"
+            BorderBrush="{StaticResource BorderClr}"
+            BorderThickness="2" CornerRadius="6" Margin="6">
+
+        <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+        <StackPanel>
+
+            <!-- ── Nagłówek / brand ──────────────────────────────────────── -->
+            <Border Background="{StaticResource HeaderBg}"
+                    CornerRadius="4,4,0,0" Padding="12,6">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+
+                    <!-- Logo RIGOL -->
+                    <StackPanel Grid.Column="0" Orientation="Vertical" VerticalAlignment="Center" Margin="0,0,12,0">
+                        <TextBlock Text="RIGOL" Foreground="{StaticResource RigolRed}"
+                                   FontFamily="Arial Black" FontSize="18" FontWeight="Black"/>
+                        <TextBlock Text="TECHNOLOGIES" Foreground="{StaticResource RigolRed}"
+                                   FontFamily="Arial" FontSize="6" FontWeight="Bold"/>
+                    </StackPanel>
+
+                    <!-- Model -->
+                    <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                        <TextBlock Text="DS1054Z / DS1104Z" Foreground="#202428"
+                                   FontFamily="Arial" FontSize="20" FontWeight="Bold"
+                                   HorizontalAlignment="Center"/>
+                        <TextBlock Text="4-CHANNEL DIGITAL OSCILLOSCOPE" Foreground="{StaticResource SubLabel}"
+                                   FontFamily="Arial" FontSize="8" HorizontalAlignment="Center"/>
+                    </StackPanel>
+
+                    <!-- Kanały status -->
+                    <StackPanel Grid.Column="2" Orientation="Horizontal" VerticalAlignment="Center" Margin="8,0,0,0">
+                        <Border Background="#FFD800" CornerRadius="2" Padding="5,2" Margin="2,0">
+                            <TextBlock Text="{Binding Ch1Label}" Foreground="#202020"
+                                       FontFamily="Consolas" FontSize="9" FontWeight="Bold"/>
+                        </Border>
+                        <Border Background="#00C8E0" CornerRadius="2" Padding="5,2" Margin="2,0">
+                            <TextBlock Text="{Binding Ch2Label}" Foreground="#FFFFFF"
+                                       FontFamily="Consolas" FontSize="9" FontWeight="Bold"/>
+                        </Border>
+                        <Border Background="#FF00CC" CornerRadius="2" Padding="5,2" Margin="2,0">
+                            <TextBlock Text="{Binding Ch3Label}" Foreground="#FFFFFF"
+                                       FontFamily="Consolas" FontSize="9" FontWeight="Bold"/>
+                        </Border>
+                        <Border Background="#40EE00" CornerRadius="2" Padding="5,2" Margin="2,0">
+                            <TextBlock Text="{Binding Ch4Label}" Foreground="#202020"
+                                       FontFamily="Consolas" FontSize="9" FontWeight="Bold"/>
+                        </Border>
+                    </StackPanel>
+                </Grid>
+            </Border>
+
+            <!-- ── Ekran oscyloskopu (OxyPlot) ──────────────────────────── -->
+            <Border Margin="8,6,8,2"
+                    Background="#060810"
+                    BorderBrush="#303848" BorderThickness="3" CornerRadius="3"
+                    Height="240">
+                <Grid>
+                    <oxy:PlotView Model="{Binding ScopeModel}"
+                                  Background="Transparent" Margin="0"/>
+
+                    <!-- Overlay informacji akwizycji -->
+                    <StackPanel Orientation="Horizontal" VerticalAlignment="Top" HorizontalAlignment="Left"
+                                Margin="6,4">
+                        <Border Background="#10182A" CornerRadius="2" Padding="5,2" Margin="0,0,4,0">
+                            <TextBlock Text="{Binding AcquisitionState}"
+                                       Foreground="#FFD800" FontFamily="Consolas" FontSize="11" FontWeight="Bold"/>
+                        </Border>
+                        <Border Background="#10182A" CornerRadius="2" Padding="5,2" Margin="0,0,4,0">
+                            <TextBlock Text="{Binding TimescaleDisplay}"
+                                       Foreground="#A0C0E8" FontFamily="Consolas" FontSize="10"/>
+                        </Border>
+                        <Border Background="#10182A" CornerRadius="2" Padding="5,2" Margin="0,0,4,0">
+                            <TextBlock Text="{Binding SampleRateText}"
+                                       Foreground="#80A8D0" FontFamily="Consolas" FontSize="10"/>
+                        </Border>
+                    </StackPanel>
+
+                    <!-- Trigger status prawy górny róg -->
+                    <Border Background="#10182A" CornerRadius="2" Padding="5,2"
+                            VerticalAlignment="Top" HorizontalAlignment="Right" Margin="6,4">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="TRIG: " Foreground="#80A0C0" FontFamily="Consolas" FontSize="9"/>
+                            <TextBlock Text="{Binding TrigStatusText}"
+                                       Foreground="#FFD800" FontFamily="Consolas" FontSize="9" FontWeight="Bold"/>
+                        </StackPanel>
+                    </Border>
+
+                    <!-- Przycisk odczytu przebiegów -->
+                    <Button Content="▶ Odczytaj przebiegi" Width="140" Height="26"
+                            Background="#005ABB" Foreground="White"
+                            FontFamily="Segoe UI" FontSize="10" FontWeight="SemiBold"
+                            VerticalAlignment="Bottom" HorizontalAlignment="Right" Margin="6"
+                            Command="{Binding CaptureWaveformCommand}"
+                            IsEnabled="{Binding IsConnected}">
+                        <Button.Style>
+                            <Style TargetType="Button" BasedOn="{StaticResource MdBtn}">
+                                <Setter Property="Background" Value="#005ABB"/>
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding IsCapturing}" Value="True">
+                                        <Setter Property="Background" Value="#808878"/>
+                                        <Setter Property="Content" Value="⏳ Odczytuję..."/>
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </Button.Style>
+                    </Button>
+                </Grid>
+            </Border>
+
+            <!-- ── Kanały CH1-CH4 ────────────────────────────────────────── -->
+            <Border Margin="8,4,8,2" Background="{StaticResource SectionBg}"
+                    BorderBrush="{StaticResource BorderClr}" BorderThickness="1" CornerRadius="4"
+                    Padding="6,5">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="6"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="6"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="6"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+
+                    <!-- CH1 (żółty) -->
+                    <StackPanel Grid.Column="0">
+                        <Border Background="#3A2C00" BorderBrush="#FFD800" BorderThickness="0,0,0,2"
+                                CornerRadius="3,3,0,0" Padding="4,2">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto"/>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="Auto"/>
+                                </Grid.ColumnDefinitions>
+                                <ToggleButton Grid.Column="0" Content="{Binding Ch1Label}"
+                                              IsChecked="{Binding Ch1Enabled}"
+                                              Style="{StaticResource ChToggle}"
+                                              Background="#4A3A00" BorderBrush="#FFD800"
+                                              Foreground="#FFD800" Width="52"/>
+                                <TextBlock Grid.Column="1" Text="CH1" Foreground="#FFD800"
+                                           FontFamily="Consolas" FontSize="11" FontWeight="Bold"
+                                           HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                <CheckBox Grid.Column="2" IsChecked="{Binding Ch1Invert}"
+                                          VerticalAlignment="Center" ToolTip="Odwróć">
+                                    <TextBlock Text="INV" Foreground="#A0780A" FontSize="8"/>
+                                </CheckBox>
+                            </Grid>
+                        </Border>
+                        <Grid Margin="0,2,0,0">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                            </Grid.RowDefinitions>
+                            <TextBlock Grid.Row="0" Grid.Column="0" Text="V/dz" Style="{StaticResource FieldLabel}" Margin="0,1,4,1"/>
+                            <ComboBox Grid.Row="0" Grid.Column="1" Style="{StaticResource CbBox}"
+                                      ItemsSource="{Binding VScaleOptions}" SelectedItem="{Binding Ch1Scale}"/>
+                            <TextBlock Grid.Row="1" Grid.Column="0" Text="Offs" Style="{StaticResource FieldLabel}" Margin="0,1,4,1"/>
+                            <TextBox Grid.Row="1" Grid.Column="1" Style="{StaticResource ValBox}"
+                                     Text="{Binding Ch1Offset, UpdateSourceTrigger=PropertyChanged}"/>
+                            <TextBlock Grid.Row="2" Grid.Column="0" Text="Spr." Style="{StaticResource FieldLabel}" Margin="0,1,4,1"/>
+                            <ComboBox Grid.Row="2" Grid.Column="1" Style="{StaticResource CbBox}"
+                                      ItemsSource="{Binding CouplingOptions}" SelectedItem="{Binding Ch1Coupling}"/>
+                            <TextBlock Grid.Row="3" Grid.Column="0" Text="×" Style="{StaticResource FieldLabel}" Margin="0,1,4,1"/>
+                            <ComboBox Grid.Row="3" Grid.Column="1" Style="{StaticResource CbBox}"
+                                      ItemsSource="{Binding ProbeOptions}" SelectedItem="{Binding Ch1Probe}"/>
+                            <TextBlock Grid.Row="4" Grid.Column="0" Text="BW" Style="{StaticResource FieldLabel}" Margin="0,1,4,1"/>
+                            <ComboBox Grid.Row="4" Grid.Column="1" Style="{StaticResource CbBox}"
+                                      ItemsSource="{Binding BWLimitOptions}" SelectedItem="{Binding Ch1BwLimit}"/>
+                        </Grid>
+                    </StackPanel>
+
+                    <Rectangle Grid.Column="1" Width="1" Fill="{StaticResource BorderClr}"/>
+
+                    <!-- CH2 (cyan) -->
+                    <StackPanel Grid.Column="2">
+                        <Border Background="#003540" BorderBrush="#00C8E0" BorderThickness="0,0,0,2"
+                                CornerRadius="3,3,0,0" Padding="4,2">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto"/>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="Auto"/>
+                                </Grid.ColumnDefinitions>
+                                <ToggleButton Grid.Column="0" Content="{Binding Ch2Label}"
+                                              IsChecked="{Binding Ch2Enabled}"
+                                              Style="{StaticResource ChToggle}"
+                                              Background="#004454" BorderBrush="#00C8E0"
+                                              Foreground="#00C8E0" Width="52"/>
+                                <TextBlock Grid.Column="1" Text="CH2" Foreground="#00C8E0"
+                                           FontFamily="Consolas" FontSize="11" FontWeight="Bold"
+                                           HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                <CheckBox Grid.Column="2" IsChecked="{Binding Ch2Invert}"
+                                          VerticalAlignment="Center" ToolTip="Odwróć">
+                                    <TextBlock Text="INV" Foreground="#009090" FontSize="8"/>
+                                </CheckBox>
+                            </Grid>
+                        </Border>
+                        <Grid Margin="0,2,0,0">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                            </Grid.RowDefinitions>
+                            <TextBlock Grid.Row="0" Grid.Column="0" Text="V/dz" Style="{StaticResource FieldLabel}" Margin="0,1,4,1"/>
+                            <ComboBox Grid.Row="0" Grid.Column="1" Style="{StaticResource CbBox}"
+                                      ItemsSource="{Binding VScaleOptions}" SelectedItem="{Binding Ch2Scale}"/>
+                            <TextBlock Grid.Row="1" Grid.Column="0" Text="Offs" Style="{StaticResource FieldLabel}" Margin="0,1,4,1"/>
+                            <TextBox Grid.Row="1" Grid.Column="1" Style="{StaticResource ValBox}"
+                                     Text="{Binding Ch2Offset, UpdateSourceTrigger=PropertyChanged}"/>
+                            <TextBlock Grid.Row="2" Grid.Column="0" Text="Spr." Style="{StaticResource FieldLabel}" Margin="0,1,4,1"/>
+                            <ComboBox Grid.Row="2" Grid.Column="1" Style="{StaticResource CbBox}"
+                                      ItemsSource="{Binding CouplingOptions}" SelectedItem="{Binding Ch2Coupling}"/>
+                            <TextBlock Grid.Row="3" Grid.Column="0" Text="×" Style="{StaticResource FieldLabel}" Margin="0,1,4,1"/>
+                            <ComboBox Grid.Row="3" Grid.Column="1" Style="{StaticResource CbBox}"
+                                      ItemsSource="{Binding ProbeOptions}" SelectedItem="{Binding Ch2Probe}"/>
+                            <TextBlock Grid.Row="4" Grid.Column="0" Text="BW" Style="{StaticResource FieldLabel}" Margin="0,1,4,1"/>
+                            <ComboBox Grid.Row="4" Grid.Column="1" Style="{StaticResource CbBox}"
+                                      ItemsSource="{Binding BWLimitOptions}" SelectedItem="{Binding Ch2BwLimit}"/>
+                        </Grid>
+                    </StackPanel>
+
+                    <Rectangle Grid.Column="3" Width="1" Fill="{StaticResource BorderClr}"/>
+
+                    <!-- CH3 (magenta) -->
+                    <StackPanel Grid.Column="4">
+                        <Border Background="#400030" BorderBrush="#FF00CC" BorderThickness="0,0,0,2"
+                                CornerRadius="3,3,0,0" Padding="4,2">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto"/>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="Auto"/>
+                                </Grid.ColumnDefinitions>
+                                <ToggleButton Grid.Column="0" Content="{Binding Ch3Label}"
+                                              IsChecked="{Binding Ch3Enabled}"
+                                              Style="{StaticResource ChToggle}"
+                                              Background="#5A0044" BorderBrush="#FF00CC"
+                                              Foreground="#FF00CC" Width="52"/>
+                                <TextBlock Grid.Column="1" Text="CH3" Foreground="#FF00CC"
+                                           FontFamily="Consolas" FontSize="11" FontWeight="Bold"
+                                           HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                <CheckBox Grid.Column="2" IsChecked="{Binding Ch3Invert}"
+                                          VerticalAlignment="Center" ToolTip="Odwróć">
+                                    <TextBlock Text="INV" Foreground="#900070" FontSize="8"/>
+                                </CheckBox>
+                            </Grid>
+                        </Border>
+                        <Grid Margin="0,2,0,0">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                            </Grid.RowDefinitions>
+                            <TextBlock Grid.Row="0" Grid.Column="0" Text="V/dz" Style="{StaticResource FieldLabel}" Margin="0,1,4,1"/>
+                            <ComboBox Grid.Row="0" Grid.Column="1" Style="{StaticResource CbBox}"
+                                      ItemsSource="{Binding VScaleOptions}" SelectedItem="{Binding Ch3Scale}"/>
+                            <TextBlock Grid.Row="1" Grid.Column="0" Text="Offs" Style="{StaticResource FieldLabel}" Margin="0,1,4,1"/>
+                            <TextBox Grid.Row="1" Grid.Column="1" Style="{StaticResource ValBox}"
+                                     Text="{Binding Ch3Offset, UpdateSourceTrigger=PropertyChanged}"/>
+                            <TextBlock Grid.Row="2" Grid.Column="0" Text="Spr." Style="{StaticResource FieldLabel}" Margin="0,1,4,1"/>
+                            <ComboBox Grid.Row="2" Grid.Column="1" Style="{StaticResource CbBox}"
+                                      ItemsSource="{Binding CouplingOptions}" SelectedItem="{Binding Ch3Coupling}"/>
+                            <TextBlock Grid.Row="3" Grid.Column="0" Text="×" Style="{StaticResource FieldLabel}" Margin="0,1,4,1"/>
+                            <ComboBox Grid.Row="3" Grid.Column="1" Style="{StaticResource CbBox}"
+                                      ItemsSource="{Binding ProbeOptions}" SelectedItem="{Binding Ch3Probe}"/>
+                            <TextBlock Grid.Row="4" Grid.Column="0" Text="BW" Style="{StaticResource FieldLabel}" Margin="0,1,4,1"/>
+                            <ComboBox Grid.Row="4" Grid.Column="1" Style="{StaticResource CbBox}"
+                                      ItemsSource="{Binding BWLimitOptions}" SelectedItem="{Binding Ch3BwLimit}"/>
+                        </Grid>
+                    </StackPanel>
+
+                    <Rectangle Grid.Column="5" Width="1" Fill="{StaticResource BorderClr}"/>
+
+                    <!-- CH4 (zielony) -->
+                    <StackPanel Grid.Column="6">
+                        <Border Background="#103000" BorderBrush="#40EE00" BorderThickness="0,0,0,2"
+                                CornerRadius="3,3,0,0" Padding="4,2">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto"/>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="Auto"/>
+                                </Grid.ColumnDefinitions>
+                                <ToggleButton Grid.Column="0" Content="{Binding Ch4Label}"
+                                              IsChecked="{Binding Ch4Enabled}"
+                                              Style="{StaticResource ChToggle}"
+                                              Background="#1C4A00" BorderBrush="#40EE00"
+                                              Foreground="#40EE00" Width="52"/>
+                                <TextBlock Grid.Column="1" Text="CH4" Foreground="#40EE00"
+                                           FontFamily="Consolas" FontSize="11" FontWeight="Bold"
+                                           HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                <CheckBox Grid.Column="2" IsChecked="{Binding Ch4Invert}"
+                                          VerticalAlignment="Center" ToolTip="Odwróć">
+                                    <TextBlock Text="INV" Foreground="#287A00" FontSize="8"/>
+                                </CheckBox>
+                            </Grid>
+                        </Border>
+                        <Grid Margin="0,2,0,0">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                            </Grid.RowDefinitions>
+                            <TextBlock Grid.Row="0" Grid.Column="0" Text="V/dz" Style="{StaticResource FieldLabel}" Margin="0,1,4,1"/>
+                            <ComboBox Grid.Row="0" Grid.Column="1" Style="{StaticResource CbBox}"
+                                      ItemsSource="{Binding VScaleOptions}" SelectedItem="{Binding Ch4Scale}"/>
+                            <TextBlock Grid.Row="1" Grid.Column="0" Text="Offs" Style="{StaticResource FieldLabel}" Margin="0,1,4,1"/>
+                            <TextBox Grid.Row="1" Grid.Column="1" Style="{StaticResource ValBox}"
+                                     Text="{Binding Ch4Offset, UpdateSourceTrigger=PropertyChanged}"/>
+                            <TextBlock Grid.Row="2" Grid.Column="0" Text="Spr." Style="{StaticResource FieldLabel}" Margin="0,1,4,1"/>
+                            <ComboBox Grid.Row="2" Grid.Column="1" Style="{StaticResource CbBox}"
+                                      ItemsSource="{Binding CouplingOptions}" SelectedItem="{Binding Ch4Coupling}"/>
+                            <TextBlock Grid.Row="3" Grid.Column="0" Text="×" Style="{StaticResource FieldLabel}" Margin="0,1,4,1"/>
+                            <ComboBox Grid.Row="3" Grid.Column="1" Style="{StaticResource CbBox}"
+                                      ItemsSource="{Binding ProbeOptions}" SelectedItem="{Binding Ch4Probe}"/>
+                            <TextBlock Grid.Row="4" Grid.Column="0" Text="BW" Style="{StaticResource FieldLabel}" Margin="0,1,4,1"/>
+                            <ComboBox Grid.Row="4" Grid.Column="1" Style="{StaticResource CbBox}"
+                                      ItemsSource="{Binding BWLimitOptions}" SelectedItem="{Binding Ch4BwLimit}"/>
+                        </Grid>
+                    </StackPanel>
+                </Grid>
+            </Border>
+
+            <!-- Zastosuj kanały -->
+            <Button Content="⟳ Zastosuj wszystkie kanały" Height="26" Margin="8,2,8,2"
+                    Style="{StaticResource MdBtn}" Background="{StaticResource BtnYellow}"
+                    Command="{Binding ApplyChannelsCommand}" IsEnabled="{Binding IsConnected}"/>
+
+            <!-- ── Podstawa czasu + Wyzwalanie ────────────────────────────── -->
+            <Grid Margin="8,4,8,2">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="8"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+
+                <!-- Timebase -->
+                <Border Grid.Column="0" Background="{StaticResource SectionBg}"
+                        BorderBrush="{StaticResource BorderClr}" BorderThickness="1" CornerRadius="4"
+                        Padding="8,5">
+                    <StackPanel>
+                        <TextBlock Text="TIMEBASE" Style="{StaticResource SecTitle}"/>
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="36"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                            </Grid.RowDefinitions>
+                            <TextBlock Grid.Row="0" Grid.Column="0" Text="s/dz" Style="{StaticResource FieldLabel}" Margin="0,1"/>
+                            <ComboBox Grid.Row="0" Grid.Column="1" Style="{StaticResource CbBox}" Margin="0,1"
+                                      ItemsSource="{Binding TScaleOptions}" SelectedItem="{Binding SelectedTimescale}"/>
+                            <TextBlock Grid.Row="1" Grid.Column="0" Text="Offs" Style="{StaticResource FieldLabel}" Margin="0,1"/>
+                            <TextBox Grid.Row="1" Grid.Column="1" Style="{StaticResource ValBox}" Margin="0,1"
+                                     Text="{Binding TimebaseOffset, UpdateSourceTrigger=PropertyChanged}"/>
+                            <TextBlock Grid.Row="2" Grid.Column="0" Text="Tryb" Style="{StaticResource FieldLabel}" Margin="0,1"/>
+                            <ComboBox Grid.Row="2" Grid.Column="1" Style="{StaticResource CbBox}" Margin="0,1"
+                                      ItemsSource="{Binding TbModeOptions}" SelectedItem="{Binding TimebaseMode}"/>
+                        </Grid>
+                        <Button Content="⟳ Zastosuj" Margin="0,4,0,0" Style="{StaticResource MdBtn}"
+                                Background="{StaticResource BtnYellow}"
+                                Command="{Binding ApplyTimebaseCommand}" IsEnabled="{Binding IsConnected}"/>
+                    </StackPanel>
+                </Border>
+
+                <!-- Trigger -->
+                <Border Grid.Column="2" Background="{StaticResource SectionBg}"
+                        BorderBrush="{StaticResource BorderClr}" BorderThickness="1" CornerRadius="4"
+                        Padding="8,5">
+                    <StackPanel>
+                        <TextBlock Text="TRIGGER" Style="{StaticResource SecTitle}"/>
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="36"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                            </Grid.RowDefinitions>
+                            <TextBlock Grid.Row="0" Grid.Column="0" Text="Tryb" Style="{StaticResource FieldLabel}" Margin="0,1"/>
+                            <ComboBox Grid.Row="0" Grid.Column="1" Style="{StaticResource CbBox}" Margin="0,1"
+                                      ItemsSource="{Binding TrigModeOptions}" SelectedItem="{Binding TriggerMode}"/>
+                            <TextBlock Grid.Row="1" Grid.Column="0" Text="Akw." Style="{StaticResource FieldLabel}" Margin="0,1"/>
+                            <ComboBox Grid.Row="1" Grid.Column="1" Style="{StaticResource CbBox}" Margin="0,1"
+                                      ItemsSource="{Binding TrigSweepOptions}" SelectedItem="{Binding TriggerSweep}"/>
+                            <TextBlock Grid.Row="2" Grid.Column="0" Text="Źródło" Style="{StaticResource FieldLabel}" Margin="0,1"/>
+                            <ComboBox Grid.Row="2" Grid.Column="1" Style="{StaticResource CbBox}" Margin="0,1"
+                                      ItemsSource="{Binding TrigSrcOptions}" SelectedItem="{Binding TriggerSource}"/>
+                            <TextBlock Grid.Row="3" Grid.Column="0" Text="Zbocze" Style="{StaticResource FieldLabel}" Margin="0,1"/>
+                            <ComboBox Grid.Row="3" Grid.Column="1" Style="{StaticResource CbBox}" Margin="0,1"
+                                      ItemsSource="{Binding TrigSlopeOptions}" SelectedItem="{Binding TriggerSlope}"/>
+                            <TextBlock Grid.Row="4" Grid.Column="0" Text="Poz. [V]" Style="{StaticResource FieldLabel}" Margin="0,1"/>
+                            <TextBox Grid.Row="4" Grid.Column="1" Style="{StaticResource ValBox}" Margin="0,1"
+                                     Text="{Binding TriggerLevel, UpdateSourceTrigger=PropertyChanged}"/>
+                        </Grid>
+                        <Grid Margin="0,4,0,0">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="4"/>
+                                <ColumnDefinition Width="Auto"/>
+                            </Grid.ColumnDefinitions>
+                            <Button Grid.Column="0" Content="⟳ Zastosuj" Style="{StaticResource MdBtn}"
+                                    Background="{StaticResource BtnYellow}"
+                                    Command="{Binding ApplyTriggerCommand}" IsEnabled="{Binding IsConnected}"/>
+                            <Button Grid.Column="2" Content="Force" Width="52" Style="{StaticResource MdBtn}"
+                                    Background="{StaticResource BtnGray}"
+                                    Command="{Binding ForceTriggerCommand}" IsEnabled="{Binding IsConnected}"/>
+                        </Grid>
+                    </StackPanel>
+                </Border>
+            </Grid>
+
+            <!-- ── Akwizycja ─────────────────────────────────────────────── -->
+            <Border Margin="8,4,8,2" Background="{StaticResource SectionBg}"
+                    BorderBrush="{StaticResource BorderClr}" BorderThickness="1" CornerRadius="4"
+                    Padding="8,5">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="10"/>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="10"/>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="10"/>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="10"/>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="10"/>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+
+                    <TextBlock Grid.Column="0" Text="ACQUIRE:" Style="{StaticResource SecTitle}"
+                               VerticalAlignment="Center" Margin="0"/>
+                    <TextBlock Grid.Column="2" Text="Typ" Style="{StaticResource FieldLabel}"/>
+                    <ComboBox Grid.Column="4" Style="{StaticResource CbBox}" Width="110"
+                              ItemsSource="{Binding AcqTypeOptions}" SelectedItem="{Binding AcquireType}"/>
+                    <TextBlock Grid.Column="6" Text="Śred." Style="{StaticResource FieldLabel}"/>
+                    <ComboBox Grid.Column="8" Style="{StaticResource CbBox}" Width="60"
+                              ItemsSource="{Binding AcqAvgOptions}" SelectedItem="{Binding AcquireAvg}"/>
+                    <TextBlock Grid.Column="10" Text="Pam." Style="{StaticResource FieldLabel}"/>
+                    <ComboBox Grid.Column="11" Style="{StaticResource CbBox}" Margin="2,0,6,0"
+                              ItemsSource="{Binding MemDepthOptions}" SelectedItem="{Binding AcquireMem}"/>
+                    <Button Grid.Column="12" Content="⟳ Zastosuj" Style="{StaticResource MdBtn}"
+                            Background="{StaticResource BtnYellow}" Width="90"
+                            Command="{Binding ApplyAcquireCommand}" IsEnabled="{Binding IsConnected}"/>
+                </Grid>
+            </Border>
+
+            <!-- ── Pomiary ────────────────────────────────────────────────── -->
+            <Border Margin="8,4,8,2" Background="{StaticResource SectionBg}"
+                    BorderBrush="{StaticResource BorderClr}" BorderThickness="1" CornerRadius="4"
+                    Padding="8,5">
+                <StackPanel>
+                    <Grid Margin="0,0,0,4">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="4"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Grid.Column="0" Text="POMIARY" Style="{StaticResource SecTitle}" VerticalAlignment="Center"/>
+                        <Button Grid.Column="2" Content="⟳ Odśwież" Style="{StaticResource MdBtn}"
+                                Background="#0060A0" Width="90"
+                                Command="{Binding UpdateMeasurementsCommand}" IsEnabled="{Binding IsConnected}"/>
+                        <Button Grid.Column="4" Content="CLR" Style="{StaticResource MdBtn}"
+                                Background="{StaticResource BtnGray}" Width="44"
+                                Command="{Binding ClearMeasurementsCommand}" IsEnabled="{Binding IsConnected}"/>
+                    </Grid>
+
+                    <UniformGrid Rows="2" Columns="2">
+                        <!-- M1 -->
+                        <Border BorderBrush="{StaticResource BorderClr}" BorderThickness="1" CornerRadius="3" Margin="2,1" Padding="5,3">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto"/>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="Auto"/>
+                                    <ColumnDefinition Width="4"/>
+                                    <ColumnDefinition Width="90"/>
+                                    <ColumnDefinition Width="Auto"/>
+                                </Grid.ColumnDefinitions>
+                                <ComboBox Grid.Column="0" Style="{StaticResource CbBox}" Width="50"
+                                          ItemsSource="{Binding ChannelSources}" SelectedItem="{Binding M1Source}"/>
+                                <ComboBox Grid.Column="2" Style="{StaticResource CbBox}" Width="90"
+                                          ItemsSource="{Binding MeasTypes}" SelectedItem="{Binding M1Type}" Margin="4,0"/>
+                                <TextBlock Grid.Column="4" Text="{Binding M1Result}" Style="{StaticResource ResultText}" HorizontalAlignment="Right"/>
+                                <TextBlock Grid.Column="5" Text="{Binding M1Unit}" Style="{StaticResource FieldLabel}" Margin="4,0,0,0"/>
+                            </Grid>
+                        </Border>
+                        <!-- M2 -->
+                        <Border BorderBrush="{StaticResource BorderClr}" BorderThickness="1" CornerRadius="3" Margin="2,1" Padding="5,3">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto"/>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="Auto"/>
+                                    <ColumnDefinition Width="4"/>
+                                    <ColumnDefinition Width="90"/>
+                                    <ColumnDefinition Width="Auto"/>
+                                </Grid.ColumnDefinitions>
+                                <ComboBox Grid.Column="0" Style="{StaticResource CbBox}" Width="50"
+                                          ItemsSource="{Binding ChannelSources}" SelectedItem="{Binding M2Source}"/>
+                                <ComboBox Grid.Column="2" Style="{StaticResource CbBox}" Width="90"
+                                          ItemsSource="{Binding MeasTypes}" SelectedItem="{Binding M2Type}" Margin="4,0"/>
+                                <TextBlock Grid.Column="4" Text="{Binding M2Result}" Style="{StaticResource ResultText}" HorizontalAlignment="Right"/>
+                                <TextBlock Grid.Column="5" Text="{Binding M2Unit}" Style="{StaticResource FieldLabel}" Margin="4,0,0,0"/>
+                            </Grid>
+                        </Border>
+                        <!-- M3 -->
+                        <Border BorderBrush="{StaticResource BorderClr}" BorderThickness="1" CornerRadius="3" Margin="2,1" Padding="5,3">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto"/>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="Auto"/>
+                                    <ColumnDefinition Width="4"/>
+                                    <ColumnDefinition Width="90"/>
+                                    <ColumnDefinition Width="Auto"/>
+                                </Grid.ColumnDefinitions>
+                                <ComboBox Grid.Column="0" Style="{StaticResource CbBox}" Width="50"
+                                          ItemsSource="{Binding ChannelSources}" SelectedItem="{Binding M3Source}"/>
+                                <ComboBox Grid.Column="2" Style="{StaticResource CbBox}" Width="90"
+                                          ItemsSource="{Binding MeasTypes}" SelectedItem="{Binding M3Type}" Margin="4,0"/>
+                                <TextBlock Grid.Column="4" Text="{Binding M3Result}" Style="{StaticResource ResultText}" HorizontalAlignment="Right"/>
+                                <TextBlock Grid.Column="5" Text="{Binding M3Unit}" Style="{StaticResource FieldLabel}" Margin="4,0,0,0"/>
+                            </Grid>
+                        </Border>
+                        <!-- M4 -->
+                        <Border BorderBrush="{StaticResource BorderClr}" BorderThickness="1" CornerRadius="3" Margin="2,1" Padding="5,3">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto"/>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="Auto"/>
+                                    <ColumnDefinition Width="4"/>
+                                    <ColumnDefinition Width="90"/>
+                                    <ColumnDefinition Width="Auto"/>
+                                </Grid.ColumnDefinitions>
+                                <ComboBox Grid.Column="0" Style="{StaticResource CbBox}" Width="50"
+                                          ItemsSource="{Binding ChannelSources}" SelectedItem="{Binding M4Source}"/>
+                                <ComboBox Grid.Column="2" Style="{StaticResource CbBox}" Width="90"
+                                          ItemsSource="{Binding MeasTypes}" SelectedItem="{Binding M4Type}" Margin="4,0"/>
+                                <TextBlock Grid.Column="4" Text="{Binding M4Result}" Style="{StaticResource ResultText}" HorizontalAlignment="Right"/>
+                                <TextBlock Grid.Column="5" Text="{Binding M4Unit}" Style="{StaticResource FieldLabel}" Margin="4,0,0,0"/>
+                            </Grid>
+                        </Border>
+                    </UniformGrid>
+                </StackPanel>
+            </Border>
+
+            <!-- ── Kursory ────────────────────────────────────────────────── -->
+            <Border Margin="8,4,8,2" Background="{StaticResource SectionBg}"
+                    BorderBrush="{StaticResource BorderClr}" BorderThickness="1" CornerRadius="4"
+                    Padding="8,4">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Grid.Column="0" Text="KURSORY:" Style="{StaticResource SecTitle}" VerticalAlignment="Center" Margin="0,0,10,0"/>
+                    <WrapPanel Grid.Column="1" Orientation="Horizontal">
+                        <TextBlock Text="AX=" Style="{StaticResource FieldLabel}" Margin="0,0,2,0"/>
+                        <TextBlock Text="{Binding CursorAX}" Style="{StaticResource ResultText}" FontSize="11" Margin="0,0,8,0"/>
+                        <TextBlock Text="BX=" Style="{StaticResource FieldLabel}" Margin="0,0,2,0"/>
+                        <TextBlock Text="{Binding CursorBX}" Style="{StaticResource ResultText}" FontSize="11" Margin="0,0,8,0"/>
+                        <TextBlock Text="ΔX=" Style="{StaticResource FieldLabel}" Foreground="#FFD800" Margin="0,0,2,0"/>
+                        <TextBlock Text="{Binding CursorDX}" Style="{StaticResource ResultText}" FontSize="11" Foreground="#FFD800" Margin="0,0,12,0"/>
+                        <TextBlock Text="AY=" Style="{StaticResource FieldLabel}" Margin="0,0,2,0"/>
+                        <TextBlock Text="{Binding CursorAY}" Style="{StaticResource ResultText}" FontSize="11" Margin="0,0,8,0"/>
+                        <TextBlock Text="BY=" Style="{StaticResource FieldLabel}" Margin="0,0,2,0"/>
+                        <TextBlock Text="{Binding CursorBY}" Style="{StaticResource ResultText}" FontSize="11" Margin="0,0,8,0"/>
+                        <TextBlock Text="ΔY=" Style="{StaticResource FieldLabel}" Foreground="#FFD800" Margin="0,0,2,0"/>
+                        <TextBlock Text="{Binding CursorDY}" Style="{StaticResource ResultText}" FontSize="11" Foreground="#FFD800"/>
+                    </WrapPanel>
+                    <Button Grid.Column="2" Content="⟳ Odczytaj" Style="{StaticResource MdBtn}"
+                            Background="{StaticResource BtnGray}" Width="80"
+                            Command="{Binding ReadCursorsCommand}" IsEnabled="{Binding IsConnected}"/>
+                </Grid>
+            </Border>
+
+            <!-- ── Główne przyciski sterowania + info ─────────────────────── -->
+            <Border Margin="8,4,8,2" Background="{StaticResource SectionBg}"
+                    BorderBrush="{StaticResource BorderClr}" BorderThickness="1" CornerRadius="4"
+                    Padding="8,6">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="5"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="5"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="5"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="12"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="5"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="5"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+
+                    <!-- RUN -->
+                    <Button Grid.Column="0" Content="▶ RUN"
+                            Command="{Binding RunCommand}" IsEnabled="{Binding IsConnected}">
+                        <Button.Style>
+                            <Style TargetType="Button" BasedOn="{StaticResource AcqBtn}">
+                                <Setter Property="Background" Value="#00A820"/>
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding AcquisitionState}" Value="RUN">
+                                        <Setter Property="Background" Value="#00CC28"/>
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </Button.Style>
+                    </Button>
+
+                    <!-- STOP -->
+                    <Button Grid.Column="2" Content="■ STOP"
+                            Command="{Binding StopCommand}" IsEnabled="{Binding IsConnected}">
+                        <Button.Style>
+                            <Style TargetType="Button" BasedOn="{StaticResource AcqBtn}">
+                                <Setter Property="Background" Value="#CC1800"/>
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding AcquisitionState}" Value="STOP">
+                                        <Setter Property="Background" Value="#EE2000"/>
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </Button.Style>
+                    </Button>
+
+                    <!-- SINGLE -->
+                    <Button Grid.Column="4" Content="① SINGLE" Style="{StaticResource AcqBtn}"
+                            Background="{StaticResource BtnSingle}"
+                            Command="{Binding SingleCommand}" IsEnabled="{Binding IsConnected}"/>
+
+                    <!-- AUTO -->
+                    <Button Grid.Column="6" Content="⚡ AUTO" Style="{StaticResource AcqBtn}"
+                            Background="{StaticResource BtnAuto}"
+                            Command="{Binding AutoScaleCommand}" IsEnabled="{Binding IsConnected}"/>
+
+                    <!-- separator -->
+                    <Rectangle Grid.Column="7" Width="1" Fill="{StaticResource BorderClr}" Margin="4,4"/>
+
+                    <!-- Screenshot -->
+                    <Button Grid.Column="8" Content="📷 Zdjęcie" Style="{StaticResource AcqBtn}"
+                            Background="{StaticResource BtnGray}"
+                            Command="{Binding TakeScreenshotCommand}" IsEnabled="{Binding IsConnected}"/>
+
+                    <!-- LIVE -->
+                    <Button Grid.Column="10" Content="▶ Live" Style="{StaticResource AcqBtn}"
+                            Background="#006060"
+                            Command="{Binding OpenLiveWindowCommand}" IsEnabled="{Binding IsConnected}"/>
+
+                    <!-- RESET -->
+                    <Button Grid.Column="12" Content="⟳ Reset" Style="{StaticResource AcqBtn}"
+                            Background="#604808"
+                            Command="{Binding ResetCommand}" IsEnabled="{Binding IsConnected}"/>
+                </Grid>
+            </Border>
+
+            <!-- ── Preset zapisz/wczytaj ──────────────────────────────────── -->
+            <Border Margin="8,3,8,4" Background="{StaticResource SectionBg}"
+                    BorderBrush="{StaticResource BorderClr}" BorderThickness="1" CornerRadius="4"
+                    Padding="8,5">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="4"/>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="8"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Grid.Column="0" Text="PRESET:" Style="{StaticResource SecTitle}" VerticalAlignment="Center" Margin="0,0,10,0"/>
+                    <Button Grid.Column="2" Content="💾 Zapisz" Style="{StaticResource MdBtn}"
+                            Background="#005080" Width="84" Command="{Binding SavePresetCommand}"/>
+                    <Button Grid.Column="4" Content="📂 Wczytaj" Style="{StaticResource MdBtn}"
+                            Background="#004060" Width="84" Command="{Binding LoadPresetCommand}"/>
+                    <Button Grid.Column="6" Content="Sa/s" Style="{StaticResource MdBtn}"
+                            Background="{StaticResource BtnGray}" Width="60"
+                            Command="{Binding ReadSampleRateCommand}" IsEnabled="{Binding IsConnected}"
+                            ToolTip="Odczytaj próbkowanie"/>
+                </Grid>
+            </Border>
+
+            <!-- ── Pasek statusu ──────────────────────────────────────────── -->
+            <Border Background="{StaticResource StatusBg}"
+                    BorderBrush="{StaticResource BorderClr}" BorderThickness="0,1,0,0"
+                    CornerRadius="0,0,4,4" Padding="10,4">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+
+                    <Ellipse Grid.Column="0" Width="8" Height="8" VerticalAlignment="Center" Margin="0,0,6,0">
+                        <Ellipse.Style>
+                            <Style TargetType="Ellipse">
+                                <Setter Property="Fill" Value="#8A8878"/>
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding IsConnected}" Value="True">
+                                        <Setter Property="Fill" Value="#00AA20"/>
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </Ellipse.Style>
+                    </Ellipse>
+
+                    <TextBlock Grid.Column="1"
+                               Text="{Binding StatusText}"
+                               Foreground="{StaticResource LabelFg}"
+                               FontFamily="Consolas" FontSize="10"
+                               VerticalAlignment="Center" TextTrimming="CharacterEllipsis"/>
+
+                    <TextBlock Grid.Column="2"
+                               Text="Rigol DS1054Z/DS1104Z  |  50/100 MHz  |  4 CH"
+                               Foreground="{StaticResource SubLabel}"
+                               FontFamily="Consolas" FontSize="9"
+                               VerticalAlignment="Center"/>
+                </Grid>
+            </Border>
+
+        </StackPanel>
+        </ScrollViewer>
+    </Border>
+</UserControl>

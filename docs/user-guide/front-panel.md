@@ -85,6 +85,25 @@ The 34970A front panel shows the installed cards and allows:
 
 ---
 
+## Rigol DS1054Z / DS1104Z — Oscilloscope Front Panel
+
+| Control | Description |
+|---|---|
+| **Channel enable** | Toggle checkboxes for CH1–CH4 |
+| **Vertical range** | V/div selector per channel |
+| **Coupling** | DC / AC / GND per channel |
+| **Probe ratio** | ×0.1 … ×1000 per channel |
+| **BW limit** | OFF or 20 MHz per channel |
+| **Invert** | Invert channel polarity |
+| **Timebase** | Time/div selector, plus MAIN / XY / ROLL mode |
+| **Trigger** | Mode (edge/pulse/slope/…), source, level, slope, sweep |
+| **Acquire** | Normal / Averages / Peak Detect / Hi-Res |
+| **Run / Stop / Single** | Acquisition mode buttons |
+| **AutoScale** | Auto-adjusts vertical and horizontal scales |
+| **Math / FFT** | MATH channel arithmetic and FFT analysis |
+
+---
+
 ## Live Data Window
 
 Every instrument also has a **Live Data Window** that floats independently. Open it from the **View** menu or by clicking the chart icon next to the instrument in the sidebar.

@@ -338,7 +338,7 @@ public partial class SequenceEditorViewModel : ViewModelBase
             block.Deserialize(bd);
             Blocks.Add(new SequenceBlockVm(block, bd.X, bd.Y));
 
-            // ConditionBlock uses True/False ports â€” skip creating "Next" for it
+            // ConditionBlock uses True/False ports — skip creating "Next" for it
             if (bd.NextBlockId != null && block is not IHasConditionOutputs)
                 Connections.Add(new ConnectionVm
                     { FromBlockId = bd.BlockId, ToBlockId = bd.NextBlockId, PortType = "Next" });

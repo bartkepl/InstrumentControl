@@ -91,6 +91,7 @@ nav:
       - ITECH IT6922B (PSU): user-guide/instruments/itech-it6922b.md
       - R&S RTB2004 (Oscilloscope): user-guide/instruments/rtb2004.md
       - CTS Chamber: user-guide/instruments/cts-chamber.md
+      - Rigol DS1054Z/DS1104Z (Oscilloscope): user-guide/instruments/rigol-ds1000z.md
   - Developer Guide:
     - Architecture: developer-guide/architecture.md
     - Plugin Development: developer-guide/plugin-development.md

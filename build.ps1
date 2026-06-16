@@ -56,7 +56,12 @@ dotnet build (jp $Root "instruments" "CTSChamber" "CTSChamber.csproj") -c $Confi
 if ($LASTEXITCODE -ne 0) { Write-Error "Blad budowania CTSChamber!"; exit 1 }
 Write-Host "   OK" -ForegroundColor Green
 
-Write-Host "8. Budowanie i publikowanie aplikacji WPF..." -ForegroundColor Yellow
+Write-Host "8. Budowanie RigolDS1000Z..." -ForegroundColor Yellow
+dotnet build (jp $Root "instruments" "RigolDS1000Z" "RigolDS1000Z.csproj") -c $Configuration --nologo -v q
+if ($LASTEXITCODE -ne 0) { Write-Error "Blad budowania RigolDS1000Z!"; exit 1 }
+Write-Host "   OK" -ForegroundColor Green
+
+Write-Host "9. Budowanie i publikowanie aplikacji WPF..." -ForegroundColor Yellow
 dotnet publish (jp $Root "src" "InstrumentControl.App" "InstrumentControl.App.csproj") `
     -c $Configuration -r win-x64 --self-contained true -o $OutDir --nologo -v q
 if ($LASTEXITCODE -ne 0) { Write-Error "Blad publikowania!"; exit 1 }
@@ -100,6 +105,12 @@ $cts = jp $Root "instruments" "CTSChamber" "bin" $Configuration "net8.0-windows"
 if (Test-Path $cts) {
     Copy-Item $cts $InstrumentsOut -Force
     Write-Host "   Skopiowano: CTSChamber.dll" -ForegroundColor Green
+}
+
+$rigol = jp $Root "instruments" "RigolDS1000Z" "bin" $Configuration "net8.0-windows" "RigolDS1000Z.dll"
+if (Test-Path $rigol) {
+    Copy-Item $rigol $InstrumentsOut -Force
+    Write-Host "   Skopiowano: RigolDS1000Z.dll" -ForegroundColor Green
 }
 
 $exe = jp $OutDir "InstrumentControl.exe"

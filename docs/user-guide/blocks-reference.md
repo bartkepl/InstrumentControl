@@ -219,3 +219,4 @@ Each instrument plugin registers its own measurement blocks. They appear in the 
 - [ITECH IT6922B blocks](instruments/itech-it6922b.md#sequence-blocks)
 - [R&S RTB2004 blocks](instruments/rtb2004.md#sequence-blocks)
 - [CTS Chamber blocks](instruments/cts-chamber.md#sequence-blocks)
+- [Rigol DS1000Z blocks](instruments/rigol-ds1000z.md#sequence-blocks)

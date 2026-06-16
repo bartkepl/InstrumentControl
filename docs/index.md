@@ -37,6 +37,7 @@ Key capabilities at a glance:
 | [ITECH IT6922B](user-guide/instruments/itech-it6922b.md) | DC Power Supply 60 V / 5 A | VISA (USB / LAN / GPIB) |
 | [R&S RTB2004](user-guide/instruments/rtb2004.md) | 4-channel Oscilloscope 300 MHz | VISA (LAN / USB) |
 | [CTS T-40/50](user-guide/instruments/cts-chamber.md) | Environmental Chamber −75 … +185 °C | RS-232 (custom binary protocol) |
+| [Rigol DS1054Z / DS1104Z](user-guide/instruments/rigol-ds1000z.md) | 4-channel Oscilloscope 50/100 MHz | VISA (LAN / USB / GPIB) |
 
 ---
 
@@ -86,6 +87,7 @@ graph TD
     C --> I[ItechIT6922B.dll]
     C --> J[RTB2004.dll]
     C --> K[CTSChamber.dll]
+    C --> L2[RigolDS1000Z.dll]
     E --> L[VisaConnectionProvider<br/>NI-VISA P/Invoke]
     E --> M[CTSSerialConnectionProvider<br/>Custom binary framing]
     E --> N[SimulatedConnectionProvider<br/>No hardware needed]
