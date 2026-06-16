@@ -1,5 +1,4 @@
 using System.Globalization;
-using System.Text.RegularExpressions;
 using System.Windows.Media;
 using InstrumentControl.Core.Base;
 using InstrumentControl.Core.Models;
@@ -33,12 +32,7 @@ public class MathBlock : SequenceBlockBase
 
         try
         {
-            // Replace {varName} occurrences with their numeric values before parsing
-            string preprocessed = Regex.Replace(expr, @"\{(\w+)\}", m =>
-                context.GetVariableAsDouble(m.Groups[1].Value, 0)
-                    .ToString(CultureInfo.InvariantCulture));
-
-            double result = MathExprEvaluator.Evaluate(preprocessed,
+            double result = MathExprEvaluator.Evaluate(expr,
                 name => context.GetVariableAsDouble(name, 0));
 
             context.SetVariable(resultVar, result);
@@ -55,13 +49,18 @@ public class MathBlock : SequenceBlockBase
 }
 
 // ── Expression evaluator ─────────────────────────────────────────────────────
-// Recursive descent parser: supports +  -  *  /  %  ^ (power), unary minus,
-// parentheses, constants (pi, e), and Math functions (sqrt, abs, sin, cos, ...).
-// Bare identifiers are looked up as variables via the provided delegate.
+// Recursive descent parser. Supports:
+//   operators   +  -  *  /  %  ^ (right-associative power), unary minus/plus
+//   grouping    ( )
+//   variable    {name}  or bare identifier looked up at runtime via getVar
+//   constants   pi  e  inf
+//   functions   sqrt cbrt abs sign  sin cos tan asin acos atan atan2
+//               sinh cosh tanh  exp log log10 log2  pow
+//               round floor ceil trunc  min max clamp  deg2rad rad2deg hypot
 
 internal static class MathExprEvaluator
 {
-    private enum TKind { Num, Plus, Minus, Star, Slash, Pct, Caret, LP, RP, Comma, Ident, Eof }
+    private enum TKind { Num, VarRef, Plus, Minus, Star, Slash, Pct, Caret, LP, RP, Comma, Ident, Eof }
     private readonly record struct Token(TKind Kind, string Raw, double Num = 0);
 
     public static double Evaluate(string expression, Func<string, double> getVar)
@@ -83,6 +82,16 @@ internal static class MathExprEvaluator
         while (i < s.Length)
         {
             if (char.IsWhiteSpace(s[i])) { i++; continue; }
+
+            // {varName} — variable reference, value resolved by getVar at parse time
+            if (s[i] == '{')
+            {
+                int end = s.IndexOf('}', i + 1);
+                if (end < 0) throw new InvalidOperationException("Brak zamknięcia '}' w wyrażeniu");
+                list.Add(new Token(TKind.VarRef, s[(i + 1)..end]));
+                i = end + 1;
+                continue;
+            }
 
             if (char.IsDigit(s[i]) || s[i] == '.')
             {
@@ -124,12 +133,6 @@ internal static class MathExprEvaluator
 
     // ── Recursive descent ─────────────────────────────────────────────────────
 
-    // expr   = term  { ('+' | '-') term }
-    // term   = power { ('*' | '/' | '%') power }
-    // power  = unary [ '^' power ]        (right-associative)
-    // unary  = ['-' | '+'] primary
-    // primary= NUMBER | '(' expr ')' | IDENT [ '(' arglist ')' ]
-
     private static double ParseAddSub(List<Token> t, ref int p, Func<string, double> gv)
     {
         double v = ParseMulDiv(t, ref p, gv);
@@ -153,7 +156,7 @@ internal static class MathExprEvaluator
             {
                 TKind.Star  => v * r,
                 TKind.Slash => r == 0 ? throw new DivideByZeroException("Dzielenie przez zero") : v / r,
-                _           => v % r
+                _           => r == 0 ? throw new DivideByZeroException("Modulo przez zero")    : v % r,
             };
         }
         return v;
@@ -175,8 +178,13 @@ internal static class MathExprEvaluator
 
     private static double ParsePrimary(List<Token> t, ref int p, Func<string, double> gv)
     {
+        // Numeric literal
         if (t[p].Kind == TKind.Num) return t[p++].Num;
 
+        // {varName} — resolved directly as double, no string conversion
+        if (t[p].Kind == TKind.VarRef) return gv(t[p++].Raw);
+
+        // Parenthesised sub-expression
         if (t[p].Kind == TKind.LP)
         {
             p++;
@@ -186,11 +194,12 @@ internal static class MathExprEvaluator
             return v;
         }
 
+        // Identifier — function call, constant, or bare variable name
         if (t[p].Kind == TKind.Ident)
         {
             string name = t[p++].Raw;
 
-            if (t[p].Kind == TKind.LP)           // function call
+            if (t[p].Kind == TKind.LP)
             {
                 p++;
                 var args = new List<double>();
@@ -204,13 +213,13 @@ internal static class MathExprEvaluator
                 return CallFunc(name.ToLowerInvariant(), args);
             }
 
-            // constants
-            if (name.Equals("pi",  StringComparison.OrdinalIgnoreCase)) return Math.PI;
-            if (name.Equals("e",   StringComparison.OrdinalIgnoreCase)) return Math.E;
-            if (name.Equals("inf", StringComparison.OrdinalIgnoreCase)) return double.PositiveInfinity;
-
-            // variable lookup
-            return gv(name);
+            return name.ToLowerInvariant() switch
+            {
+                "pi"                              => Math.PI,
+                "e"                               => Math.E,
+                "inf" or "infinity"               => double.PositiveInfinity,
+                _                                 => gv(name)  // bare variable name
+            };
         }
 
         throw new InvalidOperationException($"Nieoczekiwany token: '{t[p].Raw}'");

@@ -16,7 +16,7 @@
     <DockPanel>
         <!-- Top Menu -->
         <Menu DockPanel.Dock="Top" Background="{StaticResource PrimaryBrush}" Foreground="White">
-            <MenuItem Header="_Plik" Foreground="{StaticResource PrimaryBrush}">
+            <MenuItem Header="_Plik" Foreground="White">
                 <MenuItem Header="Nowa sekwencja" Command="{Binding SeqVm.NewSequenceCommand}"/>
                 <MenuItem Header="Otwórz sekwencję..." Command="{Binding SeqVm.OpenSequenceCommand}"/>
                 <MenuItem Header="Zapisz sekwencję" Command="{Binding SeqVm.SaveSequenceCommand}"/>
@@ -24,10 +24,10 @@
                 <Separator/>
                 <MenuItem Header="Wyjście" Click="MenuExit_Click"/>
             </MenuItem>
-            <MenuItem Header="_Instrument" Foreground="{StaticResource PrimaryBrush}">
+            <MenuItem Header="_Instrument" Foreground="White">
                 <MenuItem Header="Dodaj przyrząd..." Click="MenuAddInstrument_Click"/>
             </MenuItem>
-            <MenuItem Header="_Dane" Foreground="{StaticResource PrimaryBrush}">
+            <MenuItem Header="_Dane" Foreground="White">
                 <MenuItem Header="Wyczyść dane" Command="{Binding DataVm.ClearDataCommand}"/>
                 <MenuItem Header="Eksport CSV..." Command="{Binding DataVm.ExportCsvCommand}"/>
             </MenuItem>

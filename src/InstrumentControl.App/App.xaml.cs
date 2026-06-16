@@ -43,6 +43,7 @@ public partial class App : Application
         _ = new WaitBlock();
         _ = new SaveCsvBlock();
         _ = new AddToChartBlock();
+        _ = new MathBlock();
         _ = new LoopBlock();
         _ = new LogMessageBlock();
         _ = new SetVariableBlock();
