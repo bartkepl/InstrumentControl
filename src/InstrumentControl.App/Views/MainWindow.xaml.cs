@@ -46,7 +46,7 @@ public partial class MainWindow : Window
 
     private void MenuAddInstrument_Click(object sender, RoutedEventArgs e)
     {
-        var vm = new ConnectionManagerViewModel(App.VisaService, App.PluginLoader);
+        var vm = new ConnectionManagerViewModel(App.VisaService, App.PluginLoader, _ctx.MainVm);
         var dlg = new ConnectionManagerWindow(vm) { Owner = this };
         if (dlg.ShowDialog() == true && vm.ConnectedDriver != null)
         {

@@ -80,6 +80,7 @@ public partial class SequenceEditorViewModel : ViewModelBase
     [ObservableProperty] private bool _isRunning;
     [ObservableProperty] private bool _isPaused;
     [ObservableProperty] private string _executingBlockId = string.Empty;
+    private volatile string _pendingBlockId = string.Empty;
 
     public ObservableCollection<ISequenceBlock> AvailableBlockTemplates { get; } = new();
 
@@ -97,15 +98,8 @@ public partial class SequenceEditorViewModel : ViewModelBase
         _mainVm = mainVm;
         _logService = logService;
 
-        _engine.BlockExecuting += (_, id) => RunOnUi(() =>
-        {
-            ExecutingBlockId = id;
-            foreach (var b in Blocks) b.IsExecuting = b.Block.BlockId == id;
-        });
-        _engine.BlockCompleted += (_, _) => RunOnUi(() =>
-        {
-            foreach (var b in Blocks) b.IsExecuting = false;
-        });
+        _engine.BlockExecuting += (_, id) => _pendingBlockId = id;
+        _engine.BlockCompleted += (_, _) => { };
         _engine.LogMessage += (_, msg) => _logService.Log(LogSource.Sequence, msg);
         _engine.StateChanged += (_, state) => RunOnUi(() =>
         {
@@ -145,6 +139,20 @@ public partial class SequenceEditorViewModel : ViewModelBase
 
     private void FlushSequenceLog()
     {
+        var newBlockId = _pendingBlockId;
+        if (newBlockId != ExecutingBlockId)
+        {
+            ExecutingBlockId = newBlockId;
+            foreach (var b in Blocks)
+                b.IsExecuting = b.Block.BlockId == newBlockId;
+        }
+        if (!IsRunning && ExecutingBlockId != string.Empty)
+        {
+            ExecutingBlockId = string.Empty;
+            _pendingBlockId = string.Empty;
+            foreach (var b in Blocks) b.IsExecuting = false;
+        }
+
         if (_pendingLogs.IsEmpty) return;
         while (_pendingLogs.TryDequeue(out var line))
             _logBuilder.AppendLine(line);

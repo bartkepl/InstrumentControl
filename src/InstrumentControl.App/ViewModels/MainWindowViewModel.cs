@@ -13,6 +13,7 @@ namespace InstrumentControl.App.ViewModels;
 public partial class ConnectedInstrumentVm : ObservableObject
 {
     public IInstrumentDriver Driver { get; }
+    private readonly ILogService _logService;
 
     [ObservableProperty] private string _statusText = LocalizationService.Get("VM_StatusConnected");
     [ObservableProperty] private bool _isConnected = true;
@@ -24,6 +25,7 @@ public partial class ConnectedInstrumentVm : ObservableObject
     public ConnectedInstrumentVm(IInstrumentDriver driver, ILogService logService)
     {
         Driver = driver;
+        _logService = logService;
         Driver.StatusChanged += (_, msg) => RunOnUi(() =>
         {
             StatusText = msg;
@@ -42,6 +44,40 @@ public partial class ConnectedInstrumentVm : ObservableObject
             IsConnected = false;
             logService.Log(LogSource.Instrument, $"[{driver.DriverName}] BŁĄD: {ex.Message}");
         });
+    }
+
+    [RelayCommand]
+    private async Task Disconnect()
+    {
+        await Driver.DisconnectAsync();
+        IsConnected = false;
+        StatusText = LocalizationService.Get("VM_StatusDisconnected");
+    }
+
+    [RelayCommand]
+    private async Task Reconnect()
+    {
+        try
+        {
+            await Driver.ReconnectAsync();
+            IsConnected = true;
+            StatusText = LocalizationService.Get("VM_StatusConnected");
+        }
+        catch (Exception ex)
+        {
+            StatusText = $"{LocalizationService.Get("VM_ConnectionError")} {ex.Message}";
+            _logService.Log(LogSource.Instrument, $"[{Driver.DriverName}] Reconnect failed: {ex.Message}");
+        }
+    }
+
+    [RelayCommand]
+    private async Task Reset()
+    {
+        try { await Driver.ResetAsync(); }
+        catch (Exception ex)
+        {
+            MessageBox.Show($"{LocalizationService.Get("VM_ResetFailed")} {ex.Message}");
+        }
     }
 
     private void RunOnUi(Action a) =>

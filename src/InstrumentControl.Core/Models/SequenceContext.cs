@@ -12,6 +12,46 @@ public class SequenceContext
     public Action<string>? Log { get; init; }
     public Action<MeasurementResult>? OnMeasurement { get; init; }
 
+    // ── Pause gate ──────────────────────────────────────────────────────────
+    private volatile bool _isPaused;
+    private TaskCompletionSource? _pauseTcs;
+    private readonly object _pauseLock = new();
+
+    public bool IsPaused => _isPaused;
+
+    public void SetPaused(bool paused)
+    {
+        lock (_pauseLock)
+        {
+            if (paused && !_isPaused)
+            {
+                _isPaused = true;
+                _pauseTcs = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+            }
+            else if (!paused && _isPaused)
+            {
+                _isPaused = false;
+                _pauseTcs?.TrySetResult();
+            }
+        }
+    }
+
+    public async Task WaitIfPausedAsync()
+    {
+        if (!_isPaused) return;
+        TaskCompletionSource? tcs;
+        lock (_pauseLock)
+        {
+            if (!_isPaused) return;
+            tcs = _pauseTcs;
+        }
+        if (tcs != null)
+        {
+            using var reg = CancellationToken.Register(() => tcs.TrySetCanceled());
+            await tcs.Task;
+        }
+    }
+
     public void SetVariable(string name, object? value) => Variables[name] = value;
 
     public T? GetVariable<T>(string name)

@@ -189,7 +189,7 @@
                 <TabItem Header="{DynamicResource Tab_Log}">
                     <TabControl Background="White" BorderThickness="0,1,0,0"
                                 BorderBrush="#E0E0E0">
-                        <TabItem Header="Wszystkie">
+                        <TabItem Header="{DynamicResource LogTab_All}">
                             <ScrollViewer x:Name="LogScrollAll" VerticalScrollBarVisibility="Auto">
                                 <TextBox x:Name="LogBoxAll" IsReadOnly="True"
                                          Text="{Binding LogVm.AllText, Mode=OneWay}"
@@ -198,7 +198,7 @@
                                          TextWrapping="Wrap"/>
                             </ScrollViewer>
                         </TabItem>
-                        <TabItem Header="Sekwencja">
+                        <TabItem Header="{DynamicResource LogTab_Sequence}">
                             <ScrollViewer x:Name="LogScrollSeq" VerticalScrollBarVisibility="Auto">
                                 <TextBox x:Name="LogBoxSeq" IsReadOnly="True"
                                          Text="{Binding LogVm.SequenceText, Mode=OneWay}"
@@ -207,7 +207,7 @@
                                          TextWrapping="Wrap"/>
                             </ScrollViewer>
                         </TabItem>
-                        <TabItem Header="VISA">
+                        <TabItem Header="{DynamicResource LogTab_VISA}">
                             <ScrollViewer x:Name="LogScrollVisa" VerticalScrollBarVisibility="Auto">
                                 <TextBox x:Name="LogBoxVisa" IsReadOnly="True"
                                          Text="{Binding LogVm.VisaText, Mode=OneWay}"
@@ -216,7 +216,7 @@
                                          TextWrapping="Wrap"/>
                             </ScrollViewer>
                         </TabItem>
-                        <TabItem Header="Serial">
+                        <TabItem Header="{DynamicResource LogTab_Serial}">
                             <ScrollViewer x:Name="LogScrollSerial" VerticalScrollBarVisibility="Auto">
                                 <TextBox x:Name="LogBoxSerial" IsReadOnly="True"
                                          Text="{Binding LogVm.SerialText, Mode=OneWay}"
@@ -225,7 +225,7 @@
                                          TextWrapping="Wrap"/>
                             </ScrollViewer>
                         </TabItem>
-                        <TabItem Header="Zdarzenia">
+                        <TabItem Header="{DynamicResource LogTab_Events}">
                             <ScrollViewer x:Name="LogScrollEvent" VerticalScrollBarVisibility="Auto">
                                 <TextBox x:Name="LogBoxEvent" IsReadOnly="True"
                                          Text="{Binding LogVm.EventText, Mode=OneWay}"
@@ -234,7 +234,7 @@
                                          TextWrapping="Wrap"/>
                             </ScrollViewer>
                         </TabItem>
-                        <TabItem Header="Mierniki">
+                        <TabItem Header="{DynamicResource LogTab_Instruments}">
                             <ScrollViewer x:Name="LogScrollInstrument" VerticalScrollBarVisibility="Auto">
                                 <TextBox x:Name="LogBoxInstrument" IsReadOnly="True"
                                          Text="{Binding LogVm.InstrumentText, Mode=OneWay}"
@@ -243,7 +243,7 @@
                                          TextWrapping="Wrap"/>
                             </ScrollViewer>
                         </TabItem>
-                        <TabItem Header="Debug">
+                        <TabItem Header="{DynamicResource LogTab_Debug}">
                             <ScrollViewer x:Name="LogScrollDebug" VerticalScrollBarVisibility="Auto">
                                 <TextBox x:Name="LogBoxDebug" IsReadOnly="True"
                                          Text="{Binding LogVm.DebugText, Mode=OneWay}"

@@ -8,8 +8,7 @@ public enum SequenceState { Idle, Running, Paused, Completed, Error }
 public class SequenceEngine
 {
     private CancellationTokenSource? _cts;
-    private TaskCompletionSource? _pauseTcs;
-    private bool _paused;
+    private SequenceContext? _context;
 
     public SequenceState State { get; private set; } = SequenceState.Idle;
     public string CurrentBlockId { get; private set; } = string.Empty;
@@ -29,7 +28,6 @@ public class SequenceEngine
         if (State == SequenceState.Running) return;
 
         _cts = new CancellationTokenSource();
-        _paused = false;
 
         var blocks = BuildBlockDictionary(definition);
         if (blocks.Count == 0)
@@ -53,6 +51,7 @@ public class SequenceEngine
         };
         foreach (var inst in instruments) context.Instruments[inst.Key] = inst.Value;
         context.AllBlocks = blocks;
+        _context = context;
 
         SetState(SequenceState.Running);
         LogMessage?.Invoke(this, "Sekwencja uruchomiona.");
@@ -68,15 +67,7 @@ public class SequenceEngine
                 if (++safetyCounter > maxIterations)
                     throw new InvalidOperationException("Przekroczono limit iteracji — możliwa nieskończona pętla.");
 
-                if (_paused)
-                {
-                    _pauseTcs = new TaskCompletionSource();
-                    LogMessage?.Invoke(this, "Sekwencja wstrzymana.");
-                    SetState(SequenceState.Paused);
-                    await _pauseTcs.Task;
-                    SetState(SequenceState.Running);
-                    LogMessage?.Invoke(this, "Sekwencja wznowiona.");
-                }
+                await context.WaitIfPausedAsync();
 
                 if (!blocks.TryGetValue(currentId, out var block))
                 {
@@ -115,14 +106,24 @@ public class SequenceEngine
             SetState(SequenceState.Error);
             LogMessage?.Invoke(this, $"Błąd: {ex.Message}");
         }
+        finally
+        {
+            _context = null;
+        }
     }
 
-    public void Pause() => _paused = true;
+    public void Pause()
+    {
+        _context?.SetPaused(true);
+        LogMessage?.Invoke(this, "Sekwencja wstrzymana.");
+        SetState(SequenceState.Paused);
+    }
 
     public void Resume()
     {
-        _paused = false;
-        _pauseTcs?.TrySetResult();
+        SetState(SequenceState.Running);
+        LogMessage?.Invoke(this, "Sekwencja wznowiona.");
+        _context?.SetPaused(false);
     }
 
     public void Stop() => _cts?.Cancel();

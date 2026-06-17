@@ -25,36 +25,54 @@ public class HP34401ADriver : InstrumentDriverBase
         HP34401ABlocks.RegisterAll();
     }
 
+    // ── Configuration cache ────────────────────────────────────────────────
+
+    private (string confCmd, string? nplcCmd)? _lastConfig;
+
+    private async Task EnsureConfigured(string confCmd, string? nplcCmd)
+    {
+        var desired = (confCmd, nplcCmd);
+        if (_lastConfig == desired) return;
+        await Write(confCmd);
+        if (nplcCmd != null)
+            await Write(nplcCmd);
+        _lastConfig = desired;
+    }
+
+    public void InvalidateConfigCache() => _lastConfig = null;
+
+    public override async Task ConnectAsync(InstrumentControl.Core.Interfaces.IConnectionProvider connection)
+    {
+        InvalidateConfigCache();
+        await base.ConnectAsync(connection);
+    }
+
+    public override async Task ResetAsync()
+    {
+        InvalidateConfigCache();
+        await base.ResetAsync();
+    }
+
+    public override async Task ReconnectAsync()
+    {
+        InvalidateConfigCache();
+        await base.ReconnectAsync();
+    }
+
     // ── Measurement helpers ──────────────────────────────────────────────────
 
     private static string FormatRange(string range) =>
         range.Equals("AUTO", StringComparison.OrdinalIgnoreCase) ? "DEF" : range;
 
-    private async Task<double> Measure(string confCommand, string range, double nplc)
-    {
-        string r = FormatRange(range);
-        await Write(confCommand.Replace("{range}", r).Replace("{res}", "DEF"));
-        await Write($"SENS:VOLT:DC:NPLC {nplc.ToString(System.Globalization.CultureInfo.InvariantCulture)}");
-        double value = await QueryDouble("READ?");
-        return value;
-    }
-
-    private async Task<double> MeasureGeneric(string confCmd, string nplcSensCmd, string range, double nplc)
-    {
-        string r = FormatRange(range);
-        await Write(string.Format(System.Globalization.CultureInfo.InvariantCulture, confCmd, r));
-        if (!string.IsNullOrEmpty(nplcSensCmd))
-            await Write(string.Format(System.Globalization.CultureInfo.InvariantCulture, nplcSensCmd, nplc));
-        return await QueryDouble("READ?");
-    }
+    private static string FormatNplc(double nplc) =>
+        nplc.ToString(System.Globalization.CultureInfo.InvariantCulture);
 
     // ── Public measurement methods ───────────────────────────────────────────
 
     public async Task<double> MeasureDCV(string range = "AUTO", double nplc = 1.0)
     {
         string r = FormatRange(range);
-        await Write($"CONF:VOLT:DC {r},DEF");
-        await Write($"SENS:VOLT:DC:NPLC {nplc.ToString(System.Globalization.CultureInfo.InvariantCulture)}");
+        await EnsureConfigured($"CONF:VOLT:DC {r},DEF", $"SENS:VOLT:DC:NPLC {FormatNplc(nplc)}");
         double v = await QueryDouble("READ?");
         RaiseMeasurement(new MeasurementResult
         {
@@ -67,8 +85,7 @@ public class HP34401ADriver : InstrumentDriverBase
     public async Task<double> MeasureACV(string range = "AUTO", double nplc = 1.0)
     {
         string r = FormatRange(range);
-        await Write($"CONF:VOLT:AC {r},DEF");
-        await Write($"SENS:VOLT:AC:NPLC {nplc.ToString(System.Globalization.CultureInfo.InvariantCulture)}");
+        await EnsureConfigured($"CONF:VOLT:AC {r},DEF", $"SENS:VOLT:AC:NPLC {FormatNplc(nplc)}");
         double v = await QueryDouble("READ?");
         RaiseMeasurement(new MeasurementResult
         {
@@ -81,8 +98,7 @@ public class HP34401ADriver : InstrumentDriverBase
     public async Task<double> MeasureDCI(string range = "AUTO", double nplc = 1.0)
     {
         string r = FormatRange(range);
-        await Write($"CONF:CURR:DC {r},DEF");
-        await Write($"SENS:CURR:DC:NPLC {nplc.ToString(System.Globalization.CultureInfo.InvariantCulture)}");
+        await EnsureConfigured($"CONF:CURR:DC {r},DEF", $"SENS:CURR:DC:NPLC {FormatNplc(nplc)}");
         double v = await QueryDouble("READ?");
         RaiseMeasurement(new MeasurementResult
         {
@@ -95,8 +111,7 @@ public class HP34401ADriver : InstrumentDriverBase
     public async Task<double> MeasureACI(string range = "AUTO", double nplc = 1.0)
     {
         string r = FormatRange(range);
-        await Write($"CONF:CURR:AC {r},DEF");
-        await Write($"SENS:CURR:AC:NPLC {nplc.ToString(System.Globalization.CultureInfo.InvariantCulture)}");
+        await EnsureConfigured($"CONF:CURR:AC {r},DEF", $"SENS:CURR:AC:NPLC {FormatNplc(nplc)}");
         double v = await QueryDouble("READ?");
         RaiseMeasurement(new MeasurementResult
         {
@@ -109,8 +124,7 @@ public class HP34401ADriver : InstrumentDriverBase
     public async Task<double> MeasureResistance2W(string range = "AUTO", double nplc = 1.0)
     {
         string r = FormatRange(range);
-        await Write($"CONF:RES {r},DEF");
-        await Write($"SENS:RES:NPLC {nplc.ToString(System.Globalization.CultureInfo.InvariantCulture)}");
+        await EnsureConfigured($"CONF:RES {r},DEF", $"SENS:RES:NPLC {FormatNplc(nplc)}");
         double v = await QueryDouble("READ?");
         RaiseMeasurement(new MeasurementResult
         {
@@ -123,8 +137,7 @@ public class HP34401ADriver : InstrumentDriverBase
     public async Task<double> MeasureResistance4W(string range = "AUTO", double nplc = 1.0)
     {
         string r = FormatRange(range);
-        await Write($"CONF:FRES {r},DEF");
-        await Write($"SENS:FRES:NPLC {nplc.ToString(System.Globalization.CultureInfo.InvariantCulture)}");
+        await EnsureConfigured($"CONF:FRES {r},DEF", $"SENS:FRES:NPLC {FormatNplc(nplc)}");
         double v = await QueryDouble("READ?");
         RaiseMeasurement(new MeasurementResult
         {
@@ -136,7 +149,7 @@ public class HP34401ADriver : InstrumentDriverBase
 
     public async Task<double> MeasureFrequency(string range = "AUTO", double nplc = 1.0)
     {
-        await Write("CONF:FREQ");
+        await EnsureConfigured("CONF:FREQ", null);
         double v = await QueryDouble("READ?");
         RaiseMeasurement(new MeasurementResult
         {
@@ -148,7 +161,7 @@ public class HP34401ADriver : InstrumentDriverBase
 
     public async Task<double> MeasurePeriod(string range = "AUTO", double nplc = 1.0)
     {
-        await Write("CONF:PER");
+        await EnsureConfigured("CONF:PER", null);
         double v = await QueryDouble("READ?");
         RaiseMeasurement(new MeasurementResult
         {
@@ -160,7 +173,7 @@ public class HP34401ADriver : InstrumentDriverBase
 
     public async Task<double> MeasureDiode(string range = "AUTO", double nplc = 1.0)
     {
-        await Write("CONF:DIOD");
+        await EnsureConfigured("CONF:DIOD", null);
         double v = await QueryDouble("READ?");
         RaiseMeasurement(new MeasurementResult
         {
@@ -172,7 +185,7 @@ public class HP34401ADriver : InstrumentDriverBase
 
     public async Task<double> MeasureContinuity(string range = "AUTO", double nplc = 1.0)
     {
-        await Write("CONF:CONT");
+        await EnsureConfigured("CONF:CONT", null);
         double v = await QueryDouble("READ?");
         RaiseMeasurement(new MeasurementResult
         {

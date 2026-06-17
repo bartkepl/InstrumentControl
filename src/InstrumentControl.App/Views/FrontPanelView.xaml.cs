@@ -47,18 +47,5 @@ public partial class FrontPanelView : UserControl
                 Margin = new Thickness(16)
             };
         }
-
-        DisconnectButton.Click += async (s, e) =>
-        {
-            await vm.Driver.DisconnectAsync();
-            vm.IsConnected = false;
-            vm.StatusText = LocalizationService.Get("VM_StatusDisconnected");
-        };
-
-        ResetButton.Click += async (s, e) =>
-        {
-            try { await vm.Driver.ResetAsync(); }
-            catch (Exception ex) { MessageBox.Show($"{LocalizationService.Get("VM_ResetFailed")} {ex.Message}"); }
-        };
     }
 }

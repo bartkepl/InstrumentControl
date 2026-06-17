@@ -36,6 +36,7 @@ public class LoopBlock : SequenceBlockBase, IHasBodyOutput
         while ((infinite || i < count) && !context.CancellationToken.IsCancellationRequested)
         {
             context.CancellationToken.ThrowIfCancellationRequested();
+            await context.WaitIfPausedAsync();
 
             if (!string.IsNullOrEmpty(counterVar))
                 context.SetVariable(counterVar, (double)i);
@@ -50,6 +51,7 @@ public class LoopBlock : SequenceBlockBase, IHasBodyOutput
                 {
                     if (++bodySafety > 10000) break;
                     if (!context.AllBlocks.TryGetValue(bodyId, out var bodyBlock)) break;
+                    await context.WaitIfPausedAsync();
                     var bodyResult = await bodyBlock.ExecuteAsync(context);
                     if (!bodyResult.Success)
                         return BlockExecutionResult.Fail($"Błąd w ciele pętli (iter. {i + 1}): {bodyResult.ErrorMessage}");
@@ -59,6 +61,8 @@ public class LoopBlock : SequenceBlockBase, IHasBodyOutput
 
             if (delayMs > 0)
                 await Task.Delay((int)delayMs, context.CancellationToken);
+            else
+                await Task.Yield();
 
             i++;
         }

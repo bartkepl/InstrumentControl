@@ -26,12 +26,46 @@ public class Keithley2000Driver : InstrumentDriverBase
         Keithley2000Blocks.RegisterAll();
     }
 
+    // ── Configuration cache ────────────────────────────────────────────────
+
+    private (string confCmd, string? nplcCmd)? _lastConfig;
+
+    private async Task EnsureConfigured(string confCmd, string? nplcCmd)
+    {
+        var desired = (confCmd, nplcCmd);
+        if (_lastConfig == desired) return;
+        await Write(confCmd);
+        if (nplcCmd != null)
+            await Write(nplcCmd);
+        _lastConfig = desired;
+    }
+
+    public void InvalidateConfigCache() => _lastConfig = null;
+
+    public override async Task ConnectAsync(IConnectionProvider connection)
+    {
+        InvalidateConfigCache();
+        await base.ConnectAsync(connection);
+    }
+
+    public override async Task ResetAsync()
+    {
+        InvalidateConfigCache();
+        await base.ResetAsync();
+    }
+
+    public override async Task ReconnectAsync()
+    {
+        InvalidateConfigCache();
+        await base.ReconnectAsync();
+    }
+
     // ── Helpers ──────────────────────────────────────────────────────────────
 
     private static string FormatRange(string range) =>
         range.Equals("AUTO", StringComparison.OrdinalIgnoreCase) ? "DEF" : range;
 
-    private string NplcStr(double nplc) =>
+    private static string NplcStr(double nplc) =>
         nplc.ToString(System.Globalization.CultureInfo.InvariantCulture);
 
     // ── Public measurement methods ───────────────────────────────────────────
@@ -39,8 +73,7 @@ public class Keithley2000Driver : InstrumentDriverBase
     public async Task<double> MeasureDCV(string range = "AUTO", double nplc = 1.0)
     {
         string r = FormatRange(range);
-        await Write($"CONF:VOLT:DC {r},DEF");
-        await Write($"SENS:VOLT:DC:NPLC {NplcStr(nplc)}");
+        await EnsureConfigured($"CONF:VOLT:DC {r},DEF", $"SENS:VOLT:DC:NPLC {NplcStr(nplc)}");
         double v = await QueryDouble("READ?");
         RaiseMeasurement(new MeasurementResult
         {
@@ -53,8 +86,7 @@ public class Keithley2000Driver : InstrumentDriverBase
     public async Task<double> MeasureACV(string range = "AUTO", double nplc = 1.0)
     {
         string r = FormatRange(range);
-        await Write($"CONF:VOLT:AC {r},DEF");
-        await Write($"SENS:VOLT:AC:NPLC {NplcStr(nplc)}");
+        await EnsureConfigured($"CONF:VOLT:AC {r},DEF", $"SENS:VOLT:AC:NPLC {NplcStr(nplc)}");
         double v = await QueryDouble("READ?");
         RaiseMeasurement(new MeasurementResult
         {
@@ -67,8 +99,7 @@ public class Keithley2000Driver : InstrumentDriverBase
     public async Task<double> MeasureDCI(string range = "AUTO", double nplc = 1.0)
     {
         string r = FormatRange(range);
-        await Write($"CONF:CURR:DC {r},DEF");
-        await Write($"SENS:CURR:DC:NPLC {NplcStr(nplc)}");
+        await EnsureConfigured($"CONF:CURR:DC {r},DEF", $"SENS:CURR:DC:NPLC {NplcStr(nplc)}");
         double v = await QueryDouble("READ?");
         RaiseMeasurement(new MeasurementResult
         {
@@ -81,8 +112,7 @@ public class Keithley2000Driver : InstrumentDriverBase
     public async Task<double> MeasureACI(string range = "AUTO", double nplc = 1.0)
     {
         string r = FormatRange(range);
-        await Write($"CONF:CURR:AC {r},DEF");
-        await Write($"SENS:CURR:AC:NPLC {NplcStr(nplc)}");
+        await EnsureConfigured($"CONF:CURR:AC {r},DEF", $"SENS:CURR:AC:NPLC {NplcStr(nplc)}");
         double v = await QueryDouble("READ?");
         RaiseMeasurement(new MeasurementResult
         {
@@ -95,8 +125,7 @@ public class Keithley2000Driver : InstrumentDriverBase
     public async Task<double> MeasureResistance2W(string range = "AUTO", double nplc = 1.0)
     {
         string r = FormatRange(range);
-        await Write($"CONF:RES {r},DEF");
-        await Write($"SENS:RES:NPLC {NplcStr(nplc)}");
+        await EnsureConfigured($"CONF:RES {r},DEF", $"SENS:RES:NPLC {NplcStr(nplc)}");
         double v = await QueryDouble("READ?");
         RaiseMeasurement(new MeasurementResult
         {
@@ -109,8 +138,7 @@ public class Keithley2000Driver : InstrumentDriverBase
     public async Task<double> MeasureResistance4W(string range = "AUTO", double nplc = 1.0)
     {
         string r = FormatRange(range);
-        await Write($"CONF:FRES {r},DEF");
-        await Write($"SENS:FRES:NPLC {NplcStr(nplc)}");
+        await EnsureConfigured($"CONF:FRES {r},DEF", $"SENS:FRES:NPLC {NplcStr(nplc)}");
         double v = await QueryDouble("READ?");
         RaiseMeasurement(new MeasurementResult
         {
@@ -122,8 +150,7 @@ public class Keithley2000Driver : InstrumentDriverBase
 
     public async Task<double> MeasureFrequency(string range = "AUTO", double nplc = 1.0)
     {
-        await Write("CONF:FREQ");
-        await Write($"SENS:FREQ:NPLC {NplcStr(nplc)}");
+        await EnsureConfigured("CONF:FREQ", $"SENS:FREQ:NPLC {NplcStr(nplc)}");
         double v = await QueryDouble("READ?");
         RaiseMeasurement(new MeasurementResult
         {
@@ -135,8 +162,7 @@ public class Keithley2000Driver : InstrumentDriverBase
 
     public async Task<double> MeasurePeriod(string range = "AUTO", double nplc = 1.0)
     {
-        await Write("CONF:PER");
-        await Write($"SENS:PER:NPLC {NplcStr(nplc)}");
+        await EnsureConfigured("CONF:PER", $"SENS:PER:NPLC {NplcStr(nplc)}");
         double v = await QueryDouble("READ?");
         RaiseMeasurement(new MeasurementResult
         {
@@ -148,7 +174,7 @@ public class Keithley2000Driver : InstrumentDriverBase
 
     public async Task<double> MeasureDiode()
     {
-        await Write("CONF:DIOD");
+        await EnsureConfigured("CONF:DIOD", null);
         double v = await QueryDouble("READ?");
         RaiseMeasurement(new MeasurementResult
         {
@@ -160,7 +186,7 @@ public class Keithley2000Driver : InstrumentDriverBase
 
     public async Task<double> MeasureContinuity()
     {
-        await Write("CONF:CONT");
+        await EnsureConfigured("CONF:CONT", null);
         double v = await QueryDouble("READ?");
         RaiseMeasurement(new MeasurementResult
         {
@@ -172,8 +198,7 @@ public class Keithley2000Driver : InstrumentDriverBase
 
     public async Task<double> MeasureTemperature(string tcType = "K", double nplc = 1.0)
     {
-        await Write($"CONF:TEMP TC,{tcType}");
-        await Write($"SENS:TEMP:NPLC {NplcStr(nplc)}");
+        await EnsureConfigured($"CONF:TEMP TC,{tcType}", $"SENS:TEMP:NPLC {NplcStr(nplc)}");
         double v = await QueryDouble("READ?");
         RaiseMeasurement(new MeasurementResult
         {

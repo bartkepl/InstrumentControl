@@ -38,6 +38,9 @@ public static class LocalizationService
     public static string Get(string key) =>
         Application.Current?.Resources[key] as string ?? key;
 
+    public static string? TryGet(string key) =>
+        Application.Current?.Resources[key] as string;
+
     private static void Apply(string languageCode)
     {
         CurrentLanguage = languageCode;

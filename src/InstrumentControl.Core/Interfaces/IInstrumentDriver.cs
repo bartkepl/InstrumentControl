@@ -15,6 +15,7 @@ public interface IInstrumentDriver : IDisposable
 
     Task ConnectAsync(IConnectionProvider connection);
     Task DisconnectAsync();
+    Task ReconnectAsync();
     Task<string> GetIdentificationAsync();
     Task ResetAsync();
 

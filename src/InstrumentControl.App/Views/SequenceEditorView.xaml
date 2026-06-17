@@ -14,20 +14,6 @@
         <Border DockPanel.Dock="Top" Background="White" Padding="6,5" BorderBrush="#DDD" BorderThickness="0,0,0,1">
             <DockPanel>
                 <StackPanel Orientation="Horizontal" DockPanel.Dock="Left">
-                    <Button Style="{StaticResource SuccessButtonStyle}"
-                            Command="{Binding RunSequenceCommand}" Margin="2,0"
-                            Content="{DynamicResource SeqEditor_Run}"
-                            IsEnabled="{Binding IsRunning, Converter={StaticResource InverseBoolConverter}}"/>
-                    <Button Style="{StaticResource PrimaryButtonStyle}" Margin="2,0"
-                            Command="{Binding PauseSequenceCommand}">
-                        <TextBlock Text="{Binding IsPaused, Converter={StaticResource PauseResumeConverter}}"
-                                   Foreground="White"/>
-                    </Button>
-                    <Button Style="{StaticResource DangerButtonStyle}"
-                            Command="{Binding StopSequenceCommand}"
-                            Content="{DynamicResource SeqEditor_Stop}"
-                            IsEnabled="{Binding IsRunning}" Margin="2,0"/>
-                    <Separator Margin="4,0"/>
                     <Button Style="{StaticResource BaseButtonStyle}" Background="White"
                             Command="{Binding NewSequenceCommand}" Margin="2,0"
                             Content="{DynamicResource SeqEditor_New}"/>

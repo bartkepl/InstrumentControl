@@ -43,6 +43,15 @@
     <sys:String x:Key="Tab_Data">📊  Dane / Wykresy</sys:String>
     <sys:String x:Key="Tab_Log">📋  Log</sys:String>
 
+    <!-- Log tabs (technical — English in both languages) -->
+    <sys:String x:Key="LogTab_All">All</sys:String>
+    <sys:String x:Key="LogTab_Sequence">Sequence</sys:String>
+    <sys:String x:Key="LogTab_VISA">VISA</sys:String>
+    <sys:String x:Key="LogTab_Serial">Serial</sys:String>
+    <sys:String x:Key="LogTab_Events">Events</sys:String>
+    <sys:String x:Key="LogTab_Instruments">Instruments</sys:String>
+    <sys:String x:Key="LogTab_Debug">Debug</sys:String>
+
     <!-- Status bar -->
     <sys:String x:Key="StatusBar_VisaActive">● VISA AKTYWNE</sys:String>
     <sys:String x:Key="StatusBar_SimMode">⚠ TRYB SYMULACJI</sys:String>
@@ -78,6 +87,15 @@
     <sys:String x:Key="Chart_XAxis">Nr próbki</sys:String>
     <sys:String x:Key="Chart_YAxis">Wartość</sys:String>
 
+    <!-- Driver descriptions -->
+    <sys:String x:Key="DriverDesc_HP34401A">6½-cyfrowy multimetr cyfrowy</sys:String>
+    <sys:String x:Key="DriverDesc_Keithley2000">6½-cyfrowy multimetr cyfrowy z pomiarem temperatury TC</sys:String>
+    <sys:String x:Key="DriverDesc_Agilent34970A">Jednostka akwizycji danych / przełącznica</sys:String>
+    <sys:String x:Key="DriverDesc_ItechIT6922B">Programowalny zasilacz DC 60V/5A</sys:String>
+    <sys:String x:Key="DriverDesc_CTSChamber">Komora klimatyczna (RS-232)</sys:String>
+    <sys:String x:Key="DriverDesc_RTB2004">Oscyloskop cyfrowy 4-kanałowy 300 MHz</sys:String>
+    <sys:String x:Key="DriverDesc_RigolDS1000Z">Oscyloskop cyfrowy 4-kanałowy 50/100 MHz</sys:String>
+
     <!-- Connection manager -->
     <sys:String x:Key="ConnMgr_Title">Dodaj przyrząd</sys:String>
     <sys:String x:Key="ConnMgr_VisaResources">Zasoby VISA</sys:String>
@@ -98,6 +116,7 @@
     <sys:String x:Key="FrontPanel_NoInstrument">Brak podłączonego przyrządu</sys:String>
     <sys:String x:Key="FrontPanel_NoInstrumentHint">Kliknij 'Dodaj przyrząd' aby połączyć się z urządzeniem</sys:String>
     <sys:String x:Key="FrontPanel_Disconnect">Rozłącz</sys:String>
+    <sys:String x:Key="FrontPanel_Reconnect">Połącz ponownie</sys:String>
     <sys:String x:Key="FrontPanel_Reset">Reset</sys:String>
 
     <!-- Converters -->

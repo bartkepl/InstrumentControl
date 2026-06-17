@@ -36,6 +36,10 @@ jobs:
           "tag=v$v"    | Out-File -Append $env:GITHUB_OUTPUT
           Write-Host "Version: $v"
 
+      # ── Test ──────────────────────────────────────────────────────────────────
+      - name: Run tests
+        run: dotnet test tests/InstrumentControl.Core.Tests --nologo -v q
+
       # ── Build ─────────────────────────────────────────────────────────────────
       - name: Build Core
         run: >

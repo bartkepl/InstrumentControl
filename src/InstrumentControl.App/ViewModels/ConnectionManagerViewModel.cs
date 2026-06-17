@@ -13,18 +13,23 @@ public partial class DriverInfoVm : ObservableObject
 {
     public IInstrumentDriver Driver { get; }
     public string Name => $"{Driver.Manufacturer} {Driver.Model}";
-    public string Description => Driver.Description;
+    public string Description => LocalizationService.TryGet($"DriverDesc_{Driver.DriverName}") ?? Driver.Description;
 
     [ObservableProperty] private bool _isDetected;
     [ObservableProperty] private bool _isGrayedOut;
 
-    public DriverInfoVm(IInstrumentDriver driver) => Driver = driver;
+    public DriverInfoVm(IInstrumentDriver driver)
+    {
+        Driver = driver;
+        LocalizationService.LanguageChanged += (_, _) => OnPropertyChanged(nameof(Description));
+    }
 }
 
 public partial class ConnectionManagerViewModel : ViewModelBase
 {
     private readonly VisaService _visaService;
     private readonly PluginLoader _pluginLoader;
+    private readonly MainWindowViewModel? _mainVm;
     private CancellationTokenSource? _detectCts;
 
     [ObservableProperty] private ObservableCollection<string> _availableResources = new();
@@ -45,10 +50,11 @@ public partial class ConnectionManagerViewModel : ViewModelBase
     public bool ConnectionSuccessful { get; private set; }
     public IInstrumentDriver? ConnectedDriver { get; private set; }
 
-    public ConnectionManagerViewModel(VisaService visaService, PluginLoader pluginLoader)
+    public ConnectionManagerViewModel(VisaService visaService, PluginLoader pluginLoader, MainWindowViewModel? mainVm = null)
     {
         _visaService = visaService;
         _pluginLoader = pluginLoader;
+        _mainVm = mainVm;
         UseSimulation = visaService.IsSimulationMode;
         StatusText = LocalizationService.Get("ConnMgr_InitStatus");
         LoadDrivers();
@@ -63,6 +69,24 @@ public partial class ConnectionManagerViewModel : ViewModelBase
             if (driver != null) AvailableDrivers.Add(new DriverInfoVm(driver));
         }
         SelectedDriver = AvailableDrivers.FirstOrDefault();
+    }
+
+    partial void OnSelectedDriverChanged(DriverInfoVm? value)
+    {
+        if (value == null) return;
+        var driverName = value.Driver.DriverName;
+        if (_mainVm == null)
+        {
+            InstrumentLabel = driverName;
+            return;
+        }
+        var existing = _mainVm.GetInstrumentNames()
+            .Where(n => n.StartsWith(driverName, StringComparison.OrdinalIgnoreCase))
+            .ToList();
+        if (existing.Count == 0)
+            InstrumentLabel = driverName;
+        else
+            InstrumentLabel = $"{driverName} No.{existing.Count + 1}";
     }
 
     // ── Auto-detection ───────────────────────────────────────────────────────

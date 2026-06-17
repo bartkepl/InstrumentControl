@@ -52,6 +52,15 @@ public abstract class InstrumentDriverBase : IInstrumentDriver
         RaiseStatus("Rozłączono");
     }
 
+    public virtual async Task ReconnectAsync()
+    {
+        if (Connection == null) throw new InvalidOperationException("Brak połączenia");
+        if (!Connection.IsOpen) await Connection.OpenAsync();
+        var idn = await GetIdentificationAsync();
+        if (InstrumentInfo != null) InstrumentInfo.Status = ConnectionStatus.Connected;
+        RaiseStatus($"Ponownie połączono: {idn}");
+    }
+
     public virtual async Task<string> GetIdentificationAsync()
     {
         if (Connection == null) throw new InvalidOperationException("Brak połączenia");
