@@ -249,7 +249,7 @@ public partial class SequenceEditorViewModel : ViewModelBase
 
         var def = BuildDefinition();
         var instruments = _mainVm.GetInstrumentsDictionary();
-        await _engine.RunAsync(def, instruments, _dataManager);
+        await Task.Run(() => _engine.RunAsync(def, instruments, _dataManager));
     }
 
     private string? ValidateSequence()

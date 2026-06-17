@@ -10,7 +10,7 @@ public class LoopBlock : SequenceBlockBase, IHasBodyOutput
 {
     public override string BlockType => "LoopBlock";
     public override string DisplayName => "Pętla";
-    public override string Description => "Powtarza ciało pętli N razy, następnie przechodzi do kolejnego bloku";
+    public override string Description => "Powtarza ciało pętli N razy (0 = nieskończona), następnie przechodzi do kolejnego bloku";
     public override Color BlockColor => Color.FromRgb(0xE6, 0x7E, 0x22);
     public override string Category => "Control";
 
@@ -18,7 +18,7 @@ public class LoopBlock : SequenceBlockBase, IHasBodyOutput
 
     public override IEnumerable<BlockPropertyDefinition> PropertyDefinitions =>
     [
-        BlockPropertyDefinition.Number("Iterations", "Liczba powtórzeń", 10),
+        BlockPropertyDefinition.Number("Iterations", "Liczba powtórzeń (0 = nieskończona)", 10),
         BlockPropertyDefinition.Variable("CounterVariable", "Zmienna licznika (opcjonalna)", ""),
         BlockPropertyDefinition.Number("DelayBetweenMs", "Opóźnienie między iteracjami [ms]", 0),
     ];
@@ -26,19 +26,21 @@ public class LoopBlock : SequenceBlockBase, IHasBodyOutput
     public override async Task<BlockExecutionResult> ExecuteAsync(SequenceContext context)
     {
         int count = (int)GetProp<double>("Iterations", 10);
+        bool infinite = count <= 0;
         string counterVar = GetPropStr("CounterVariable", "");
         double delayMs = GetProp<double>("DelayBetweenMs", 0);
 
-        context.Log?.Invoke($"Pętla: {count} iteracji");
+        context.Log?.Invoke(infinite ? "Pętla: nieskończona" : $"Pętla: {count} iteracji");
 
-        for (int i = 0; i < count; i++)
+        int i = 0;
+        while ((infinite || i < count) && !context.CancellationToken.IsCancellationRequested)
         {
             context.CancellationToken.ThrowIfCancellationRequested();
 
             if (!string.IsNullOrEmpty(counterVar))
                 context.SetVariable(counterVar, (double)i);
 
-            context.Log?.Invoke($"Iteracja {i + 1}/{count}");
+            context.Log?.Invoke(infinite ? $"Iteracja {i + 1}" : $"Iteracja {i + 1}/{count}");
 
             if (BodyBlockId != null && context.AllBlocks.Count > 0)
             {
@@ -57,6 +59,8 @@ public class LoopBlock : SequenceBlockBase, IHasBodyOutput
 
             if (delayMs > 0)
                 await Task.Delay((int)delayMs, context.CancellationToken);
+
+            i++;
         }
 
         return BlockExecutionResult.Ok(NextBlockId);
