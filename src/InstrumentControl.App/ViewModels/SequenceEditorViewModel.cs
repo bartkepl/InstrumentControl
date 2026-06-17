@@ -1,6 +1,9 @@
-﻿using System.Collections.ObjectModel;
+﻿using System.Collections.Concurrent;
+using System.Collections.ObjectModel;
 using System.IO;
+using System.Text;
 using System.Windows;
+using System.Windows.Threading;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using InstrumentControl.App.Controls;
@@ -59,6 +62,8 @@ public partial class SequenceEditorViewModel : ViewModelBase
     private MainWindowViewModel _mainVm;
     private readonly ILogService _logService;
     private readonly Stack<SequenceDefinition> _undoStack = new();
+    private readonly ConcurrentQueue<string> _pendingLogs = new();
+    private readonly StringBuilder _logBuilder = new();
 
     [ObservableProperty] private ObservableCollection<SequenceBlockVm> _blocks = new();
     [ObservableProperty] private ObservableCollection<ConnectionVm> _connections = new();
@@ -115,12 +120,18 @@ public partial class SequenceEditorViewModel : ViewModelBase
             RunOnUi(() => ErrorWindow.ShowException("Sequence error", ex));
         };
 
-        // Mirror Sequence-source entries into the embedded console (SequenceEditorView panel)
+        // Mirror Sequence-source entries into the embedded console (SequenceEditorView panel).
+        // Entries are queued and flushed in batches via a timer to avoid flooding the dispatcher
+        // with thousands of individual BeginInvoke calls during fast loops.
         logService.EntryAdded += (_, entry) =>
         {
             if (entry.Source == LogSource.Sequence)
-                RunOnUi(() => LogText += entry.Formatted + "\n");
+                _pendingLogs.Enqueue(entry.Formatted);
         };
+
+        var logFlushTimer = new DispatcherTimer { Interval = TimeSpan.FromMilliseconds(100) };
+        logFlushTimer.Tick += (_, _) => FlushSequenceLog();
+        logFlushTimer.Start();
 
         SequenceName = LocalizationService.Get("VM_NewSequenceName");
         SequenceStatus = LocalizationService.Get("VM_SeqStatus_Ready");
@@ -130,6 +141,28 @@ public partial class SequenceEditorViewModel : ViewModelBase
             OnPropertyChanged(nameof(IsPaused));
             OnPropertyChanged(nameof(SequenceStatusDisplay));
         });
+    }
+
+    private void FlushSequenceLog()
+    {
+        if (_pendingLogs.IsEmpty) return;
+        while (_pendingLogs.TryDequeue(out var line))
+            _logBuilder.AppendLine(line);
+        const int maxLen = 100_000;
+        if (_logBuilder.Length > maxLen)
+        {
+            var s = _logBuilder.ToString();
+            var cut = s.IndexOf('\n', s.Length - 80_000);
+            _logBuilder.Clear();
+            _logBuilder.Append(cut >= 0 ? s[(cut + 1)..] : s[^80_000..]);
+        }
+        LogText = _logBuilder.ToString();
+    }
+
+    partial void OnLogTextChanged(string value)
+    {
+        if (string.IsNullOrEmpty(value))
+            _logBuilder.Clear();
     }
 
     public void RefreshAvailableBlocks(IEnumerable<IInstrumentDriver> drivers)
