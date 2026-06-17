@@ -43,12 +43,24 @@ If identification fails (the instrument does not respond to `*IDN?` or the respo
 
 ## Manual Driver Selection
 
-Use the **Driver** drop-down to override auto-detection:
+Use the **Driver** list to override auto-detection:
 
 1. Select a resource
-2. Expand the **Driver** drop-down
-3. Choose the correct driver from the list of all installed plugins
-4. Click **Connect**
+2. Pick the correct driver from the list of all installed plugins (after a successful `*IDN?` match, non-matching drivers are dimmed but still selectable)
+3. Click **Connect**
+
+---
+
+## Instrument Label & Automatic Naming
+
+The **Instrument label** field (in the *Options* section) sets the name shown in the sidebar, the Front Panel tab, and the *Instrument* selector inside sequence blocks.
+
+When you pick a driver, the field is **pre-filled automatically**:
+
+- The first instance of a driver gets the driver name — e.g. `HP34401A`.
+- Each additional instance of the same driver type is numbered — `HP34401A No.2`, `HP34401A No.3`, …
+
+The numbering is based on the instruments already connected. You can overwrite the suggested label with any name you like before clicking **Connect**; the label is what sequence blocks use to address the instrument, so unique, memorable names (e.g. `DMM_input`, `PSU_5V`) make sequences easier to read.
 
 ---
 
@@ -77,9 +89,14 @@ Each connected instrument:
 
 ---
 
-## Disconnecting
+## Disconnecting and Reconnecting
 
-Right-click an instrument in the sidebar and choose **Disconnect**, or select it and click the **−** (remove) button. The VISA session is closed and the instrument row is removed. Any sequence blocks that referenced it will log an error when executed.
+There are two distinct actions:
+
+- **Remove** — click the **✕** button on the instrument's row in the sidebar. The VISA session is closed and the instrument is removed from the list entirely. Any sequence blocks that referenced it will log an error when executed.
+- **Disconnect / Reconnect** — use the **Disconnect** button on the instrument's [Front Panel](front-panel.md) toolbar. This closes the session but keeps the instrument in the list, and a **Reconnect** button appears in its place to re-open the same resource later.
+
+Disconnecting one instrument never affects the others — each row owns its own connection.
 
 ---
 

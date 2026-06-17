@@ -46,7 +46,8 @@
                             <TextBlock Text="{DynamicResource FrontPanel_Reconnect}"/>
                         </Button>
                         <Button Style="{StaticResource PrimaryButtonStyle}"
-                                Command="{Binding ResetCommand}" Margin="4,0">
+                                Command="{Binding ResetCommand}" Margin="4,0"
+                                Visibility="{Binding IsConnected, Converter={StaticResource BoolToVis}}">
                             <TextBlock Text="{DynamicResource FrontPanel_Reset}"/>
                         </Button>
                     </StackPanel>

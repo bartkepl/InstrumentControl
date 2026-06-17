@@ -73,6 +73,10 @@ All noise is generated with the Box-Muller Gaussian transform (not uniform `Next
 
 Responses can be overridden for individual commands via `SetResponse(command, value)`.
 
+### Disconnect / Reconnect
+
+`VisaConnectionProvider.CloseAsync()` releases the native session with `viClose`. `OpenAsync()` is reconnect-aware: when called on a provider whose session was previously closed, it re-acquires a fresh session via `viOpen` (re-applying the timeout) instead of reusing the dead handle. This is what lets a driver's `ReconnectAsync()` restore a connection to the same resource after a front-panel **Disconnect** — see [Front Panel → Connection toolbar](../user-guide/front-panel.md#connection-toolbar). The simulated and serial providers reconnect the same way (toggling `IsOpen` / reopening the COM port).
+
 See [Simulation Mode](../user-guide/simulation-mode.md) in the User Guide for the full table of simulated values.
 
 ### P/Invoke Bindings
@@ -200,8 +204,7 @@ while (current is not null)
 {
     if (ct.IsCancellationRequested) break;
 
-    if (_pauseSource is not null)
-        await _pauseSource.Task;   // suspends here until Resume()
+    await ctx.WaitIfPausedAsync();   // suspends here until Resume() (also honored inside LoopBlock)
 
     StateChanged?.Invoke(this, SequenceState.Running);
     BlockStarted?.Invoke(this, current.BlockId);
@@ -227,7 +230,14 @@ while (current is not null)
 
 ### Pause / Resume
 
-Pause is implemented using a `TaskCompletionSource<bool>`. When `Pause()` is called, a new `TCS` is created. The execution loop `await`s `_pauseSource.Task` before each block. `Resume()` calls `_pauseSource.SetResult(true)` and nulls the source.
+Pause is implemented as a **shared pause gate** on `SequenceContext`, backed by a `TaskCompletionSource`. `SequenceEngine.Pause()` / `Resume()` call `context.SetPaused(true/false)`; any code with access to the context can suspend by awaiting `context.WaitIfPausedAsync()`.
+
+The gate is awaited in two places, which is what makes pause work **inside loops**:
+
+- the engine's top-level execution loop, before each block, and
+- inside `LoopBlock` — on **every iteration** and before each block of the loop body.
+
+Because of this, pressing Pause during a long-running loop halts within one iteration instead of waiting for the whole loop to finish. `WaitIfPausedAsync()` also observes the `CancellationToken`, so **Stop works while paused** (the await throws `OperationCanceledException`).
 
 This approach uses zero CPU while paused (no polling).
 

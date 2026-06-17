@@ -85,6 +85,7 @@ nav:
     - Block Reference: user-guide/blocks-reference.md
     - Data Viewer: user-guide/data-viewer.md
     - Language / Localization: user-guide/language.md
+    - Automatic Updates: user-guide/automatic-updates.md
     - Instruments:
       - HP 34401A (DMM): user-guide/instruments/hp34401a.md
       - Agilent 34970A (DAQ): user-guide/instruments/agilent34970a.md
@@ -99,3 +100,4 @@ nav:
     - Core Interfaces: developer-guide/interfaces.md
     - Services Reference: developer-guide/services.md
     - Custom Blocks: developer-guide/custom-blocks.md
+    - Testing & CI: developer-guide/testing.md

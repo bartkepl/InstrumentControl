@@ -16,8 +16,9 @@ Key capabilities at a glance:
 
 | Feature | Description |
 |---|---|
-| **Virtual front panels** | Per-instrument UI that mirrors the physical device's controls |
+| **Virtual front panels** | Per-instrument UI that mirrors the physical device's controls, with independent Disconnect / Reconnect / Reset per instrument |
 | **Drag-and-drop sequences** | Build automated measurement programs by connecting blocks on a canvas |
+| **Responsive execution** | Pause works mid-loop and the UI stays responsive even in tight zero-delay loops; DMM drivers cache configuration so repeated reads issue only `READ?` |
 | **Live charts** | OxyPlot graphs and data tables update in real time during sequence runs |
 | **Plugin DLLs** | Each instrument driver is an independent DLL — drop it in the `instruments/` folder and restart |
 | **VISA auto-discovery** | Scans USB, GPIB, TCPIP and serial ports; sends `*IDN?` to identify devices automatically |

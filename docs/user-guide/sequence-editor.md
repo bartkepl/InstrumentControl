@@ -13,7 +13,10 @@ The canvas occupies the main area of the **Sequence Editor** tab.
 | **Block toolbox** (left panel) | Lists all available blocks, grouped by category and instrument |
 | **Canvas** (centre) | Infinite drag-and-drop surface where you arrange blocks |
 | **Properties panel** (right) | Opens when you double-click a block; shows editable fields |
-| **Toolbar** | Run ▶, Pause ⏸, Stop ■, New, Open, Save |
+| **Editor toolbar** | New, Open, Save — sequence-file actions only |
+
+!!! note "Run / Pause / Stop live in the main toolbar"
+    Execution is controlled from the **global toolbar at the top of the main window** (Run ▶, Pause/Resume ⏸, Stop ■), not from the Sequence Editor tab. This keeps a single source of truth for sequence control regardless of which tab is active. The editor's own toolbar carries only the file actions (New / Open / Save).
 
 ---
 
@@ -59,17 +62,19 @@ Right-click a block and choose *Delete*, or select it and press **Delete**.
 
 ### Running a Sequence
 
-Click **Run** (▶) or press `F5`. Execution starts at the **StartBlock** and follows the connection arrows.
+Click **Run** (▶) in the main toolbar. Execution starts at the **StartBlock** and follows the connection arrows.
 
-The currently-running block is highlighted. The **Log** tab shows step-by-step progress messages.
+The currently-running block is highlighted. The **Log** tab shows step-by-step progress messages. Block highlighting is refreshed on a timer rather than per-block, so the window **stays responsive even during tight loops** with thousands of zero-delay iterations — you can still scroll, switch tabs, and click Stop.
 
 ### Pausing and Resuming
 
-Click **Pause** (⏸) or press `F7`. Execution suspends after the current block finishes. Click **Resume** (▶) or press `F5` again to continue.
+Click **Pause** (⏸). Execution suspends and the status changes to *Paused*; the button becomes **Resume** (▶) — click it to continue from the same point.
+
+Pause takes effect **mid-loop**: the engine checks a pause gate on every loop iteration (and before each block in a loop body), so a long `LoopBlock` halts within one iteration instead of running to completion first.
 
 ### Stopping
 
-Click **Stop** (■) or press `F8`. The current block is interrupted and the sequence ends. If a block was in the middle of a VISA command, the command is cancelled.
+Click **Stop** (■). The current block is interrupted and the sequence ends. If a block was in the middle of a VISA command, the command is cancelled. Stop also works while the sequence is paused.
 
 ### Execution Limits
 
@@ -97,11 +102,11 @@ Variables hold either a `double` (number) or a `string`. If a block writes a num
 
 ## Saving and Loading Sequences
 
-Sequences are stored as **JSON files** (`.seq`):
+Sequences are stored as **JSON files** (`.iseq`):
 
-- **Save** — click the floppy-disk icon or press `Ctrl+S`; choose a file path
-- **Open** — click the folder icon or press `Ctrl+O`; browse to a `.seq` file
-- **New** — click the document icon or press `Ctrl+N`; clears the canvas and starts a fresh sequence
+- **Save** — click the floppy-disk icon; on first save you choose a file path, after that it overwrites
+- **Open** — click the folder icon; browse to an `.iseq` file
+- **New** — click the document icon; clears the canvas and starts a fresh sequence (a StartBlock is added automatically)
 
 The JSON file stores block positions, types, properties, and connection IDs. It is human-readable and can be edited in any text editor if needed.
 

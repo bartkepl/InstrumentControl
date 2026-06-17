@@ -32,6 +32,9 @@ public static class Program
 
     private static void CheckAndApplyUpdateBeforeStart()
     {
+        // Holds the version under attempt so the failure handler can record it
+        // without issuing a second (un-timed) network call at startup.
+        string? targetVersion = null;
         try
         {
             var source  = new GithubSource(RepoUrl, null, false);
@@ -40,22 +43,31 @@ public static class Program
             if (!manager.IsInstalled)
                 return;
 
-            var cts = new System.Threading.CancellationTokenSource(TimeSpan.FromSeconds(10));
-            var updateInfo = manager.CheckForUpdatesAsync().GetAwaiter().GetResult();
+            // CheckForUpdatesAsync() has no cancellation overload in Velopack 1.2.0,
+            // so enforce the startup timeout with a bounded wait. On timeout the
+            // background call is abandoned and startup proceeds without updating.
+            var checkTask = manager.CheckForUpdatesAsync();
+            if (!checkTask.Wait(TimeSpan.FromSeconds(10)))
+            {
+                LogUpdate("Update check timed out — skipping");
+                return;
+            }
+
+            var updateInfo = checkTask.GetAwaiter().GetResult();
             if (updateInfo == null)
                 return;
 
-            var version = updateInfo.TargetFullRelease.Version.ToString();
+            targetVersion = updateInfo.TargetFullRelease.Version.ToString();
 
             var (skippedVersion, failCount) = LoadUpdateState();
-            if (version == skippedVersion && failCount >= MaxUpdateAttempts)
+            if (targetVersion == skippedVersion && failCount >= MaxUpdateAttempts)
             {
-                LogUpdate($"Skipping version {version} — {failCount} previous failures");
+                LogUpdate($"Skipping version {targetVersion} — {failCount} previous failures");
                 return;
             }
 
             var result = MessageBox.Show(
-                $"Dostępna jest nowa wersja: {version}\n\nCzy chcesz zaktualizować teraz?\n(Aplikacja uruchomi się ponownie po aktualizacji)",
+                $"Dostępna jest nowa wersja: {targetVersion}\n\nCzy chcesz zaktualizować teraz?\n(Aplikacja uruchomi się ponownie po aktualizacji)",
                 "Aktualizacja dostępna",
                 MessageBoxButton.YesNo,
                 MessageBoxImage.Information);
@@ -63,9 +75,9 @@ public static class Program
             if (result != MessageBoxResult.Yes)
                 return;
 
-            LogUpdate($"Downloading update {version}...");
+            LogUpdate($"Downloading update {targetVersion}...");
             manager.DownloadUpdatesAsync(updateInfo).GetAwaiter().GetResult();
-            LogUpdate($"Applying update {version}...");
+            LogUpdate($"Applying update {targetVersion}...");
             manager.ApplyUpdatesAndRestart(updateInfo);
         }
         catch (OperationCanceledException)
@@ -74,8 +86,14 @@ public static class Program
         }
         catch (Exception ex)
         {
-            LogUpdate($"Update failed: {ex.Message}");
-            RecordFailure(ex);
+            // Task.Wait wraps faults in AggregateException — unwrap for a useful message.
+            var message = (ex as AggregateException)?.GetBaseException().Message ?? ex.Message;
+            LogUpdate($"Update failed: {message}");
+            // Only count a failure against a concrete target version (download/apply
+            // stage). A failure before the version is known is a transient check error,
+            // not a reason to permanently skip a version.
+            if (targetVersion != null)
+                RecordFailure(targetVersion);
         }
     }
 
@@ -94,22 +112,17 @@ public static class Program
         catch { return (null, 0); }
     }
 
-    private static void RecordFailure(Exception ex)
+    private static void RecordFailure(string version)
     {
         try
         {
-            var source = new GithubSource(RepoUrl, null, false);
-            var manager = new UpdateManager(source);
-            var info = manager.CheckForUpdatesAsync().GetAwaiter().GetResult();
-            if (info == null) return;
-
-            var version = info.TargetFullRelease.Version.ToString();
             var (savedVersion, failCount) = LoadUpdateState();
             int newCount = version == savedVersion ? failCount + 1 : 1;
 
             Directory.CreateDirectory(SettingsDir);
             File.WriteAllText(UpdateStateFile,
                 $"{{\"version\":\"{version}\",\"failCount\":{newCount}}}");
+            LogUpdate($"Recorded failure {newCount}/{MaxUpdateAttempts} for version {version}");
         }
         catch { }
     }

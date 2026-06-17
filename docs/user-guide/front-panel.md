@@ -12,6 +12,20 @@ When multiple instruments are connected, use the **instrument selector** (drop-d
 
 ---
 
+## Connection toolbar
+
+Above every front panel is a small toolbar with the instrument title, its resource string, and connection controls:
+
+| Button | When shown | Action |
+|---|---|---|
+| **Disconnect** | While connected | Closes the connection to **this** instrument only — other connected instruments are unaffected. |
+| **Reconnect** | While disconnected | Re-opens the connection to the same instrument (same resource/transport) and re-reads its identification. |
+| **Reset** | While connected | Sends `*RST` / `*CLS` to return the instrument to its default state. |
+
+Disconnecting from the front panel leaves the instrument in the sidebar list so you can reconnect it later; it does not remove the instrument. To remove it entirely, use the **✕** button in the sidebar.
+
+---
+
 ## HP 34401A / Keithley 2000 — DMM Front Panel
 
 The DMM front panel provides:

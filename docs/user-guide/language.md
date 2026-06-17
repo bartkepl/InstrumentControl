@@ -47,8 +47,8 @@ UI strings are stored in XAML resource dictionaries under `src/InstrumentControl
 
 | File | Language | Entries |
 |---|---|---|
-| `Strings.en.xaml` | English | 134 |
-| `Strings.pl.xaml` | Polish | 134 |
+| `Strings.en.xaml` | English | 282 |
+| `Strings.pl.xaml` | Polish | 282 |
 
 Each file is a standard WPF `ResourceDictionary` containing `<sys:String>` entries:
 
@@ -57,9 +57,9 @@ Each file is a standard WPF `ResourceDictionary` containing `<sys:String>` entri
 <ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                     xmlns:sys="clr-namespace:System;assembly=mscorlib">
-    <sys:String x:Key="AddInstrument">Add Instrument</sys:String>
-    <sys:String x:Key="Run">Run</sys:String>
-    <sys:String x:Key="Pause">Pause</sys:String>
+    <sys:String x:Key="Toolbar_AddInstrument">➕ Add Instrument</sys:String>
+    <sys:String x:Key="Toolbar_Run">▶ Run</sys:String>
+    <sys:String x:Key="DriverDesc_HP34401A">6½-digit digital multimeter</sys:String>
     ...
 </ResourceDictionary>
 ```
@@ -67,10 +67,20 @@ Each file is a standard WPF `ResourceDictionary` containing `<sys:String>` entri
 All XAML views bind to string resources with `{DynamicResource Key}`:
 
 ```xml
-<Button Content="{DynamicResource AddInstrument}" />
+<Button Content="{DynamicResource Toolbar_AddInstrument}" />
 ```
 
-Using `DynamicResource` (instead of `StaticResource`) is what enables the live switch — WPF re-evaluates all dynamic bindings when the resource dictionary is swapped.
+Using `DynamicResource` (instead of `StaticResource`) is what enables the live switch — WPF re-evaluates all dynamic bindings when the resource dictionary is swapped. C# code that needs a localized string reads it through `LocalizationService.Get("Key")` (or `TryGet`, which returns `null` for missing keys).
+
+### Intentionally English-only text
+
+Some strings are kept in English in **both** language files because they are technical:
+
+- **Log tab headers** (`LogTab_All`, `LogTab_Sequence`, `LogTab_VISA`, `LogTab_Serial`, `LogTab_Events`, `LogTab_Instruments`, `LogTab_Debug`) and the log content itself — instrument communication logs are read in English.
+
+### Localized instrument descriptions
+
+The driver descriptions shown in the **Add Instrument** dialog come from `DriverDesc_<DriverName>` keys (e.g. `DriverDesc_HP34401A`), one per installed driver, so they switch language with the rest of the UI. If a key is missing, the dialog falls back to the driver's built-in `Description` property.
 
 ### LocalizationService
 
@@ -83,6 +93,6 @@ Using `DynamicResource` (instead of `StaticResource`) is what enables the live s
 ### Adding a Third Language
 
 1. Copy `Strings.en.xaml` to `Strings.xx.xaml` (where `xx` is the BCP 47 language tag, e.g. `de` for German)
-2. Translate all 134 string values
+2. Translate all 282 string values (leave the `LogTab_*` keys in English)
 3. In `LocalizationService.SetLanguage()`, add `"xx"` to the list of supported codes and map it to the new file path
 4. Add the language option to the `AboutWindow` XAML combo-box items

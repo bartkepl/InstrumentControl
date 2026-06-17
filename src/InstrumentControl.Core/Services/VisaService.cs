@@ -7,8 +7,9 @@ namespace InstrumentControl.Core.Services;
 
 public class VisaConnectionProvider : IConnectionProvider
 {
-    private readonly IntPtr _session;
+    private IntPtr _session;
     private readonly IntPtr _rm;
+    private readonly uint _timeoutMs;
     private bool _disposed;
 
     public string ResourceName { get; }
@@ -17,15 +18,30 @@ public class VisaConnectionProvider : IConnectionProvider
 
     internal Action<string>? Log { get; set; }
 
-    internal VisaConnectionProvider(string resourceName, IntPtr rm, IntPtr session)
+    internal VisaConnectionProvider(string resourceName, IntPtr rm, IntPtr session, uint timeoutMs = 5000)
     {
         ResourceName = resourceName;
         _rm = rm;
         _session = session;
+        _timeoutMs = timeoutMs;
         IsOpen = true;
     }
 
-    public Task OpenAsync() { IsOpen = true; return Task.CompletedTask; }
+    public Task OpenAsync()
+    {
+        // Already open (initial connect) — nothing to do.
+        if (IsOpen) return Task.CompletedTask;
+
+        // Re-open a session that was previously closed via CloseAsync (Reconnect).
+        // The old native handle was released by viClose, so acquire a fresh one.
+        int status = NiVisa.viOpen(_rm, ResourceName, 0, _timeoutMs, out _session);
+        if (status < 0)
+            throw new InvalidOperationException(
+                $"Cannot reopen VISA resource '{ResourceName}': 0x{status:X8}");
+        NiVisa.viSetAttribute(_session, NiVisa.VI_ATTR_TMO_VALUE, _timeoutMs);
+        IsOpen = true;
+        return Task.CompletedTask;
+    }
 
     public Task CloseAsync()
     {
@@ -559,7 +575,7 @@ public class VisaService
         int status = NiVisa.viOpen(_rm, resourceName, 0, (uint)timeoutMs, out var session);
         if (status < 0) throw new InvalidOperationException($"Cannot open VISA resource '{resourceName}': 0x{status:X8}");
         NiVisa.viSetAttribute(session, NiVisa.VI_ATTR_TMO_VALUE, (uint)timeoutMs);
-        var provider = new VisaConnectionProvider(resourceName, _rm, session);
+        var provider = new VisaConnectionProvider(resourceName, _rm, session, (uint)timeoutMs);
         provider.Log = VisaLog;
         return provider;
     }

@@ -10,7 +10,7 @@ Built with .NET 8 WPF, a plugin DLL architecture, and a visual Scratch-like sequ
 
 ## Features
 
-- **Virtual front panels** — realistic per-instrument UI with controls matching the real device
+- **Virtual front panels** — realistic per-instrument UI with controls matching the real device; each panel has its own Disconnect / Reconnect / Reset controls that act on that instrument only
 - **Live Data window** — floating OxyPlot chart + measurement table, one window per instrument
 - **Visual sequence editor** — drag-and-drop block programming (Start → Measure → Loop → Save CSV → End)
 - **VISA auto-discovery** — scans USB, GPIB, TCPIP and serial for connected instruments
@@ -18,6 +18,7 @@ Built with .NET 8 WPF, a plugin DLL architecture, and a visual Scratch-like sequ
 - **Instrument auto-detection** — sends `*IDN?` to the selected resource and highlights the matching driver automatically
 - **Simulation mode** — runs without NI-VISA installed; great for UI development
 - **Plugin architecture** — each instrument is an independent DLL, loaded at runtime
+- **Efficient repeated measurements** — DMM drivers cache the active configuration and re-send `CONF`/`SENS` only when the function, range or NPLC actually changes, so tight measurement loops issue just `READ?`
 - **Data viewer** — live charts and tables from sequence runs
 - **UI language** — English and Polish; switch any time from the About dialog, no restart required; choice is saved to `%LocalAppData%\InstrumentControl\settings.json`
 - **About dialog** — version, author and GitHub link accessible via the toolbar
@@ -52,12 +53,14 @@ UI strings are stored in XAML resource dictionaries inside `src/InstrumentContro
 
 | File | Language |
 |---|---|
-| `Strings.en.xaml` | English (134 entries) |
-| `Strings.pl.xaml` | Polish (134 entries) |
+| `Strings.en.xaml` | English (282 entries) |
+| `Strings.pl.xaml` | Polish (282 entries) |
 
 All XAML bindings use `{DynamicResource Key}` so the switch is live. `LocalizationService` (singleton, initialized in `App.xaml.cs`) handles loading the saved language on startup and swapping the active resource dictionary when the user changes the setting.
 
-To add a third language, create `Strings.xx.xaml` with the same 134 keys and register `"xx"` as a supported code in `LocalizationService.SetLanguage()`.
+Two categories are intentionally kept in English in **both** languages: the **log tab headers** (`LogTab_*`) and other purely technical log text, since instrument logs are read in English. Instrument driver descriptions shown in the *Add Instrument* dialog are localized through `DriverDesc_<DriverName>` keys.
+
+To add a third language, create `Strings.xx.xaml` with the same 282 keys and register `"xx"` as a supported code in `LocalizationService.SetLanguage()`.
 
 ---
 
@@ -99,7 +102,9 @@ InstrumentControl-x.y.z-win-Setup.exe --installDir "D:\Lab\InstrumentControl"
 
 When installed via the Setup EXE, the application checks GitHub Releases for a newer version on every launch — **before the main window opens**. If an update is found, a dialog appears asking whether to update now. Choosing **Yes** downloads only the changed files (delta update) and restarts the app into the new version. Choosing **No** skips the update and launches normally.
 
-Update checks require an internet connection. If GitHub is unreachable (e.g. isolated lab network), the check silently times out and the app starts normally.
+Update checks require an internet connection. If GitHub is unreachable (e.g. isolated lab network), the check times out after 10 seconds and the app starts normally.
+
+To guard against a broken release causing an endless download → restart → download loop, each failed download/apply attempt is recorded in `%LocalAppData%\InstrumentControl\update_state.json`. After **3** failed attempts on the same version, that version is skipped until a newer one is published. All update activity is logged to `%LocalAppData%\InstrumentControl\update.log`.
 
 ## Quick Start
 
@@ -149,6 +154,16 @@ For a debug build:
 
 > **Note:** Close `InstrumentControl.exe` before rebuilding — the running process locks the output DLLs (`MSB3027`).
 
+## Testing
+
+Unit tests live in `tests/InstrumentControl.Core.Tests` (xUnit) and cover the UI-independent core logic — the sequence engine state machine, `LoopBlock` iteration/cancellation, the pause gate in `SequenceContext`, and `*IDN?` parsing / reconnect in `InstrumentDriverBase`.
+
+```powershell
+dotnet test tests/InstrumentControl.Core.Tests
+```
+
+The GitHub Actions workflow (`release.yml`) runs `dotnet test` **before** the build/publish steps on every push and pull request, so a failing test blocks the release. See the [Testing & CI](docs/developer-guide/testing.md) guide for details.
+
 ## Project Structure
 
 ```
@@ -164,24 +179,26 @@ InstrumentControl.sln
 │       ├── Controls/                  # BlockCanvas (drag-and-drop), BlockPropertiesEditor
 │       ├── ViewModels/                # MainWindow, SequenceEditor, DataViewer, ConnectionManager
 │       └── Views/                     # XAML views and windows
-└── instruments/
-    ├── HP34401A/                      # HP 34401A plugin DLL
-    │   ├── HP34401ADriver.cs          # SCPI driver
-    │   ├── HP34401ABlocks.cs          # 8 sequence blocks
-    │   └── Views/                     # Front panel XAML + ViewModel
-    ├── Agilent34970A/                 # Agilent 34970A plugin DLL
-    ├── Keithley2000/                  # Keithley 2000 plugin DLL
-    ├── ItechIT6922B/                  # ITECH IT6922B DC power supply plugin DLL
-    ├── RTB2004/                       # R&S RTB2004 oscilloscope plugin DLL
-    ├── CTSChamber/                    # CTS T-40/50 environmental chamber plugin DLL
-    │   ├── CTSSerialConnectionProvider.cs  # Custom IConnectionProvider — CTS binary ASCII framing
-    │   ├── CTSChamberDriver.cs             # Driver (overrides ConnectAsync to use CTS provider)
-    │   ├── CTSChamberBlocks.cs             # 7 sequence blocks
-    │   └── Views/                          # Front panel XAML + ViewModel
-    └── RigolDS1000Z/                  # Rigol DS1054Z/DS1104Z oscilloscope plugin DLL
-        ├── RigolDS1000ZDriver.cs           # SCPI driver (channel, timebase, trigger, measure, waveform)
-        ├── RigolDS1000ZBlocks.cs           # 13 sequence blocks
-        └── Views/                          # Front panel XAML + ViewModel
+├── instruments/
+│   ├── HP34401A/                      # HP 34401A plugin DLL
+│   │   ├── HP34401ADriver.cs          # SCPI driver
+│   │   ├── HP34401ABlocks.cs          # 8 sequence blocks
+│   │   └── Views/                     # Front panel XAML + ViewModel
+│   ├── Agilent34970A/                 # Agilent 34970A plugin DLL
+│   ├── Keithley2000/                  # Keithley 2000 plugin DLL
+│   ├── ItechIT6922B/                  # ITECH IT6922B DC power supply plugin DLL
+│   ├── RTB2004/                       # R&S RTB2004 oscilloscope plugin DLL
+│   ├── CTSChamber/                    # CTS T-40/50 environmental chamber plugin DLL
+│   │   ├── CTSSerialConnectionProvider.cs  # Custom IConnectionProvider — CTS binary ASCII framing
+│   │   ├── CTSChamberDriver.cs             # Driver (overrides ConnectAsync to use CTS provider)
+│   │   ├── CTSChamberBlocks.cs             # 7 sequence blocks
+│   │   └── Views/                          # Front panel XAML + ViewModel
+│   └── RigolDS1000Z/                  # Rigol DS1054Z/DS1104Z oscilloscope plugin DLL
+│       ├── RigolDS1000ZDriver.cs           # SCPI driver (channel, timebase, trigger, measure, waveform)
+│       ├── RigolDS1000ZBlocks.cs           # 13 sequence blocks
+│       └── Views/                          # Front panel XAML + ViewModel
+└── tests/
+    └── InstrumentControl.Core.Tests/  # xUnit tests (SequenceEngine, LoopBlock, SequenceContext, InstrumentDriverBase)
 ```
 
 ## Adding a New Instrument Plugin
