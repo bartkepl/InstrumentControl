@@ -505,6 +505,34 @@
   
   
     <li class="md-nav__item">
+      <a href="../../user-guide/simulation-mode/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Simulation Mode
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../../user-guide/front-panel/" class="md-nav__link">
         
   
@@ -660,10 +688,10 @@
         
           
         
-        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_2_9" >
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_2_10" >
         
           
-          <label class="md-nav__link" for="__nav_2_9" id="__nav_2_9_label" tabindex="0">
+          <label class="md-nav__link" for="__nav_2_10" id="__nav_2_10_label" tabindex="0">
             
   
   
@@ -681,8 +709,8 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_2_9_label" aria-expanded="false">
-          <label class="md-nav__title" for="__nav_2_9">
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_2_10_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2_10">
             <span class="md-nav__icon md-icon"></span>
             
   
@@ -1145,6 +1173,17 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#simulatedconnectionprovider" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        SimulatedConnectionProvider
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#pinvoke-bindings" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1426,6 +1465,17 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#simulatedconnectionprovider" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        SimulatedConnectionProvider
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#pinvoke-bindings" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1643,14 +1693,116 @@
 <a id="__codelineno-0-12" name="__codelineno-0-12" href="#__codelineno-0-12"></a><span class="p">}</span>
 </code></pre></div>
 <h3 id="simulation-mode">Simulation Mode<a class="headerlink" href="#simulation-mode" title="Permanent link">&para;</a></h3>
-<p>If the NI-VISA DLL (<code>visa32.dll</code> or <code>visa64.dll</code>) is not found in the standard NI-VISA installation paths, <code>VisaService</code> activates simulation mode:</p>
+<p>If the NI-VISA DLL (<code>visa32.dll</code> or <code>visa64.dll</code>) is not found, <code>VisaService</code> activates simulation mode:</p>
 <ul>
-<li><code>IsVisa</code> returns <code>false</code></li>
-<li><code>FindResources()</code> returns <code>["SIMULATED"]</code></li>
-<li><code>OpenSession("SIMULATED")</code> returns a <code>SimulatedConnectionProvider</code></li>
+<li><code>IsSimulationMode</code> returns <code>true</code></li>
+<li><code>FindResources()</code> returns a set of <code>SIM::</code> resource strings, one per supported instrument type</li>
+<li><code>OpenSimulated(resourceName)</code> returns a <code>SimulatedConnectionProvider</code></li>
 <li>The status bar displays <code>VISA: Simulation</code></li>
 </ul>
-<p>The <code>SimulatedConnectionProvider</code> returns <code>"+1.234567E+00"</code> for any <code>QueryAsync()</code> call. This value can be overridden per query prefix in the static defaults table inside <code>SimulatedConnectionProvider</code>.</p>
+<h3 id="simulatedconnectionprovider">SimulatedConnectionProvider<a class="headerlink" href="#simulatedconnectionprovider" title="Permanent link">&para;</a></h3>
+<p><code>SimulatedConnectionProvider</code> is a stateful SCPI / protocol simulator. It parses every <code>WriteAsync</code> call to track instrument state, then returns context-appropriate responses to <code>QueryAsync</code> / <code>ReadAsync</code>.</p>
+<p><strong>State tracked across Write calls:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Write command</th>
+<th>State updated</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>CONF:VOLT:DC</code>, <code>CONF:RES</code>, …</td>
+<td>Active DMM function (<code>_confFunc</code>)</td>
+</tr>
+<tr>
+<td><code>SAMP:COUN N</code></td>
+<td>Burst sample count</td>
+</tr>
+<tr>
+<td><code>ROUT:SCAN (@...)</code></td>
+<td>Number of channels to return on next <code>FETCH?</code></td>
+</tr>
+<tr>
+<td><code>VOLT x</code></td>
+<td>Power supply voltage set-point</td>
+</tr>
+<tr>
+<td><code>CURR x</code></td>
+<td>Power supply current limit</td>
+</tr>
+<tr>
+<td><code>OUTP ON/OFF</code></td>
+<td>Power supply output state</td>
+</tr>
+<tr>
+<td><code>VOLT:PROT x</code>, <code>CURR:PROT:LEV x</code></td>
+<td>OVP / OCP levels</td>
+</tr>
+<tr>
+<td><code>a0 x</code> (CTS)</td>
+<td>Chamber temperature set-point + timestamp reset</td>
+</tr>
+<tr>
+<td><code>u0 x</code> / <code>d0 x</code> (CTS)</td>
+<td>Ramp-up / ramp-down rate (K/min)</td>
+</tr>
+<tr>
+<td><code>s1 1</code> / <code>s1 0</code> (CTS)</td>
+<td>Chamber running state</td>
+</tr>
+<tr>
+<td><code>TIM:SCAL x</code></td>
+<td>Oscilloscope timebase</td>
+</tr>
+<tr>
+<td><code>CHANn:SCAL x</code></td>
+<td>Oscilloscope channel scale</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Selected query responses:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Query</th>
+<th>Response</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>*IDN?</code></td>
+<td><code>SIMULATED,INSTRUMENT,SIM001,1.0</code></td>
+</tr>
+<tr>
+<td><code>READ?</code> / <code>FETCH?</code></td>
+<td>Value(s) matching last <code>CONF:</code> function, Gaussian noise applied</td>
+</tr>
+<tr>
+<td><code>MEAS:VOLT?</code></td>
+<td>PSU set-point ± 2 mV (or <code>0</code> if output OFF)</td>
+</tr>
+<tr>
+<td><code>MEAS:CURR?</code></td>
+<td>≈ 8 % of current limit ± 1 mA (or <code>0</code> if output OFF)</td>
+</tr>
+<tr>
+<td><code>CHANn:DATA?</code></td>
+<td>1 000-point 1 kHz sine wave ASCII</td>
+</tr>
+<tr>
+<td><code>A0</code> (CTS)</td>
+<td><code>A0 {actual} {setpoint}</code> — temperature ramps in real time</td>
+</tr>
+<tr>
+<td><code>C</code> (CTS)</td>
+<td><code>C 2.10;1.20;001;</code> (firmware identification)</td>
+</tr>
+</tbody>
+</table>
+<p>All noise is generated with the Box-Muller Gaussian transform (not uniform <code>NextDouble()</code>).</p>
+<p>Responses can be overridden for individual commands via <code>SetResponse(command, value)</code>.</p>
+<p>See <a href="../../user-guide/simulation-mode/">Simulation Mode</a> in the User Guide for the full table of simulated values.</p>
 <h3 id="pinvoke-bindings">P/Invoke Bindings<a class="headerlink" href="#pinvoke-bindings" title="Permanent link">&para;</a></h3>
 <p><code>VisaService</code> wraps the following NI-VISA C API functions:</p>
 <table>

@@ -12,13 +12,13 @@
         <meta name="author" content="Bartek">
       
       
-        <link rel="canonical" href="https://bartkepl.github.io/InstrumentControl/user-guide/connection-manager/">
+        <link rel="canonical" href="https://bartkepl.github.io/InstrumentControl/user-guide/simulation-mode/">
       
       
-        <link rel="prev" href="../quick-start/">
+        <link rel="prev" href="../connection-manager/">
       
       
-        <link rel="next" href="../simulation-mode/">
+        <link rel="next" href="../front-panel/">
       
       
         
@@ -29,7 +29,7 @@
     
     
       
-        <title>Connection Manager - InstrumentControl</title>
+        <title>Simulation Mode - InstrumentControl</title>
       
     
     
@@ -80,7 +80,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#connection-manager" class="md-skip">
+        <a href="#simulation-mode" class="md-skip">
           Skip to content
         </a>
       
@@ -120,7 +120,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Connection Manager
+              Simulation Mode
             
           </span>
         </div>
@@ -477,6 +477,34 @@
                 
   
   
+  
+  
+    <li class="md-nav__item">
+      <a href="../connection-manager/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Connection Manager
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
     
   
   
@@ -496,7 +524,7 @@
   <span class="md-ellipsis">
     
   
-    Connection Manager
+    Simulation Mode
   
 
     
@@ -514,7 +542,7 @@
   <span class="md-ellipsis">
     
   
-    Connection Manager
+    Simulation Mode
   
 
     
@@ -540,10 +568,10 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#resource-discovery" class="md-nav__link">
+  <a href="#when-is-simulation-mode-active" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Resource Discovery
+        When is Simulation Mode Active?
       
     </span>
   </a>
@@ -551,10 +579,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#automatic-identification" class="md-nav__link">
+  <a href="#connecting-a-simulated-instrument" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Automatic Identification
+        Connecting a Simulated Instrument
       
     </span>
   </a>
@@ -562,10 +590,82 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#manual-driver-selection" class="md-nav__link">
+  <a href="#simulated-values-per-instrument" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Manual Driver Selection
+        Simulated Values per Instrument
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Simulated Values per Instrument">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#multimeters-hp-34401a-keithley-2000" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Multimeters — HP 34401A, Keithley 2000
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#data-acquisition-agilent-34970a" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Data Acquisition — Agilent 34970A
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dc-power-supply-itech-it6922b" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        DC Power Supply — ITECH IT6922B
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#oscilloscopes-rs-rtb2004-rigol-ds1000z" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Oscilloscopes — R&amp;S RTB2004, Rigol DS1000Z
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#environmental-chamber-cts-t-4050" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Environmental Chamber — CTS T-40/50
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#how-noise-is-generated" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        How Noise is Generated
       
     </span>
   </a>
@@ -573,43 +673,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#connection-status" class="md-nav__link">
+  <a href="#limitations" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Connection Status
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#multiple-instruments" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Multiple Instruments
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#disconnecting" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Disconnecting
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#simulation-mode" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Simulation Mode
+        Limitations
       
     </span>
   </a>
@@ -620,34 +687,6 @@
   
 </nav>
       
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../simulation-mode/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Simulation Mode
-  
-
-    
-  </span>
-  
-  
-
-      </a>
     </li>
   
 
@@ -1289,10 +1328,10 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#resource-discovery" class="md-nav__link">
+  <a href="#when-is-simulation-mode-active" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Resource Discovery
+        When is Simulation Mode Active?
       
     </span>
   </a>
@@ -1300,10 +1339,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#automatic-identification" class="md-nav__link">
+  <a href="#connecting-a-simulated-instrument" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Automatic Identification
+        Connecting a Simulated Instrument
       
     </span>
   </a>
@@ -1311,10 +1350,82 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#manual-driver-selection" class="md-nav__link">
+  <a href="#simulated-values-per-instrument" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Manual Driver Selection
+        Simulated Values per Instrument
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Simulated Values per Instrument">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#multimeters-hp-34401a-keithley-2000" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Multimeters — HP 34401A, Keithley 2000
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#data-acquisition-agilent-34970a" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Data Acquisition — Agilent 34970A
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dc-power-supply-itech-it6922b" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        DC Power Supply — ITECH IT6922B
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#oscilloscopes-rs-rtb2004-rigol-ds1000z" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Oscilloscopes — R&amp;S RTB2004, Rigol DS1000Z
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#environmental-chamber-cts-t-4050" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Environmental Chamber — CTS T-40/50
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#how-noise-is-generated" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        How Noise is Generated
       
     </span>
   </a>
@@ -1322,43 +1433,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#connection-status" class="md-nav__link">
+  <a href="#limitations" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Connection Status
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#multiple-instruments" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Multiple Instruments
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#disconnecting" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Disconnecting
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#simulation-mode" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Simulation Mode
+        Limitations
       
     </span>
   </a>
@@ -1385,127 +1463,304 @@
   
 
 
-<h1 id="connection-manager">Connection Manager<a class="headerlink" href="#connection-manager" title="Permanent link">&para;</a></h1>
-<p>The Connection Manager is the dialog used to discover and connect to instruments. Open it by clicking <strong>Add Instrument</strong> (<code>+</code>) in the left sidebar.</p>
+<h1 id="simulation-mode">Simulation Mode<a class="headerlink" href="#simulation-mode" title="Permanent link">&para;</a></h1>
+<p>Simulation mode lets you develop and test sequences <strong>without any physical hardware or NI-VISA installation</strong>. Every instrument driver returns physically plausible values with a small amount of Gaussian noise so sequences behave realistically.</p>
 <hr />
-<h2 id="resource-discovery">Resource Discovery<a class="headerlink" href="#resource-discovery" title="Permanent link">&para;</a></h2>
-<p>When the Connection Manager opens it automatically scans for available VISA resources across all interface types:</p>
+<h2 id="when-is-simulation-mode-active">When is Simulation Mode Active?<a class="headerlink" href="#when-is-simulation-mode-active" title="Permanent link">&para;</a></h2>
+<p>Simulation mode activates automatically in two cases:</p>
+<ol>
+<li><strong>NI-VISA not installed</strong> — <code>visa64.dll</code> is not found in the standard NI installation path; the application falls back to simulation for all VISA resources.</li>
+<li><strong>Explicit checkbox</strong> — the <strong>Use Simulation</strong> checkbox in the Connection Manager is checked; this forces simulation even when NI-VISA is present.</li>
+</ol>
+<p>The status bar at the bottom of the main window shows <strong><code>VISA: Simulation</code></strong> when active.</p>
+<hr />
+<h2 id="connecting-a-simulated-instrument">Connecting a Simulated Instrument<a class="headerlink" href="#connecting-a-simulated-instrument" title="Permanent link">&para;</a></h2>
+<ol>
+<li>Click <strong>Add Instrument</strong> (<code>+</code>) in the left sidebar</li>
+<li>
+<p>Click <strong>Refresh</strong> — the resource list shows one simulated entry per supported instrument type:</p>
 <table>
 <thead>
 <tr>
-<th>Interface</th>
-<th>Example resource string</th>
-<th>Typical devices</th>
+<th>Resource</th>
+<th>Intended driver</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td>GPIB</td>
-<td><code>GPIB0::1::INSTR</code></td>
-<td>Older bench instruments</td>
+<td><code>SIM::GPIB0::22::INSTR (HP34401A)</code></td>
+<td>HP 34401A</td>
 </tr>
 <tr>
-<td>USB-TMC</td>
-<td><code>USB0::0x0957::0x0607::MY12345678::INSTR</code></td>
-<td>Modern USB instruments</td>
+<td><code>SIM::GPIB0::10::INSTR (Keithley2000)</code></td>
+<td>Keithley 2000</td>
 </tr>
 <tr>
-<td>TCPIP / LAN</td>
-<td><code>TCPIP0::192.168.1.100::inst0::INSTR</code></td>
-<td>LAN-enabled instruments</td>
+<td><code>SIM::GPIB0::09::INSTR (Agilent34970A)</code></td>
+<td>Agilent 34970A</td>
 </tr>
 <tr>
-<td>RS-232 / COM</td>
-<td><code>COM3</code></td>
-<td>Serial-only devices</td>
+<td><code>SIM::GPIB0::11::INSTR (ItechIT6922B)</code></td>
+<td>ITECH IT6922B</td>
+</tr>
+<tr>
+<td><code>SIM::TCPIP0::192.168.0.100::INSTR (RTB2004)</code></td>
+<td>R&amp;S RTB2004</td>
+</tr>
+<tr>
+<td><code>SIM::TCPIP0::192.168.0.101::INSTR (RigolDS1000Z)</code></td>
+<td>Rigol DS1000Z</td>
+</tr>
+<tr>
+<td><code>SIM::COM3 (CTSChamber)</code></td>
+<td>CTS Chamber</td>
 </tr>
 </tbody>
 </table>
-<p>The scan result is shown in the <strong>Resource List</strong>. Click <strong>Refresh</strong> to repeat the scan at any time.</p>
-<div class="admonition note">
-<p class="admonition-title">COM ports</p>
-<p>COM ports appear in the list only when a plugin that supports serial resources (e.g. the CTS Chamber driver) is loaded. The Connection Manager filters the list to show only resources that at least one installed plugin can handle.</p>
+</li>
+<li>
+<p>Select a resource, choose the matching driver, and click <strong>Connect</strong></p>
+</li>
+</ol>
+<div class="admonition tip">
+<p class="admonition-title">Tip</p>
+<p>Any <code>SIM::</code> resource works with any driver. The suggested pairings above are just for clarity. You can also type a custom resource string (e.g. <code>SIM::INSTR</code>) in the <strong>Manual Resource</strong> field.</p>
 </div>
 <hr />
-<h2 id="automatic-identification">Automatic Identification<a class="headerlink" href="#automatic-identification" title="Permanent link">&para;</a></h2>
-<p>When you select a resource from the list, InstrumentControl sends <code>*IDN?</code> (IEEE 488.2 identification query) to the instrument and parses the response. If the response matches a known driver's <code>SupportedResourcePatterns</code>, the driver is automatically highlighted in the <strong>Driver</strong> drop-down.</p>
-<p>Example <code>*IDN?</code> response and how it maps to drivers:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>HEWLETT-PACKARD,34401A,0,10-5-2      → HP 34401A driver
-<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>AGILENT TECHNOLOGIES,34970A,...       → Agilent 34970A driver
-<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>KEITHLEY INSTRUMENTS INC.,MODEL 2000  → Keithley 2000 driver
-<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>ITECH ELECTRONIC,IT6922B,...          → ITECH IT6922B driver
-<a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a>Rohde&amp;Schwarz,RTB2004,...             → R&amp;S RTB2004 driver
-<a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a>RIGOL TECHNOLOGIES,DS1054Z,...        → Rigol DS1000Z driver
-</code></pre></div>
-<p>If identification fails (the instrument does not respond to <code>*IDN?</code> or the response is not recognized), you can choose the driver manually from the drop-down.</p>
-<hr />
-<h2 id="manual-driver-selection">Manual Driver Selection<a class="headerlink" href="#manual-driver-selection" title="Permanent link">&para;</a></h2>
-<p>Use the <strong>Driver</strong> drop-down to override auto-detection:</p>
-<ol>
-<li>Select a resource</li>
-<li>Expand the <strong>Driver</strong> drop-down</li>
-<li>Choose the correct driver from the list of all installed plugins</li>
-<li>Click <strong>Connect</strong></li>
-</ol>
-<hr />
-<h2 id="connection-status">Connection Status<a class="headerlink" href="#connection-status" title="Permanent link">&para;</a></h2>
-<p>After clicking <strong>Connect</strong> the Connection Manager shows a progress indicator while:</p>
-<ol>
-<li>Opening the VISA session</li>
-<li>Sending <code>*IDN?</code> (or the device-specific identification for non-VISA drivers)</li>
-<li>Parsing firmware and serial number</li>
-<li>Initializing the driver's internal state</li>
-</ol>
-<p>On success the dialog closes and the instrument appears in the sidebar. On failure an error message describes the cause (resource busy, wrong VISA address, driver mismatch, etc.).</p>
-<hr />
-<h2 id="multiple-instruments">Multiple Instruments<a class="headerlink" href="#multiple-instruments" title="Permanent link">&para;</a></h2>
-<p>You can connect as many instruments as you need. Click <strong>Add Instrument</strong> again to open the Connection Manager a second time. Instruments already connected are still active while you connect a new one.</p>
-<p>Each connected instrument:</p>
-<ul>
-<li>Appears as a row in the left sidebar with its name and VISA address</li>
-<li>Gets its own <strong>Front Panel</strong> tab (tabs cycle through instruments when more than one is connected)</li>
-<li>Can be used as a source in sequence blocks via the <em>Instrument</em> property selector</li>
-</ul>
-<hr />
-<h2 id="disconnecting">Disconnecting<a class="headerlink" href="#disconnecting" title="Permanent link">&para;</a></h2>
-<p>Right-click an instrument in the sidebar and choose <strong>Disconnect</strong>, or select it and click the <strong>−</strong> (remove) button. The VISA session is closed and the instrument row is removed. Any sequence blocks that referenced it will log an error when executed.</p>
-<hr />
-<h2 id="simulation-mode">Simulation Mode<a class="headerlink" href="#simulation-mode" title="Permanent link">&para;</a></h2>
-<p>When NI-VISA is not installed (or the <strong>Use Simulation</strong> checkbox is checked), the Connection Manager automatically activates simulation mode:</p>
-<ul>
-<li>The resource list shows one pre-labelled <code>SIM::</code> entry for each supported instrument type.</li>
-<li>Connecting any driver to a <code>SIM::</code> resource creates a <strong>simulated instrument</strong>.</li>
-<li>The <code>SimulatedConnectionProvider</code> maintains internal instrument state and returns physically plausible values with Gaussian noise — not a constant placeholder.</li>
-<li>The status bar shows <code>VISA: Simulation</code>.</li>
-</ul>
-<p>Examples of what the simulation returns:</p>
+<h2 id="simulated-values-per-instrument">Simulated Values per Instrument<a class="headerlink" href="#simulated-values-per-instrument" title="Permanent link">&para;</a></h2>
+<h3 id="multimeters-hp-34401a-keithley-2000">Multimeters — HP 34401A, Keithley 2000<a class="headerlink" href="#multimeters-hp-34401a-keithley-2000" title="Permanent link">&para;</a></h3>
+<p>The simulated DMM tracks the last <code>CONF:</code> command and returns a realistic value for each function.</p>
 <table>
 <thead>
 <tr>
-<th>Driver</th>
-<th>Typical simulated reading</th>
+<th>Function</th>
+<th>Command</th>
+<th>Simulated value</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td>HP 34401A / Keithley 2000 (DC Voltage)</td>
+<td>DC Voltage</td>
+<td><code>CONF:VOLT:DC</code></td>
 <td>3.300 V ± 1 mV</td>
 </tr>
 <tr>
-<td>ITECH IT6922B MEAS:VOLT? (output ON)</td>
-<td>Set-point ± 2 mV</td>
+<td>AC Voltage</td>
+<td><code>CONF:VOLT:AC</code></td>
+<td>1.500 V ± 5 mV</td>
 </tr>
 <tr>
-<td>CTS Chamber A0 query</td>
-<td>Temperature ramps at 3 K/min toward set-point</td>
+<td>DC Current</td>
+<td><code>CONF:CURR:DC</code></td>
+<td>125 mA ± 0.2 mA</td>
 </tr>
 <tr>
-<td>RTB2004 frequency measurement</td>
-<td>1 000.0 Hz ± 0.5 Hz</td>
+<td>AC Current</td>
+<td><code>CONF:CURR:AC</code></td>
+<td>80 mA ± 0.2 mA</td>
+</tr>
+<tr>
+<td>2-wire Resistance</td>
+<td><code>CONF:RES</code></td>
+<td>1 000 Ω ± 0.5 Ω</td>
+</tr>
+<tr>
+<td>4-wire Resistance</td>
+<td><code>CONF:FRES</code></td>
+<td>1 000 Ω ± 0.5 Ω</td>
+</tr>
+<tr>
+<td>Frequency</td>
+<td><code>CONF:FREQ</code></td>
+<td>50.00 Hz ± 0.01 Hz</td>
+</tr>
+<tr>
+<td>Period</td>
+<td><code>CONF:PER</code></td>
+<td>20.00 ms ± 1 µs</td>
+</tr>
+<tr>
+<td>Diode</td>
+<td><code>CONF:DIOD</code></td>
+<td>652 mV ± 1 mV</td>
+</tr>
+<tr>
+<td>Continuity</td>
+<td><code>CONF:CONT</code></td>
+<td>5.2 Ω ± 0.1 Ω</td>
+</tr>
+<tr>
+<td>Temperature (TC)</td>
+<td><code>CONF:TEMP</code></td>
+<td>25.0 °C ± 0.1 °C</td>
 </tr>
 </tbody>
 </table>
-<p>For the complete reference of simulated values see <strong><a href="../simulation-mode/">Simulation Mode</a></strong>.</p>
+<p>Burst measurements (<code>SAMP:COUN N</code> + <code>FETCH?</code>) return <em>N</em> independent samples, each with its own noise draw.</p>
+<hr />
+<h3 id="data-acquisition-agilent-34970a">Data Acquisition — Agilent 34970A<a class="headerlink" href="#data-acquisition-agilent-34970a" title="Permanent link">&para;</a></h3>
+<p>The scan engine uses the same function-to-value table as the DMMs above. When a <code>ROUT:SCAN (@...)</code> command is received, the simulator counts the number of channels in the scan list. A subsequent <code>FETCH?</code> returns exactly that many comma-separated values, one per channel, using the currently configured function.</p>
+<p><strong>Example:</strong> scanning channels 101–103 after <code>CONF:VOLT:DC</code> → <code>FETCH?</code> returns:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>+3.29987,+3.30101,+3.29954
+</code></pre></div>
+<hr />
+<h3 id="dc-power-supply-itech-it6922b">DC Power Supply — ITECH IT6922B<a class="headerlink" href="#dc-power-supply-itech-it6922b" title="Permanent link">&para;</a></h3>
+<p>The simulator maintains an internal voltage set-point and current limit. Measurement results reflect the configured values:</p>
+<table>
+<thead>
+<tr>
+<th>Query</th>
+<th>Returned value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>VOLT?</code></td>
+<td>Voltage set-point (last <code>VOLT x</code> command)</td>
+</tr>
+<tr>
+<td><code>CURR?</code></td>
+<td>Current limit (last <code>CURR x</code> command)</td>
+</tr>
+<tr>
+<td><code>OUTP?</code></td>
+<td><code>1</code> if output ON, <code>0</code> if OFF</td>
+</tr>
+<tr>
+<td><code>MEAS:VOLT?</code></td>
+<td>Set-point ± 2 mV when output is ON; <code>0</code> when OFF</td>
+</tr>
+<tr>
+<td><code>MEAS:CURR?</code></td>
+<td>≈ 8 % of current limit ± 1 mA when ON; <code>0</code> when OFF</td>
+</tr>
+<tr>
+<td><code>MEAS:POW?</code></td>
+<td>Simulated V × I product</td>
+</tr>
+<tr>
+<td><code>STAT:OPER:COND?</code></td>
+<td><code>1</code> (CV mode always assumed)</td>
+</tr>
+</tbody>
+</table>
+<div class="admonition note">
+<p class="admonition-title">Simulated load</p>
+<p>The 8 % current draw models a modest resistive load on the output. There is no simulated short-circuit or CC-mode transition.</p>
+</div>
+<p>OVP and OCP levels are stored and returned correctly by <code>VOLT:PROT?</code>, <code>CURR:PROT:LEV?</code>, and their <code>STAT?</code> companions.</p>
+<hr />
+<h3 id="oscilloscopes-rs-rtb2004-rigol-ds1000z">Oscilloscopes — R&amp;S RTB2004, Rigol DS1000Z<a class="headerlink" href="#oscilloscopes-rs-rtb2004-rigol-ds1000z" title="Permanent link">&para;</a></h3>
+<p><strong>Parametric measurements</strong> — <code>MEASn:RES:ACT?</code>:</p>
+<table>
+<thead>
+<tr>
+<th>Measurement type</th>
+<th>Simulated value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Frequency</td>
+<td>1 000.0 Hz ± 0.5 Hz</td>
+</tr>
+<tr>
+<td>Period</td>
+<td>1.000 ms ± 100 ns</td>
+</tr>
+<tr>
+<td>Amplitude / Pk-Pk</td>
+<td>2.00 V ± 10 mV</td>
+</tr>
+<tr>
+<td>RMS</td>
+<td>707 mV ± 3 mV</td>
+</tr>
+<tr>
+<td>Mean / Vavg</td>
+<td>0 V ± 2 mV</td>
+</tr>
+<tr>
+<td>Rise / Fall time</td>
+<td>10 ns ± 0.5 ns</td>
+</tr>
+<tr>
+<td>Duty cycle</td>
+<td>50.0 % ± 0.05 %</td>
+</tr>
+<tr>
+<td>Phase</td>
+<td>0.0 ° ± 0.1 °</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Waveform readout</strong> — <code>CHANn:DATA?</code>:</p>
+<p>Returns 1 000 ASCII-encoded samples of a <strong>1 kHz sine wave</strong> with amplitude ≈ 1 V plus small noise (σ = 5 mV). The time axis is derived from the current timebase setting (<code>TIM:SCAL</code>):</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>Time span = TIM:SCAL × 10  (one full acquisition window)
+</code></pre></div>
+<p>The waveform header (<code>CHANn:DATA:HEAD?</code>) is computed to match:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>−half_span, +half_span, 1000, 1
+</code></pre></div>
+<p>Channel scale (<code>CHANn:SCAL</code>) and timebase values are stored and returned correctly by their <code>?</code> queries.</p>
+<hr />
+<h3 id="environmental-chamber-cts-t-4050">Environmental Chamber — CTS T-40/50<a class="headerlink" href="#environmental-chamber-cts-t-4050" title="Permanent link">&para;</a></h3>
+<p>The chamber simulator maintains a continuously-updated <strong>actual temperature</strong> that tracks the set-point according to the configured ramp rates. This means sequences using <code>CTS_WaitForTemperature</code> will actually wait for the simulated temperature to converge.</p>
+<table>
+<thead>
+<tr>
+<th>Property</th>
+<th>Default</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Initial temperature</td>
+<td>23.5 °C</td>
+</tr>
+<tr>
+<td>Default set-point</td>
+<td>25.0 °C</td>
+</tr>
+<tr>
+<td>Ramp-up rate</td>
+<td>3 K/min</td>
+</tr>
+<tr>
+<td>Ramp-down rate</td>
+<td>3 K/min</td>
+</tr>
+<tr>
+<td>Noise on each read</td>
+<td>± 0.02 °C</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Temperature dynamics:</strong> Every <code>A0</code> query (read temperature) triggers an update. The actual temperature moves toward the set-point at the configured rate based on real elapsed wall-clock time between queries. If the chamber is <strong>not running</strong> (before <code>CTS_ChamberStart</code>), the temperature drifts slightly around its current value but does not track the set-point.</p>
+<p><strong>Example timeline</strong> with default 3 K/min ramp and set-point changed to 85 °C:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>t=0 s   CTS_SetTemperature → 85 °C
+<a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a>t=0 s   ReadTemperature → 23.5 °C  (chamber just started)
+<a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a>t=60 s  ReadTemperature → 26.5 °C  (+3 K after 1 min)
+<a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a>t=600 s ReadTemperature → 53.5 °C  (+30 K after 10 min)
+<a id="__codelineno-3-5" name="__codelineno-3-5" href="#__codelineno-3-5"></a>t=1233 s ReadTemperature → 85.0 °C (set-point reached)
+</code></pre></div>
+<p>The simulated chamber reports <strong>running</strong> (<code>O</code> → <code>O101</code>) and <strong>ramp active</strong> (<code>R0</code> → <code>R0 11 ...</code>) once <code>CTS_ChamberStart</code> is executed.</p>
+<hr />
+<h2 id="how-noise-is-generated">How Noise is Generated<a class="headerlink" href="#how-noise-is-generated" title="Permanent link">&para;</a></h2>
+<p>All noise values use the <strong>Box-Muller transform</strong> to produce a Gaussian (normal) distribution:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="kt">double</span><span class="w"> </span><span class="n">u1</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">1.0</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">rng</span><span class="p">.</span><span class="n">NextDouble</span><span class="p">();</span>
+<a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a><span class="kt">double</span><span class="w"> </span><span class="n">u2</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">1.0</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">rng</span><span class="p">.</span><span class="n">NextDouble</span><span class="p">();</span>
+<a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a><span class="kt">double</span><span class="w"> </span><span class="n">noise</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">sigma</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">Math</span><span class="p">.</span><span class="n">Sqrt</span><span class="p">(</span><span class="o">-</span><span class="mf">2.0</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">Math</span><span class="p">.</span><span class="n">Log</span><span class="p">(</span><span class="n">u1</span><span class="p">))</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">Math</span><span class="p">.</span><span class="n">Sin</span><span class="p">(</span><span class="mf">2.0</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">Math</span><span class="p">.</span><span class="n">PI</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">u2</span><span class="p">);</span>
+</code></pre></div>
+<p>This gives realistic measurement scatter — occasional outliers included — rather than the flat uniform distribution that a plain <code>NextDouble()</code> would produce.</p>
+<hr />
+<h2 id="limitations">Limitations<a class="headerlink" href="#limitations" title="Permanent link">&para;</a></h2>
+<ul>
+<li><strong>No CV/CC transition</strong> for the power supply — the output is always in CV mode in simulation.</li>
+<li><strong>No fault conditions</strong> — no OVP/OCP trip, no instrument error states.</li>
+<li><strong>No waveform math</strong> — oscilloscope <code>MATH</code> channel queries return generic values.</li>
+<li><strong>No multi-instrument coupling</strong> — e.g., the power supply's simulated output voltage does not affect a simulated DMM connected in parallel.</li>
+<li><strong>Single-instance state</strong> — each <code>SimulatedConnectionProvider</code> holds its own state. Two simulated connections to the same <code>SIM::GPIB0::22::INSTR</code> resource string are independent.</li>
+</ul>
 
 
 
@@ -1541,7 +1796,7 @@
       <nav class="md-footer__inner md-grid" aria-label="Footer" >
         
           
-          <a href="../quick-start/" class="md-footer__link md-footer__link--prev" aria-label="Previous: Quick Start">
+          <a href="../connection-manager/" class="md-footer__link md-footer__link--prev" aria-label="Previous: Connection Manager">
             <div class="md-footer__button md-icon">
               
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
@@ -1551,20 +1806,20 @@
                 Previous
               </span>
               <div class="md-ellipsis">
-                Quick Start
+                Connection Manager
               </div>
             </div>
           </a>
         
         
           
-          <a href="../simulation-mode/" class="md-footer__link md-footer__link--next" aria-label="Next: Simulation Mode">
+          <a href="../front-panel/" class="md-footer__link md-footer__link--next" aria-label="Next: Front Panel">
             <div class="md-footer__title">
               <span class="md-footer__direction">
                 Next
               </span>
               <div class="md-ellipsis">
-                Simulation Mode
+                Front Panel
               </div>
             </div>
             <div class="md-footer__button md-icon">
