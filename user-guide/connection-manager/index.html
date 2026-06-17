@@ -573,6 +573,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#instrument-label-automatic-naming" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Instrument Label &amp; Automatic Naming
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#connection-status" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -595,10 +606,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#disconnecting" class="md-nav__link">
+  <a href="#disconnecting-and-reconnecting" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Disconnecting
+        Disconnecting and Reconnecting
       
     </span>
   </a>
@@ -799,6 +810,34 @@
   
   
   
+    <li class="md-nav__item">
+      <a href="../automatic-updates/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Automatic Updates
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
     
     
     
@@ -818,10 +857,10 @@
         
           
         
-        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_2_10" >
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_2_11" >
         
           
-          <label class="md-nav__link" for="__nav_2_10" id="__nav_2_10_label" tabindex="">
+          <label class="md-nav__link" for="__nav_2_11" id="__nav_2_11_label" tabindex="">
             
   
   
@@ -839,8 +878,8 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_2_10_label" aria-expanded="false">
-          <label class="md-nav__title" for="__nav_2_10">
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_2_11_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2_11">
             <span class="md-nav__icon md-icon"></span>
             
   
@@ -1255,6 +1294,34 @@
 
               
             
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../developer-guide/testing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Testing & CI
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
           </ul>
         </nav>
       
@@ -1322,6 +1389,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#instrument-label-automatic-naming" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Instrument Label &amp; Automatic Naming
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#connection-status" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1344,10 +1422,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#disconnecting" class="md-nav__link">
+  <a href="#disconnecting-and-reconnecting" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Disconnecting
+        Disconnecting and Reconnecting
       
     </span>
   </a>
@@ -1440,13 +1518,21 @@
 <p>If identification fails (the instrument does not respond to <code>*IDN?</code> or the response is not recognized), you can choose the driver manually from the drop-down.</p>
 <hr />
 <h2 id="manual-driver-selection">Manual Driver Selection<a class="headerlink" href="#manual-driver-selection" title="Permanent link">&para;</a></h2>
-<p>Use the <strong>Driver</strong> drop-down to override auto-detection:</p>
+<p>Use the <strong>Driver</strong> list to override auto-detection:</p>
 <ol>
 <li>Select a resource</li>
-<li>Expand the <strong>Driver</strong> drop-down</li>
-<li>Choose the correct driver from the list of all installed plugins</li>
+<li>Pick the correct driver from the list of all installed plugins (after a successful <code>*IDN?</code> match, non-matching drivers are dimmed but still selectable)</li>
 <li>Click <strong>Connect</strong></li>
 </ol>
+<hr />
+<h2 id="instrument-label-automatic-naming">Instrument Label &amp; Automatic Naming<a class="headerlink" href="#instrument-label-automatic-naming" title="Permanent link">&para;</a></h2>
+<p>The <strong>Instrument label</strong> field (in the <em>Options</em> section) sets the name shown in the sidebar, the Front Panel tab, and the <em>Instrument</em> selector inside sequence blocks.</p>
+<p>When you pick a driver, the field is <strong>pre-filled automatically</strong>:</p>
+<ul>
+<li>The first instance of a driver gets the driver name — e.g. <code>HP34401A</code>.</li>
+<li>Each additional instance of the same driver type is numbered — <code>HP34401A No.2</code>, <code>HP34401A No.3</code>, …</li>
+</ul>
+<p>The numbering is based on the instruments already connected. You can overwrite the suggested label with any name you like before clicking <strong>Connect</strong>; the label is what sequence blocks use to address the instrument, so unique, memorable names (e.g. <code>DMM_input</code>, <code>PSU_5V</code>) make sequences easier to read.</p>
 <hr />
 <h2 id="connection-status">Connection Status<a class="headerlink" href="#connection-status" title="Permanent link">&para;</a></h2>
 <p>After clicking <strong>Connect</strong> the Connection Manager shows a progress indicator while:</p>
@@ -1467,8 +1553,13 @@
 <li>Can be used as a source in sequence blocks via the <em>Instrument</em> property selector</li>
 </ul>
 <hr />
-<h2 id="disconnecting">Disconnecting<a class="headerlink" href="#disconnecting" title="Permanent link">&para;</a></h2>
-<p>Right-click an instrument in the sidebar and choose <strong>Disconnect</strong>, or select it and click the <strong>−</strong> (remove) button. The VISA session is closed and the instrument row is removed. Any sequence blocks that referenced it will log an error when executed.</p>
+<h2 id="disconnecting-and-reconnecting">Disconnecting and Reconnecting<a class="headerlink" href="#disconnecting-and-reconnecting" title="Permanent link">&para;</a></h2>
+<p>There are two distinct actions:</p>
+<ul>
+<li><strong>Remove</strong> — click the <strong>✕</strong> button on the instrument's row in the sidebar. The VISA session is closed and the instrument is removed from the list entirely. Any sequence blocks that referenced it will log an error when executed.</li>
+<li><strong>Disconnect / Reconnect</strong> — use the <strong>Disconnect</strong> button on the instrument's <a href="../front-panel/">Front Panel</a> toolbar. This closes the session but keeps the instrument in the list, and a <strong>Reconnect</strong> button appears in its place to re-open the same resource later.</li>
+</ul>
+<p>Disconnecting one instrument never affects the others — each row owns its own connection.</p>
 <hr />
 <h2 id="simulation-mode">Simulation Mode<a class="headerlink" href="#simulation-mode" title="Permanent link">&para;</a></h2>
 <p>When NI-VISA is not installed (or the <strong>Use Simulation</strong> checkbox is checked), the Connection Manager automatically activates simulation mode:</p>

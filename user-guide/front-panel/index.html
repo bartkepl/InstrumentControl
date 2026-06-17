@@ -607,6 +607,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#connection-toolbar" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Connection toolbar
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#hp-34401a-keithley-2000-dmm-front-panel" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -810,6 +821,34 @@
   
   
   
+    <li class="md-nav__item">
+      <a href="../automatic-updates/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Automatic Updates
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
     
     
     
@@ -829,10 +868,10 @@
         
           
         
-        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_2_10" >
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_2_11" >
         
           
-          <label class="md-nav__link" for="__nav_2_10" id="__nav_2_10_label" tabindex="">
+          <label class="md-nav__link" for="__nav_2_11" id="__nav_2_11_label" tabindex="">
             
   
   
@@ -850,8 +889,8 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_2_10_label" aria-expanded="false">
-          <label class="md-nav__title" for="__nav_2_10">
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_2_11_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2_11">
             <span class="md-nav__icon md-icon"></span>
             
   
@@ -1266,6 +1305,34 @@
 
               
             
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../developer-guide/testing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Testing & CI
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
           </ul>
         </nav>
       
@@ -1304,6 +1371,17 @@
     <span class="md-ellipsis">
       
         Overview
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#connection-toolbar" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Connection toolbar
       
     </span>
   </a>
@@ -1413,6 +1491,36 @@
 <h2 id="overview">Overview<a class="headerlink" href="#overview" title="Permanent link">&para;</a></h2>
 <p>Each instrument plugin ships its own XAML front panel. The panel mirrors the physical instrument's controls and gives you interactive access to the most common functions.</p>
 <p>When multiple instruments are connected, use the <strong>instrument selector</strong> (drop-down at the top of the Front Panel tab) to switch between them, or use the tabs that appear for each connected device.</p>
+<hr />
+<h2 id="connection-toolbar">Connection toolbar<a class="headerlink" href="#connection-toolbar" title="Permanent link">&para;</a></h2>
+<p>Above every front panel is a small toolbar with the instrument title, its resource string, and connection controls:</p>
+<table>
+<thead>
+<tr>
+<th>Button</th>
+<th>When shown</th>
+<th>Action</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Disconnect</strong></td>
+<td>While connected</td>
+<td>Closes the connection to <strong>this</strong> instrument only — other connected instruments are unaffected.</td>
+</tr>
+<tr>
+<td><strong>Reconnect</strong></td>
+<td>While disconnected</td>
+<td>Re-opens the connection to the same instrument (same resource/transport) and re-reads its identification.</td>
+</tr>
+<tr>
+<td><strong>Reset</strong></td>
+<td>While connected</td>
+<td>Sends <code>*RST</code> / <code>*CLS</code> to return the instrument to its default state.</td>
+</tr>
+</tbody>
+</table>
+<p>Disconnecting from the front panel leaves the instrument in the sidebar list so you can reconnect it later; it does not remove the instrument. To remove it entirely, use the <strong>✕</strong> button in the sidebar.</p>
 <hr />
 <h2 id="hp-34401a-keithley-2000-dmm-front-panel">HP 34401A / Keithley 2000 — DMM Front Panel<a class="headerlink" href="#hp-34401a-keithley-2000-dmm-front-panel" title="Permanent link">&para;</a></h2>
 <p>The DMM front panel provides:</p>

@@ -999,6 +999,34 @@
   
   
   
+    <li class="md-nav__item">
+      <a href="../automatic-updates/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Automatic Updates
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
     
     
     
@@ -1018,10 +1046,10 @@
         
           
         
-        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_2_10" >
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_2_11" >
         
           
-          <label class="md-nav__link" for="__nav_2_10" id="__nav_2_10_label" tabindex="">
+          <label class="md-nav__link" for="__nav_2_11" id="__nav_2_11_label" tabindex="">
             
   
   
@@ -1039,8 +1067,8 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_2_10_label" aria-expanded="false">
-          <label class="md-nav__title" for="__nav_2_10">
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_2_11_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2_11">
             <span class="md-nav__icon md-icon"></span>
             
   
@@ -1455,6 +1483,34 @@
 
               
             
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../developer-guide/testing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Testing & CI
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
           </ul>
         </nav>
       
@@ -1811,11 +1867,15 @@
 <td>Opens when you double-click a block; shows editable fields</td>
 </tr>
 <tr>
-<td><strong>Toolbar</strong></td>
-<td>Run ▶, Pause ⏸, Stop ■, New, Open, Save</td>
+<td><strong>Editor toolbar</strong></td>
+<td>New, Open, Save — sequence-file actions only</td>
 </tr>
 </tbody>
 </table>
+<div class="admonition note">
+<p class="admonition-title">Run / Pause / Stop live in the main toolbar</p>
+<p>Execution is controlled from the <strong>global toolbar at the top of the main window</strong> (Run ▶, Pause/Resume ⏸, Stop ■), not from the Sequence Editor tab. This keeps a single source of truth for sequence control regardless of which tab is active. The editor's own toolbar carries only the file actions (New / Open / Save).</p>
+</div>
 <hr />
 <h2 id="working-with-blocks">Working with Blocks<a class="headerlink" href="#working-with-blocks" title="Permanent link">&para;</a></h2>
 <h3 id="adding-blocks">Adding Blocks<a class="headerlink" href="#adding-blocks" title="Permanent link">&para;</a></h3>
@@ -1843,12 +1903,13 @@
 <hr />
 <h2 id="sequence-execution">Sequence Execution<a class="headerlink" href="#sequence-execution" title="Permanent link">&para;</a></h2>
 <h3 id="running-a-sequence">Running a Sequence<a class="headerlink" href="#running-a-sequence" title="Permanent link">&para;</a></h3>
-<p>Click <strong>Run</strong> (▶) or press <code>F5</code>. Execution starts at the <strong>StartBlock</strong> and follows the connection arrows.</p>
-<p>The currently-running block is highlighted. The <strong>Log</strong> tab shows step-by-step progress messages.</p>
+<p>Click <strong>Run</strong> (▶) in the main toolbar. Execution starts at the <strong>StartBlock</strong> and follows the connection arrows.</p>
+<p>The currently-running block is highlighted. The <strong>Log</strong> tab shows step-by-step progress messages. Block highlighting is refreshed on a timer rather than per-block, so the window <strong>stays responsive even during tight loops</strong> with thousands of zero-delay iterations — you can still scroll, switch tabs, and click Stop.</p>
 <h3 id="pausing-and-resuming">Pausing and Resuming<a class="headerlink" href="#pausing-and-resuming" title="Permanent link">&para;</a></h3>
-<p>Click <strong>Pause</strong> (⏸) or press <code>F7</code>. Execution suspends after the current block finishes. Click <strong>Resume</strong> (▶) or press <code>F5</code> again to continue.</p>
+<p>Click <strong>Pause</strong> (⏸). Execution suspends and the status changes to <em>Paused</em>; the button becomes <strong>Resume</strong> (▶) — click it to continue from the same point.</p>
+<p>Pause takes effect <strong>mid-loop</strong>: the engine checks a pause gate on every loop iteration (and before each block in a loop body), so a long <code>LoopBlock</code> halts within one iteration instead of running to completion first.</p>
 <h3 id="stopping">Stopping<a class="headerlink" href="#stopping" title="Permanent link">&para;</a></h3>
-<p>Click <strong>Stop</strong> (■) or press <code>F8</code>. The current block is interrupted and the sequence ends. If a block was in the middle of a VISA command, the command is cancelled.</p>
+<p>Click <strong>Stop</strong> (■). The current block is interrupted and the sequence ends. If a block was in the middle of a VISA command, the command is cancelled. Stop also works while the sequence is paused.</p>
 <h3 id="execution-limits">Execution Limits<a class="headerlink" href="#execution-limits" title="Permanent link">&para;</a></h3>
 <p>The sequence engine enforces a <strong>100,000-iteration safety limit</strong> to prevent infinite loops. If a loop runs beyond this limit, the sequence stops with an error in the Log.</p>
 <hr />
@@ -1862,11 +1923,11 @@
 <p>Variables hold either a <code>double</code> (number) or a <code>string</code>. If a block writes a numeric string (e.g. <code>"3.14"</code>), subsequent blocks that expect a number will auto-parse it.</p>
 <hr />
 <h2 id="saving-and-loading-sequences">Saving and Loading Sequences<a class="headerlink" href="#saving-and-loading-sequences" title="Permanent link">&para;</a></h2>
-<p>Sequences are stored as <strong>JSON files</strong> (<code>.seq</code>):</p>
+<p>Sequences are stored as <strong>JSON files</strong> (<code>.iseq</code>):</p>
 <ul>
-<li><strong>Save</strong> — click the floppy-disk icon or press <code>Ctrl+S</code>; choose a file path</li>
-<li><strong>Open</strong> — click the folder icon or press <code>Ctrl+O</code>; browse to a <code>.seq</code> file</li>
-<li><strong>New</strong> — click the document icon or press <code>Ctrl+N</code>; clears the canvas and starts a fresh sequence</li>
+<li><strong>Save</strong> — click the floppy-disk icon; on first save you choose a file path, after that it overwrites</li>
+<li><strong>Open</strong> — click the folder icon; browse to an <code>.iseq</code> file</li>
+<li><strong>New</strong> — click the document icon; clears the canvas and starts a fresh sequence (a StartBlock is added automatically)</li>
 </ul>
 <p>The JSON file stores block positions, types, properties, and connection IDs. It is human-readable and can be edited in any text editor if needed.</p>
 <hr />
