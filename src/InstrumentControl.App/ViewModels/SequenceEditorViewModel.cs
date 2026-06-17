@@ -6,6 +6,7 @@ using CommunityToolkit.Mvvm.Input;
 using InstrumentControl.App.Controls;
 using InstrumentControl.App.Services;
 using InstrumentControl.App.Views;
+using InstrumentControl.Core.Enums;
 using InstrumentControl.Core.Interfaces;
 using InstrumentControl.Core.Models;
 using InstrumentControl.Core.Services;
@@ -56,6 +57,7 @@ public partial class SequenceEditorViewModel : ViewModelBase
     private readonly SequenceEngine _engine;
     private readonly DataManager _dataManager;
     private MainWindowViewModel _mainVm;
+    private readonly ILogService _logService;
     private readonly Stack<SequenceDefinition> _undoStack = new();
 
     [ObservableProperty] private ObservableCollection<SequenceBlockVm> _blocks = new();
@@ -68,6 +70,7 @@ public partial class SequenceEditorViewModel : ViewModelBase
 
     public string SequenceStatusDisplay =>
         $"{LocalizationService.Get("StatusBar_SequenceLabel")} {SequenceStatus}";
+    // Embedded console in SequenceEditorView — shows only Sequence-source entries
     [ObservableProperty] private string _logText = string.Empty;
     [ObservableProperty] private bool _isRunning;
     [ObservableProperty] private bool _isPaused;
@@ -82,11 +85,12 @@ public partial class SequenceEditorViewModel : ViewModelBase
     // Instrument names for InstrumentSelector ComboBoxes.
     public ObservableCollection<string> ConnectedInstrumentNames { get; } = new();
 
-    public SequenceEditorViewModel(SequenceEngine engine, DataManager dataManager, MainWindowViewModel mainVm)
+    public SequenceEditorViewModel(SequenceEngine engine, DataManager dataManager, MainWindowViewModel mainVm, ILogService logService)
     {
         _engine = engine;
         _dataManager = dataManager;
         _mainVm = mainVm;
+        _logService = logService;
 
         _engine.BlockExecuting += (_, id) => RunOnUi(() =>
         {
@@ -97,7 +101,7 @@ public partial class SequenceEditorViewModel : ViewModelBase
         {
             foreach (var b in Blocks) b.IsExecuting = false;
         });
-        _engine.LogMessage += (_, msg) => RunOnUi(() => LogText += msg + "\n");
+        _engine.LogMessage += (_, msg) => _logService.Log(LogSource.Sequence, msg);
         _engine.StateChanged += (_, state) => RunOnUi(() =>
         {
             IsRunning = state == SequenceState.Running || state == SequenceState.Paused;
@@ -105,11 +109,18 @@ public partial class SequenceEditorViewModel : ViewModelBase
             SequenceStatus = state.ToString();
             OnPropertyChanged(nameof(SequenceStatusDisplay));
         });
-        _engine.Error += (_, ex) => RunOnUi(() =>
+        _engine.Error += (_, ex) =>
         {
-            LogText += $"{LocalizationService.Get("VM_ErrorLogPrefix")} {ex.Message}\n";
-            ErrorWindow.ShowException("Sequence error", ex);
-        });
+            _logService.Log(LogSource.Sequence, $"{LocalizationService.Get("VM_ErrorLogPrefix")} {ex.Message}");
+            RunOnUi(() => ErrorWindow.ShowException("Sequence error", ex));
+        };
+
+        // Mirror Sequence-source entries into the embedded console (SequenceEditorView panel)
+        logService.EntryAdded += (_, entry) =>
+        {
+            if (entry.Source == LogSource.Sequence)
+                RunOnUi(() => LogText += entry.Formatted + "\n");
+        };
 
         SequenceName = LocalizationService.Get("VM_NewSequenceName");
         SequenceStatus = LocalizationService.Get("VM_SeqStatus_Ready");
@@ -232,11 +243,10 @@ public partial class SequenceEditorViewModel : ViewModelBase
         var error = ValidateSequence();
         if (error != null)
         {
-            LogText = $"[WALIDACJA] {error}\n";
+            _logService.Log(LogSource.Sequence, $"[WALIDACJA] {error}");
             return;
         }
 
-        LogText = string.Empty;
         var def = BuildDefinition();
         var instruments = _mainVm.GetInstrumentsDictionary();
         await _engine.RunAsync(def, instruments, _dataManager);
@@ -268,7 +278,6 @@ public partial class SequenceEditorViewModel : ViewModelBase
         Blocks.Clear(); Connections.Clear();
         SequenceName = LocalizationService.Get("VM_NewSequenceName");
         CurrentFilePath = string.Empty;
-        LogText = string.Empty;
         IsModified = false;
 
         var startBlock = BlockRegistry.Create("StartBlock");

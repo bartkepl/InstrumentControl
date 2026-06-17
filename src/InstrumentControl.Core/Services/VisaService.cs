@@ -15,6 +15,8 @@ public class VisaConnectionProvider : IConnectionProvider
     public string ConnectionType => "VISA";
     public bool IsOpen { get; private set; }
 
+    internal Action<string>? Log { get; set; }
+
     internal VisaConnectionProvider(string resourceName, IntPtr rm, IntPtr session)
     {
         ResourceName = resourceName;
@@ -34,6 +36,7 @@ public class VisaConnectionProvider : IConnectionProvider
 
     public async Task WriteAsync(string command)
     {
+        Log?.Invoke($"→ [{ResourceName}] {command.TrimEnd()}");
         var bytes = System.Text.Encoding.ASCII.GetBytes(command + "\n");
         uint retCount = 0;
         int status = NiVisa.viWrite(_session, bytes, (uint)bytes.Length, ref retCount);
@@ -65,7 +68,9 @@ public class VisaConnectionProvider : IConnectionProvider
             throw new InvalidOperationException(
                 $"VISA read error: 0x{status:X8} na zasobie '{ResourceName}'");
         }
-        return Task.FromResult(System.Text.Encoding.ASCII.GetString(buf, 0, (int)retCount).TrimEnd('\n', '\r'));
+        var response = System.Text.Encoding.ASCII.GetString(buf, 0, (int)retCount).TrimEnd('\n', '\r');
+        Log?.Invoke($"← [{ResourceName}] {response}");
+        return Task.FromResult(response);
     }
 
     public Task WriteRawAsync(byte[] data)
@@ -124,6 +129,8 @@ public class SimulatedConnectionProvider : IConnectionProvider
     public string ConnectionType => "SIMULATION";
     public bool IsOpen { get; private set; }
 
+    internal Action<string>? Log { get; set; }
+
     public SimulatedConnectionProvider(string resourceName)
     {
         ResourceName = resourceName;
@@ -136,6 +143,7 @@ public class SimulatedConnectionProvider : IConnectionProvider
     public Task WriteAsync(string command)
     {
         _lastCommand = command.Trim();
+        Log?.Invoke($"→ [{ResourceName}] {_lastCommand}");
         ProcessWrite(_lastCommand);
         return Task.CompletedTask;
     }
@@ -148,8 +156,11 @@ public class SimulatedConnectionProvider : IConnectionProvider
 
     public Task<string> ReadAsync(int timeoutMs = 5000)
     {
-        if (_customResponses.TryGetValue(_lastCommand, out var r)) return Task.FromResult(r);
-        return Task.FromResult(BuildResponse(_lastCommand));
+        var response = _customResponses.TryGetValue(_lastCommand, out var r)
+            ? r
+            : BuildResponse(_lastCommand);
+        Log?.Invoke($"← [{ResourceName}] {response}");
+        return Task.FromResult(response);
     }
 
     // ── Write parsing: track instrument state ────────────────────────────────
@@ -422,6 +433,8 @@ public class SerialConnectionProvider : IConnectionProvider
     public string ConnectionType => "COM";
     public bool IsOpen => _port.IsOpen;
 
+    internal Action<string>? Log { get; set; }
+
     public SerialConnectionProvider(string portName, int baudRate = 9600, int dataBits = 8,
         Parity parity = Parity.None, StopBits stopBits = StopBits.One)
     {
@@ -437,6 +450,7 @@ public class SerialConnectionProvider : IConnectionProvider
 
     public Task WriteAsync(string command)
     {
+        Log?.Invoke($"→ [{ResourceName}] {command.TrimEnd()}");
         _port.WriteLine(command);
         return Task.CompletedTask;
     }
@@ -451,7 +465,9 @@ public class SerialConnectionProvider : IConnectionProvider
     public Task<string> ReadAsync(int timeoutMs = 5000)
     {
         _port.ReadTimeout = timeoutMs;
-        return Task.FromResult(_port.ReadLine().TrimEnd('\r', '\n'));
+        var response = _port.ReadLine().TrimEnd('\r', '\n');
+        Log?.Invoke($"← [{ResourceName}] {response}");
+        return Task.FromResult(response);
     }
 
     public Task WriteRawAsync(byte[] data) { _port.Write(data, 0, data.Length); return Task.CompletedTask; }
@@ -469,6 +485,8 @@ public class VisaService
 {
     private IntPtr _rm = IntPtr.Zero;
     public bool IsSimulationMode { get; private set; }
+    public Action<string>? VisaLog { get; set; }
+    public Action<string>? SerialLog { get; set; }
 
     public void Initialize()
     {
@@ -541,14 +559,24 @@ public class VisaService
         int status = NiVisa.viOpen(_rm, resourceName, 0, (uint)timeoutMs, out var session);
         if (status < 0) throw new InvalidOperationException($"Cannot open VISA resource '{resourceName}': 0x{status:X8}");
         NiVisa.viSetAttribute(session, NiVisa.VI_ATTR_TMO_VALUE, (uint)timeoutMs);
-        return new VisaConnectionProvider(resourceName, _rm, session);
+        var provider = new VisaConnectionProvider(resourceName, _rm, session);
+        provider.Log = VisaLog;
+        return provider;
     }
 
-    public IConnectionProvider OpenComSession(string portName, int baudRate = 9600) =>
-        new SerialConnectionProvider(portName, baudRate);
+    public IConnectionProvider OpenComSession(string portName, int baudRate = 9600)
+    {
+        var provider = new SerialConnectionProvider(portName, baudRate);
+        provider.Log = SerialLog;
+        return provider;
+    }
 
-    public IConnectionProvider OpenSimulated(string resourceName) =>
-        new SimulatedConnectionProvider(resourceName);
+    public IConnectionProvider OpenSimulated(string resourceName)
+    {
+        var provider = new SimulatedConnectionProvider(resourceName);
+        provider.Log = VisaLog;
+        return provider;
+    }
 
     public void Dispose()
     {

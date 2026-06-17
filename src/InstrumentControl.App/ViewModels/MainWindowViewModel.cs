@@ -3,6 +3,7 @@ using System.Windows;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using InstrumentControl.App.Services;
+using InstrumentControl.Core.Enums;
 using InstrumentControl.Core.Interfaces;
 using InstrumentControl.Core.Models;
 using InstrumentControl.Core.Services;
@@ -20,12 +21,27 @@ public partial class ConnectedInstrumentVm : ObservableObject
     public string DisplayName => Driver.InstrumentInfo?.DisplayName ?? Driver.DriverName;
     public string ResourceName => Driver.InstrumentInfo?.ResourceName ?? "?";
 
-    public ConnectedInstrumentVm(IInstrumentDriver driver)
+    public ConnectedInstrumentVm(IInstrumentDriver driver, ILogService logService)
     {
         Driver = driver;
-        Driver.StatusChanged += (_, msg) => RunOnUi(() => StatusText = msg);
-        Driver.MeasurementReceived += (_, r) => RunOnUi(() => LastValue = $"{r.Value:G6} {r.Unit}");
-        Driver.ErrorOccurred += (_, ex) => RunOnUi(() => { StatusText = $"{LocalizationService.Get("VM_ErrorPrefix")} {ex.Message}"; IsConnected = false; });
+        Driver.StatusChanged += (_, msg) => RunOnUi(() =>
+        {
+            StatusText = msg;
+            logService.Log(LogSource.Instrument, $"[{driver.DriverName}] {msg}");
+        });
+        Driver.MeasurementReceived += (_, r) => RunOnUi(() =>
+        {
+            LastValue = $"{r.Value:G6} {r.Unit}";
+            var name = string.IsNullOrEmpty(r.InstrumentName) ? driver.DriverName : r.InstrumentName;
+            var ch   = string.IsNullOrEmpty(r.ChannelId) ? "" : $"/{r.ChannelId}";
+            logService.Log(LogSource.Instrument, $"[{name}{ch}] {r.Function}: {r.Value:G6} {r.Unit}");
+        });
+        Driver.ErrorOccurred += (_, ex) => RunOnUi(() =>
+        {
+            StatusText = $"{LocalizationService.Get("VM_ErrorPrefix")} {ex.Message}";
+            IsConnected = false;
+            logService.Log(LogSource.Instrument, $"[{driver.DriverName}] BŁĄD: {ex.Message}");
+        });
     }
 
     private void RunOnUi(Action a) =>
@@ -37,6 +53,7 @@ public partial class MainWindowViewModel : ViewModelBase
     private readonly VisaService _visaService;
     private readonly PluginLoader _pluginLoader;
     private readonly DataManager _dataManager;
+    private readonly ILogService _logService;
 
     [ObservableProperty] private ObservableCollection<ConnectedInstrumentVm> _connectedInstruments = new();
     [ObservableProperty] private ConnectedInstrumentVm? _selectedInstrument;
@@ -44,11 +61,12 @@ public partial class MainWindowViewModel : ViewModelBase
     [ObservableProperty] private string _statusBarText = "Gotowy";
     [ObservableProperty] private bool _isVisaSimulated;
 
-    public MainWindowViewModel(VisaService visaService, PluginLoader pluginLoader, DataManager dataManager)
+    public MainWindowViewModel(VisaService visaService, PluginLoader pluginLoader, DataManager dataManager, ILogService logService)
     {
         _visaService = visaService;
         _pluginLoader = pluginLoader;
         _dataManager = dataManager;
+        _logService = logService;
         IsVisaSimulated = visaService.IsSimulationMode;
         StatusBarText = visaService.IsSimulationMode
             ? LocalizationService.Get("StatusBar_SimStartup")
@@ -67,6 +85,7 @@ public partial class MainWindowViewModel : ViewModelBase
     private void RemoveInstrument(ConnectedInstrumentVm? vm)
     {
         if (vm == null) return;
+        _logService.Log(LogSource.Event, $"Rozłączanie instrumentu: {vm.Driver.DriverName} ({vm.ResourceName})");
         vm.Driver.DisconnectAsync().ContinueWith(_ => RunOnUi(() =>
         {
             ConnectedInstruments.Remove(vm);
@@ -77,7 +96,9 @@ public partial class MainWindowViewModel : ViewModelBase
 
     public void AddConnectedInstrument(IInstrumentDriver driver)
     {
-        var vm = new ConnectedInstrumentVm(driver);
+        _logService.Log(LogSource.Event,
+            $"Instrument dodany: {driver.DriverName} @ {driver.InstrumentInfo?.ResourceName ?? "?"}");
+        var vm = new ConnectedInstrumentVm(driver, _logService);
         ConnectedInstruments.Add(vm);
         SelectedInstrument = vm;
     }

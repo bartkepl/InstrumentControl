@@ -187,15 +187,72 @@
                                           DataContext="{Binding DataVm}"/>
                 </TabItem>
                 <TabItem Header="{DynamicResource Tab_Log}">
-                    <Border Padding="8" Background="White">
-                        <ScrollViewer x:Name="LogScroll" VerticalScrollBarVisibility="Auto">
-                            <TextBox x:Name="LogBox" IsReadOnly="True"
-                                     Text="{Binding SeqVm.LogText, Mode=OneWay}"
-                                     FontFamily="Consolas" FontSize="12"
-                                     Background="White" BorderThickness="0"
-                                     TextWrapping="Wrap"/>
-                        </ScrollViewer>
-                    </Border>
+                    <TabControl Background="White" BorderThickness="0,1,0,0"
+                                BorderBrush="#E0E0E0">
+                        <TabItem Header="Wszystkie">
+                            <ScrollViewer x:Name="LogScrollAll" VerticalScrollBarVisibility="Auto">
+                                <TextBox x:Name="LogBoxAll" IsReadOnly="True"
+                                         Text="{Binding LogVm.AllText, Mode=OneWay}"
+                                         FontFamily="Consolas" FontSize="11"
+                                         Background="White" BorderThickness="0"
+                                         TextWrapping="Wrap"/>
+                            </ScrollViewer>
+                        </TabItem>
+                        <TabItem Header="Sekwencja">
+                            <ScrollViewer x:Name="LogScrollSeq" VerticalScrollBarVisibility="Auto">
+                                <TextBox x:Name="LogBoxSeq" IsReadOnly="True"
+                                         Text="{Binding LogVm.SequenceText, Mode=OneWay}"
+                                         FontFamily="Consolas" FontSize="11"
+                                         Background="White" BorderThickness="0"
+                                         TextWrapping="Wrap"/>
+                            </ScrollViewer>
+                        </TabItem>
+                        <TabItem Header="VISA">
+                            <ScrollViewer x:Name="LogScrollVisa" VerticalScrollBarVisibility="Auto">
+                                <TextBox x:Name="LogBoxVisa" IsReadOnly="True"
+                                         Text="{Binding LogVm.VisaText, Mode=OneWay}"
+                                         FontFamily="Consolas" FontSize="11"
+                                         Background="White" BorderThickness="0"
+                                         TextWrapping="Wrap"/>
+                            </ScrollViewer>
+                        </TabItem>
+                        <TabItem Header="Serial">
+                            <ScrollViewer x:Name="LogScrollSerial" VerticalScrollBarVisibility="Auto">
+                                <TextBox x:Name="LogBoxSerial" IsReadOnly="True"
+                                         Text="{Binding LogVm.SerialText, Mode=OneWay}"
+                                         FontFamily="Consolas" FontSize="11"
+                                         Background="White" BorderThickness="0"
+                                         TextWrapping="Wrap"/>
+                            </ScrollViewer>
+                        </TabItem>
+                        <TabItem Header="Zdarzenia">
+                            <ScrollViewer x:Name="LogScrollEvent" VerticalScrollBarVisibility="Auto">
+                                <TextBox x:Name="LogBoxEvent" IsReadOnly="True"
+                                         Text="{Binding LogVm.EventText, Mode=OneWay}"
+                                         FontFamily="Consolas" FontSize="11"
+                                         Background="White" BorderThickness="0"
+                                         TextWrapping="Wrap"/>
+                            </ScrollViewer>
+                        </TabItem>
+                        <TabItem Header="Mierniki">
+                            <ScrollViewer x:Name="LogScrollInstrument" VerticalScrollBarVisibility="Auto">
+                                <TextBox x:Name="LogBoxInstrument" IsReadOnly="True"
+                                         Text="{Binding LogVm.InstrumentText, Mode=OneWay}"
+                                         FontFamily="Consolas" FontSize="11"
+                                         Background="White" BorderThickness="0"
+                                         TextWrapping="Wrap"/>
+                            </ScrollViewer>
+                        </TabItem>
+                        <TabItem Header="Debug">
+                            <ScrollViewer x:Name="LogScrollDebug" VerticalScrollBarVisibility="Auto">
+                                <TextBox x:Name="LogBoxDebug" IsReadOnly="True"
+                                         Text="{Binding LogVm.DebugText, Mode=OneWay}"
+                                         FontFamily="Consolas" FontSize="11"
+                                         Background="White" BorderThickness="0"
+                                         TextWrapping="Wrap"/>
+                            </ScrollViewer>
+                        </TabItem>
+                    </TabControl>
                 </TabItem>
             </TabControl>
         </Grid>

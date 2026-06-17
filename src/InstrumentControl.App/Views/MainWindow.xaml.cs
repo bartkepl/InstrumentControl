@@ -1,6 +1,8 @@
 using System.Windows;
 using System.Windows.Controls;
 using InstrumentControl.App.ViewModels;
+using InstrumentControl.Core.Interfaces;
+using InstrumentControl.Core.Services;
 
 namespace InstrumentControl.App.Views;
 
@@ -15,7 +17,8 @@ public partial class MainWindow : Window
         _ctx = new MainWindowContext(
             App.VisaService,
             App.PluginLoader,
-            App.DataManager);
+            App.DataManager,
+            App.LogService);
 
         DataContext = _ctx;
 
@@ -30,6 +33,15 @@ public partial class MainWindow : Window
         _ctx.MainVm.ConnectedInstruments.CollectionChanged += (_, _) =>
             _ctx.SeqVm.RefreshAvailableBlocks(
                 _ctx.MainVm.ConnectedInstruments.Select(i => i.Driver));
+
+        // Auto-scroll each log TextBox to bottom when new text arrives
+        LogBoxAll.TextChanged        += (_, _) => LogScrollAll.ScrollToBottom();
+        LogBoxSeq.TextChanged        += (_, _) => LogScrollSeq.ScrollToBottom();
+        LogBoxVisa.TextChanged       += (_, _) => LogScrollVisa.ScrollToBottom();
+        LogBoxSerial.TextChanged     += (_, _) => LogScrollSerial.ScrollToBottom();
+        LogBoxEvent.TextChanged      += (_, _) => LogScrollEvent.ScrollToBottom();
+        LogBoxInstrument.TextChanged += (_, _) => LogScrollInstrument.ScrollToBottom();
+        LogBoxDebug.TextChanged      += (_, _) => LogScrollDebug.ScrollToBottom();
     }
 
     private void MenuAddInstrument_Click(object sender, RoutedEventArgs e)
@@ -61,6 +73,7 @@ public partial class MainWindow : Window
     {
         base.OnClosed(e);
         App.VisaService.Dispose();
+        App.LogService.Dispose();
     }
 }
 
@@ -69,15 +82,18 @@ public class MainWindowContext
     public MainWindowViewModel MainVm { get; }
     public SequenceEditorViewModel SeqVm { get; }
     public DataViewerViewModel DataVm { get; }
+    public LogViewModel LogVm { get; }
 
     public MainWindowContext(
-        InstrumentControl.Core.Services.VisaService visaService,
-        InstrumentControl.Core.Services.PluginLoader pluginLoader,
-        InstrumentControl.Core.Services.DataManager dataManager)
+        VisaService visaService,
+        PluginLoader pluginLoader,
+        DataManager dataManager,
+        ILogService logService)
     {
-        MainVm = new MainWindowViewModel(visaService, pluginLoader, dataManager);
-        var engine = new InstrumentControl.Core.Services.SequenceEngine();
-        SeqVm = new SequenceEditorViewModel(engine, dataManager, MainVm);
+        LogVm  = new LogViewModel(logService);
+        MainVm = new MainWindowViewModel(visaService, pluginLoader, dataManager, logService);
+        var engine = new SequenceEngine();
+        SeqVm  = new SequenceEditorViewModel(engine, dataManager, MainVm, logService);
         DataVm = new DataViewerViewModel(dataManager);
     }
 }
