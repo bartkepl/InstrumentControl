@@ -29,14 +29,51 @@ public class VisaService
 
 ### Simulation Mode
 
-If the NI-VISA DLL (`visa32.dll` or `visa64.dll`) is not found in the standard NI-VISA installation paths, `VisaService` activates simulation mode:
+If the NI-VISA DLL (`visa32.dll` or `visa64.dll`) is not found, `VisaService` activates simulation mode:
 
-- `IsVisa` returns `false`
-- `FindResources()` returns `["SIMULATED"]`
-- `OpenSession("SIMULATED")` returns a `SimulatedConnectionProvider`
+- `IsSimulationMode` returns `true`
+- `FindResources()` returns a set of `SIM::` resource strings, one per supported instrument type
+- `OpenSimulated(resourceName)` returns a `SimulatedConnectionProvider`
 - The status bar displays `VISA: Simulation`
 
-The `SimulatedConnectionProvider` returns `"+1.234567E+00"` for any `QueryAsync()` call. This value can be overridden per query prefix in the static defaults table inside `SimulatedConnectionProvider`.
+### SimulatedConnectionProvider
+
+`SimulatedConnectionProvider` is a stateful SCPI / protocol simulator. It parses every `WriteAsync` call to track instrument state, then returns context-appropriate responses to `QueryAsync` / `ReadAsync`.
+
+**State tracked across Write calls:**
+
+| Write command | State updated |
+|---|---|
+| `CONF:VOLT:DC`, `CONF:RES`, … | Active DMM function (`_confFunc`) |
+| `SAMP:COUN N` | Burst sample count |
+| `ROUT:SCAN (@...)` | Number of channels to return on next `FETCH?` |
+| `VOLT x` | Power supply voltage set-point |
+| `CURR x` | Power supply current limit |
+| `OUTP ON/OFF` | Power supply output state |
+| `VOLT:PROT x`, `CURR:PROT:LEV x` | OVP / OCP levels |
+| `a0 x` (CTS) | Chamber temperature set-point + timestamp reset |
+| `u0 x` / `d0 x` (CTS) | Ramp-up / ramp-down rate (K/min) |
+| `s1 1` / `s1 0` (CTS) | Chamber running state |
+| `TIM:SCAL x` | Oscilloscope timebase |
+| `CHANn:SCAL x` | Oscilloscope channel scale |
+
+**Selected query responses:**
+
+| Query | Response |
+|---|---|
+| `*IDN?` | `SIMULATED,INSTRUMENT,SIM001,1.0` |
+| `READ?` / `FETCH?` | Value(s) matching last `CONF:` function, Gaussian noise applied |
+| `MEAS:VOLT?` | PSU set-point ± 2 mV (or `0` if output OFF) |
+| `MEAS:CURR?` | ≈ 8 % of current limit ± 1 mA (or `0` if output OFF) |
+| `CHANn:DATA?` | 1 000-point 1 kHz sine wave ASCII |
+| `A0` (CTS) | `A0 {actual} {setpoint}` — temperature ramps in real time |
+| `C` (CTS) | `C 2.10;1.20;001;` (firmware identification) |
+
+All noise is generated with the Box-Muller Gaussian transform (not uniform `NextDouble()`).
+
+Responses can be overridden for individual commands via `SetResponse(command, value)`.
+
+See [Simulation Mode](../user-guide/simulation-mode.md) in the User Guide for the full table of simulated values.
 
 ### P/Invoke Bindings
 

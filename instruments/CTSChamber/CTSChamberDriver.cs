@@ -27,7 +27,27 @@ public class CTSChamberDriver : InstrumentDriverBase
 
     public override async Task ConnectAsync(IConnectionProvider connection)
     {
-        // The app passes a generic provider; swap for CTS-specific binary-protocol one
+        // In simulation mode: use the provided simulated connection directly
+        if (connection.ConnectionType == "SIMULATION")
+        {
+            Connection = connection;
+            await connection.OpenAsync();
+            InstrumentInfo = new InstrumentInfo
+            {
+                ResourceName    = connection.ResourceName,
+                DriverName      = DriverName,
+                Manufacturer    = Manufacturer,
+                Model           = Model,
+                ConnectionType  = "SIMULATION",
+                FirmwareVersion = "SIM 2.10",
+                Status          = ConnectionStatus.Connected,
+                ConnectedAt     = DateTime.Now,
+            };
+            RaiseStatus($"Symulacja: {DriverName}");
+            return;
+        }
+
+        // Normal path: swap for CTS-specific binary-protocol provider
         string portName = connection.ResourceName;
         connection.Dispose();
 

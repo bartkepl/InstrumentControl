@@ -79,6 +79,7 @@ nav:
     - Installation: user-guide/installation.md
     - Quick Start: user-guide/quick-start.md
     - Connection Manager: user-guide/connection-manager.md
+    - Simulation Mode: user-guide/simulation-mode.md
     - Front Panel: user-guide/front-panel.md
     - Sequence Editor: user-guide/sequence-editor.md
     - Block Reference: user-guide/blocks-reference.md

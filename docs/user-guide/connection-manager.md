@@ -85,11 +85,20 @@ Right-click an instrument in the sidebar and choose **Disconnect**, or select it
 
 ## Simulation Mode
 
-When NI-VISA is not installed:
+When NI-VISA is not installed (or the **Use Simulation** checkbox is checked), the Connection Manager automatically activates simulation mode:
 
-- The Connection Manager shows a single `SIMULATED` resource
-- Connecting to it with any driver creates a **simulated instrument**
-- The `SimulatedConnectionProvider` returns configurable default values (usually `+1.234567E+00`)
-- The status bar shows `VISA: Simulation`
+- The resource list shows one pre-labelled `SIM::` entry for each supported instrument type.
+- Connecting any driver to a `SIM::` resource creates a **simulated instrument**.
+- The `SimulatedConnectionProvider` maintains internal instrument state and returns physically plausible values with Gaussian noise — not a constant placeholder.
+- The status bar shows `VISA: Simulation`.
 
-Simulated instruments are useful for developing and testing sequences on machines without lab hardware.
+Examples of what the simulation returns:
+
+| Driver | Typical simulated reading |
+|---|---|
+| HP 34401A / Keithley 2000 (DC Voltage) | 3.300 V ± 1 mV |
+| ITECH IT6922B MEAS:VOLT? (output ON) | Set-point ± 2 mV |
+| CTS Chamber A0 query | Temperature ramps at 3 K/min toward set-point |
+| RTB2004 frequency measurement | 1 000.0 Hz ± 0.5 Hz |
+
+For the complete reference of simulated values see **[Simulation Mode](simulation-mode.md)**.
