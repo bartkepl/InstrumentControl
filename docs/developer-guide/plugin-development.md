@@ -25,7 +25,7 @@ instruments/
 ```xml
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFramework>net8.0-windows</TargetFramework>
+    <!-- TargetFramework (net10.0-windows) jest dziedziczony z Directory.Build.props -->
     <UseWPF>true</UseWPF>
     <AssemblyName>YourInstrument</AssemblyName>
     <RootNamespace>YourInstrument</RootNamespace>
@@ -236,7 +236,7 @@ dotnet build instruments/YourInstrument/YourInstrument.csproj `
 And a copy step in the instrument DLL collection section:
 
 ```powershell
-Copy-Item "instruments/YourInstrument/bin/Release/net8.0-windows/YourInstrument.dll" $dest
+Copy-Item "instruments/YourInstrument/bin/Release/$Tfm/YourInstrument.dll" $dest
 ```
 
 **release.yml** — add the same build step to the GitHub Actions workflow.

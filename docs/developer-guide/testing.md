@@ -7,7 +7,7 @@ Automated tests cover the **UI-independent core logic** — the parts that are d
 ## Test project
 
 ```
-tests/InstrumentControl.Core.Tests/   # xUnit, net8.0-windows
+tests/InstrumentControl.Core.Tests/   # xUnit, net10.0-windows
 ```
 
 The project references only `InstrumentControl.Core`, so it builds fast and has no plugin/UI dependencies. It is part of `InstrumentControl.sln`.

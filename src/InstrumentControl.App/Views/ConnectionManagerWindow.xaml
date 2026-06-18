@@ -45,9 +45,39 @@
                     </DockPanel>
                     <ListBox x:Name="ResourceList" Height="140"
                              ItemsSource="{Binding AvailableResources}"
-                             SelectedItem="{Binding SelectedResource}"
+                             SelectedItem="{Binding SelectedResourceItem}"
                              Margin="0,4,0,0" ScrollViewer.HorizontalScrollBarVisibility="Auto"
-                             ScrollViewer.VerticalScrollBarVisibility="Auto"/>
+                             ScrollViewer.VerticalScrollBarVisibility="Auto">
+
+                        <!-- In-use resources can't be selected (would cause a VISA busy error) -->
+                        <ListBox.ItemContainerStyle>
+                            <Style TargetType="ListBoxItem">
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding IsInUse}" Value="True">
+                                        <Setter Property="IsEnabled" Value="False"/>
+                                        <Setter Property="Opacity" Value="0.4"/>
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </ListBox.ItemContainerStyle>
+
+                        <ListBox.ItemTemplate>
+                            <DataTemplate>
+                                <DockPanel>
+                                    <!-- "w użyciu" badge — visible only on busy resources -->
+                                    <Border DockPanel.Dock="Right" CornerRadius="3"
+                                            Background="#E67E22" Padding="5,1"
+                                            Margin="7,0,0,0" VerticalAlignment="Center"
+                                            Visibility="{Binding IsInUse, Converter={StaticResource BoolToVis}}">
+                                        <TextBlock Text="{DynamicResource ConnMgr_InUse}" Foreground="White"
+                                                   FontSize="10" FontWeight="Bold"/>
+                                    </Border>
+                                    <TextBlock Text="{Binding Address}" FontFamily="Consolas"
+                                               VerticalAlignment="Center"/>
+                                </DockPanel>
+                            </DataTemplate>
+                        </ListBox.ItemTemplate>
+                    </ListBox>
 
                     <TextBlock Text="{DynamicResource ConnMgr_ManualHint}"
                                FontSize="11" Foreground="#7F8C8D" Margin="0,8,0,2"/>

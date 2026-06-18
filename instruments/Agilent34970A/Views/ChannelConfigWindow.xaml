@@ -1,0 +1,95 @@
+<Window x:Class="Agilent34970A.Views.ChannelConfigWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Konfiguracja kanału" Width="380"
+        SizeToContent="Height" MinHeight="200"
+        WindowStartupLocation="CenterOwner"
+        ResizeMode="NoResize" Background="#D4D0CC">
+    <Window.Resources>
+        <Style TargetType="TextBlock">
+            <Setter Property="Foreground" Value="#202020"/>
+            <Setter Property="Margin" Value="0,8,0,2"/>
+            <Setter Property="FontSize" Value="11"/>
+        </Style>
+        <Style TargetType="TextBox">
+            <Setter Property="Padding" Value="5,3"/>
+            <Setter Property="Background" Value="#C8C4C0"/>
+            <Setter Property="BorderBrush" Value="#9A9694"/>
+        </Style>
+        <Style TargetType="ComboBox">
+            <Setter Property="Padding" Value="5,3"/>
+            <Setter Property="Background" Value="#C8C4C0"/>
+            <Setter Property="BorderBrush" Value="#9A9694"/>
+        </Style>
+    </Window.Resources>
+
+    <StackPanel Margin="16">
+        <TextBlock Text="{Binding Channel, StringFormat='Kanał: {0}'}"
+                   FontWeight="Bold" FontSize="13" Margin="0,0,0,2"/>
+        <TextBlock Text="{Binding Function, StringFormat='Funkcja: {0}'}" Margin="0,0,0,6"/>
+
+        <TextBlock Text="{Binding ParamLabel}"/>
+        <ComboBox IsEditable="True" ItemsSource="{Binding ParamOptions}"
+                  IsEnabled="{Binding HasParam}"
+                  Text="{Binding Param, UpdateSourceTrigger=PropertyChanged}"/>
+
+        <TextBlock Text="Zakres (AUTO lub wartość, np. 10):"/>
+        <ComboBox IsEditable="True"
+                  Text="{Binding Range, UpdateSourceTrigger=PropertyChanged}">
+            <ComboBoxItem Content="AUTO"/>
+            <ComboBoxItem Content="MIN"/>
+            <ComboBoxItem Content="MAX"/>
+        </ComboBox>
+
+        <TextBlock Text="Rozdzielczość (DEF / MIN / MAX / wartość):"/>
+        <ComboBox IsEditable="True"
+                  Text="{Binding Resolution, UpdateSourceTrigger=PropertyChanged}">
+            <ComboBoxItem Content="DEF"/>
+            <ComboBoxItem Content="MIN"/>
+            <ComboBoxItem Content="MAX"/>
+        </ComboBox>
+
+        <TextBlock Text="NPLC (puste = bez zmian):"/>
+        <ComboBox IsEditable="True"
+                  Text="{Binding Nplc, UpdateSourceTrigger=PropertyChanged}">
+            <ComboBoxItem Content=""/>
+            <ComboBoxItem Content="0.02"/>
+            <ComboBoxItem Content="0.2"/>
+            <ComboBoxItem Content="1"/>
+            <ComboBoxItem Content="2"/>
+            <ComboBoxItem Content="10"/>
+            <ComboBoxItem Content="20"/>
+            <ComboBoxItem Content="100"/>
+        </ComboBox>
+
+        <Border Background="#C0BCB8" BorderBrush="#9A9694" BorderThickness="1"
+                CornerRadius="4" Padding="10" Margin="0,12,0,0">
+            <StackPanel>
+                <CheckBox Content="Skalowanie Mx+B" IsChecked="{Binding ScaleEnabled}"
+                          Foreground="#202020" FontWeight="SemiBold"/>
+                <Grid Margin="0,6,0,0">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="8"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+                    <StackPanel Grid.Column="0">
+                        <TextBlock Text="Wzmocnienie M:"/>
+                        <TextBox Text="{Binding ScaleGain, UpdateSourceTrigger=PropertyChanged}"/>
+                    </StackPanel>
+                    <StackPanel Grid.Column="2">
+                        <TextBlock Text="Offset B:"/>
+                        <TextBox Text="{Binding ScaleOffset, UpdateSourceTrigger=PropertyChanged}"/>
+                    </StackPanel>
+                </Grid>
+                <TextBlock Text="Jednostka (do 3 znaków, np. PSI):"/>
+                <TextBox Text="{Binding ScaleUnit, UpdateSourceTrigger=PropertyChanged}" MaxLength="3"/>
+            </StackPanel>
+        </Border>
+
+        <Button Content="OK" Width="100" Height="32"
+                HorizontalAlignment="Right" Margin="0,16,0,0"
+                Background="#1A73C8" Foreground="White" BorderThickness="0"
+                Click="OnOkClick"/>
+    </StackPanel>
+</Window>

@@ -75,15 +75,32 @@ Set the voltage and current limit first, then enable the output. The readback va
 
 ## Agilent 34970A — DAQ Front Panel
 
-The 34970A front panel shows the installed cards and allows:
+The 34970A panel is organised **per card**: the sidebar configures the slots and the main
+area shows **one tab per installed card** (built dynamically). The **WYKRYJ KARTY**
+(Detect cards) button queries each slot with `SYST:CTYP?` and fills in the detected types.
+
+**34901A multiplexer tab** — an editable grid where every row measures a different function
+in the same scan (e.g. 2× VDC + 1× RTD 4W). The grid enforces the card rules live:
 
 | Control | Description |
 |---|---|
-| **Card slot view** | Lists installed cards (34901A analog, 34907A digital) with their channel ranges |
-| **Scan** | Starts a single scan across all configured channels |
-| **Channel readings** | Grid showing the last measured value for each channel |
-| **DAC outputs** | Set voltage on DAC channels (34907A card) |
-| **Digital I/O** | Byte-level read/write for DIO ports |
+| **Channel** | Slot-aware dropdown; a channel used in one row disappears from the others |
+| **Function** | Channels 21/22 are restricted to current (CURR_DC/AC); a 4-wire row reserves channel *n* **and** *n+10* |
+| **Range** | AUTO/DEF/MIN/MAX or a numeric value (validated) |
+| **Konfig. kanału…** | Dialog for resolution, NPLC and Mx+B scaling |
+| **Konfig. skanu…** | Dialog for trigger source, timer interval, sweep count, channel delay |
+| **Scan / Continuous** | Single sweep or repeated polling; results land in the readings grid |
+
+**34907A multifunction tab** — DAC, digital I/O and totalizer on one tab (the tab *is* the card):
+
+| Control | Description |
+|---|---|
+| **DAC 1 / DAC 2** | Set-point with ▲/▼ step buttons (configurable step), ±12 V |
+| **Digital I/O** | Both ports (s01, s02) shown side by side, byte read/write with bit toggles |
+| **Totalizer** | Read / reset the pulse counter (s03) |
+
+See the [Agilent 34970A instrument page](instruments/agilent34970a.md) for channel mapping
+and SCPI details.
 
 ---
 

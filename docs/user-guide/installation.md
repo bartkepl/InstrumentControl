@@ -6,7 +6,7 @@
 |---|---|
 | Operating System | Windows 10 or 11, 64-bit |
 | NI-VISA | Optional — 21.x or newer (for real instruments) |
-| .NET 8 Runtime | Not required — bundled in the installer and ZIP |
+| .NET 10 Runtime | Not required — bundled in the installer and ZIP |
 
 !!! info "Simulation Mode"
     Without NI-VISA the application starts in **simulation mode**. All VISA calls return a configurable default response, so you can design and test sequences on any Windows laptop without physical hardware.

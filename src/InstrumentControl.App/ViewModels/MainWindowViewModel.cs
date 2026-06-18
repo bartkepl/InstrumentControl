@@ -155,4 +155,19 @@ public partial class MainWindowViewModel : ViewModelBase
     public IEnumerable<string> GetInstrumentNames() =>
         ConnectedInstruments.Select(vm =>
             vm.Driver.InstrumentInfo?.UserLabel is { Length: > 0 } lbl ? lbl : vm.DisplayName);
+
+    /// <summary>Adresy zasobów (VISA/COM) zajęte przez aktualnie połączone przyrządy.</summary>
+    public IEnumerable<string> GetUsedResourceNames() =>
+        ConnectedInstruments
+            .Where(vm => vm.IsConnected)
+            .Select(vm => vm.ResourceName);
+
+    /// <summary>
+    /// Czy dany adres jest już zajęty przez połączony przyrząd. Otwarcie drugiej
+    /// sesji do tego samego zasobu kończy się błędem VISA (VI_ERROR_RSRC_BUSY).
+    /// </summary>
+    public bool IsResourceInUse(string resource) =>
+        !string.IsNullOrWhiteSpace(resource) &&
+        GetUsedResourceNames().Any(r =>
+            string.Equals(r, resource, StringComparison.OrdinalIgnoreCase));
 }

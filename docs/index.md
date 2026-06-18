@@ -10,7 +10,7 @@
 
 ## What is InstrumentControl?
 
-InstrumentControl is a .NET 8 WPF desktop application that lets you **connect, control, and automate laboratory instruments** without writing any code. It supports standard VISA instruments (GPIB, USB-TMC, LAN/VXI-11) and custom RS-232 devices through a plugin architecture.
+InstrumentControl is a .NET 10 WPF desktop application that lets you **connect, control, and automate laboratory instruments** without writing any code. It supports standard VISA instruments (GPIB, USB-TMC, LAN/VXI-11) and custom RS-232 devices through a plugin architecture.
 
 Key capabilities at a glance:
 
@@ -78,7 +78,7 @@ Key capabilities at a glance:
 
 ```mermaid
 graph TD
-    A[InstrumentControl.App<br/>WPF executable] --> B[InstrumentControl.Core<br/>.NET 8 library]
+    A[InstrumentControl.App<br/>WPF executable] --> B[InstrumentControl.Core<br/>.NET 10 library]
     B --> C[IInstrumentDriver]
     B --> D[ISequenceBlock]
     B --> E[IConnectionProvider]

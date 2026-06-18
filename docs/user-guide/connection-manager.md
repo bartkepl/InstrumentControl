@@ -81,6 +81,8 @@ On success the dialog closes and the instrument appears in the sidebar. On failu
 
 You can connect as many instruments as you need. Click **Add Instrument** again to open the Connection Manager a second time. Instruments already connected are still active while you connect a new one.
 
+A resource that is already held by a connected instrument is marked **in use** in the discovered-resources list and cannot be selected. If you enter its address manually, **Test** and **Connect** refuse it with a message asking you to disconnect the existing instrument first. (Simulated `SIM::` resources are exempt — they can be shared.)
+
 Each connected instrument:
 
 - Appears as a row in the left sidebar with its name and VISA address

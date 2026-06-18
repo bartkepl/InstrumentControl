@@ -111,6 +111,7 @@
     <sys:String x:Key="ConnMgr_Connect">Connect</sys:String>
     <sys:String x:Key="ConnMgr_Cancel">Cancel</sys:String>
     <sys:String x:Key="ConnMgr_InitStatus">Click 'Refresh' to find VISA resources</sys:String>
+    <sys:String x:Key="ConnMgr_InUse">in use</sys:String>
 
     <!-- Front panel -->
     <sys:String x:Key="FrontPanel_NoInstrument">No instrument connected</sys:String>
@@ -141,6 +142,7 @@
     <sys:String x:Key="VM_SelectDriver">Select a driver</sys:String>
     <sys:String x:Key="VM_Connected">Connected:</sys:String>
     <sys:String x:Key="VM_ConnectionError">Connection error:</sys:String>
+    <sys:String x:Key="VM_ResourceInUse">Address {0} is already used by a connected instrument. Disconnect it first.</sys:String>
     <sys:String x:Key="VM_ResetFailed">Reset failed:</sys:String>
     <sys:String x:Key="VM_FilterSeq">InstrumentControl Sequences (*.iseq)|*.iseq|All files (*.*)|*.*</sys:String>
     <sys:String x:Key="VM_FilterCsv">CSV (*.csv)|*.csv</sys:String>
@@ -186,11 +188,14 @@
     <sys:String x:Key="Block_HP34401A_MeasureContinuity">Continuity Test</sys:String>
 
     <!-- Block names — Agilent34970A -->
+    <sys:String x:Key="Block_A34970A_DetectCards">Detect Cards</sys:String>
     <sys:String x:Key="Block_A34970A_ScanChannels">Scan Channels</sys:String>
+    <sys:String x:Key="Block_A34970A_ScanMixed">Mixed Scan</sys:String>
     <sys:String x:Key="Block_A34970A_MeasureChannel">Measure Channel</sys:String>
     <sys:String x:Key="Block_A34970A_SetDAC">Set DAC</sys:String>
     <sys:String x:Key="Block_A34970A_SetDigitalOutput">Digital Output</sys:String>
     <sys:String x:Key="Block_A34970A_ReadDigitalInput">Digital Input</sys:String>
+    <sys:String x:Key="Block_A34970A_ReadTotalizer">Read Totalizer</sys:String>
 
     <!-- Block names — Keithley2000 -->
     <sys:String x:Key="Block_K2000_MeasureDCV">K2000 Measure DCV</sys:String>
@@ -237,6 +242,7 @@
     <sys:String x:Key="Category_Control">Control</sys:String>
     <sys:String x:Key="Category_General">General</sys:String>
     <sys:String x:Key="Category_Data">Data</sys:String>
+    <sys:String x:Key="Category_Agilent34970A">Agilent 34970A</sys:String>
 
     <!-- Block descriptions (toolbox tooltips) — Core blocks -->
     <sys:String x:Key="BlockDesc_StartBlock">Entry point of the sequence</sys:String>
@@ -318,13 +324,23 @@
 
     <!-- Block property labels — Agilent34970A -->
     <sys:String x:Key="Prop_A34970A_ScanChannels_ChannelList">Channel list (SCPI)</sys:String>
+    <sys:String x:Key="Prop_A34970A_ScanChannels_Range">Range</sys:String>
     <sys:String x:Key="Prop_A34970A_ScanChannels_OutputPrefix">Output variable prefix</sys:String>
-    <sys:String x:Key="Prop_A34970A_MeasureChannel_Channel">Channel (1-20)</sys:String>
+    <sys:String x:Key="Prop_A34970A_ScanMixed_Spec">Channel spec (ch=FUNC[:param][@range])</sys:String>
+    <sys:String x:Key="Prop_A34970A_ScanMixed_OutputPrefix">Output variable prefix</sys:String>
+    <sys:String x:Key="Prop_A34970A_MeasureChannel_Channel">Channel (1-22)</sys:String>
+    <sys:String x:Key="Prop_A34970A_MeasureChannel_Range">Range</sys:String>
     <sys:String x:Key="Prop_A34970A_SetDAC_DacChannel">DAC channel</sys:String>
-    <sys:String x:Key="Prop_A34970A_SetDAC_Voltage">Voltage [V]</sys:String>
+    <sys:String x:Key="Prop_A34970A_SetDAC_Voltage">Voltage [V] (-12..12)</sys:String>
     <sys:String x:Key="Prop_A34970A_SetDAC_VoltageVariable">Voltage variable (optional)</sys:String>
+    <sys:String x:Key="Prop_A34970A_SetDigitalOutput_Port">Port (1/2)</sys:String>
     <sys:String x:Key="Prop_A34970A_SetDigitalOutput_Value">Value (0-255)</sys:String>
     <sys:String x:Key="Prop_A34970A_SetDigitalOutput_ValueVariable">Value variable (optional)</sys:String>
+    <sys:String x:Key="Prop_A34970A_ReadDigitalInput_Port">Port (1/2)</sys:String>
+    <sys:String x:Key="Prop_A34970A_ReadDigitalInput_OutputVariable">Output variable</sys:String>
+    <sys:String x:Key="Prop_A34970A_ReadTotalizer_ResetAfter">Reset after read</sys:String>
+    <sys:String x:Key="Prop_A34970A_ReadTotalizer_OutputVariable">Output variable</sys:String>
+    <sys:String x:Key="Prop_Common_Slot">Slot</sys:String>
 
     <!-- Block property labels — ItechIT6922B -->
     <sys:String x:Key="Prop_IT6922B_SetVoltage_Voltage">Voltage [V]</sys:String>

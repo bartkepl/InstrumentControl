@@ -25,6 +25,20 @@ public partial class DriverInfoVm : ObservableObject
     }
 }
 
+public partial class ResourceItemVm : ObservableObject
+{
+    public string Address { get; }
+
+    /// <summary>Zasób jest już zajęty przez połączony przyrząd — nie można go wybrać.</summary>
+    [ObservableProperty] private bool _isInUse;
+
+    public ResourceItemVm(string address, bool isInUse)
+    {
+        Address = address;
+        IsInUse = isInUse;
+    }
+}
+
 public partial class ConnectionManagerViewModel : ViewModelBase
 {
     private readonly VisaService _visaService;
@@ -32,9 +46,10 @@ public partial class ConnectionManagerViewModel : ViewModelBase
     private readonly MainWindowViewModel? _mainVm;
     private CancellationTokenSource? _detectCts;
 
-    [ObservableProperty] private ObservableCollection<string> _availableResources = new();
+    [ObservableProperty] private ObservableCollection<ResourceItemVm> _availableResources = new();
     [ObservableProperty] private ObservableCollection<string> _availableComPorts = new();
     [ObservableProperty] private ObservableCollection<DriverInfoVm> _availableDrivers = new();
+    [ObservableProperty] private ResourceItemVm? _selectedResourceItem;
     [ObservableProperty] private string _selectedResource = string.Empty;
     [ObservableProperty] private string _manualResourceString = string.Empty;
     [ObservableProperty] private DriverInfoVm? _selectedDriver;
@@ -90,6 +105,12 @@ public partial class ConnectionManagerViewModel : ViewModelBase
     }
 
     // ── Auto-detection ───────────────────────────────────────────────────────
+
+    partial void OnSelectedResourceItemChanged(ResourceItemVm? value)
+    {
+        // In-use resources are not selectable in the list, but guard anyway.
+        SelectedResource = value is { IsInUse: false } ? value.Address : string.Empty;
+    }
 
     partial void OnSelectedResourceChanged(string value)
     {
@@ -204,11 +225,13 @@ public partial class ConnectionManagerViewModel : ViewModelBase
             RunOnUi(() =>
             {
                 AvailableResources.Clear();
-                foreach (var r in resources) AvailableResources.Add(r);
+                foreach (var r in resources)
+                    AvailableResources.Add(new ResourceItemVm(r, IsResourceBusy(r)));
                 AvailableComPorts.Clear();
                 foreach (var p in ports) AvailableComPorts.Add(p);
                 StatusText = string.Format(LocalizationService.Get("VM_FoundResources"), resources.Length, ports.Length);
-                if (resources.Length > 0) SelectedResource = resources[0];
+                // Preselect the first resource that is not already in use.
+                SelectedResourceItem = AvailableResources.FirstOrDefault(r => !r.IsInUse);
             });
         });
         IsBusy = false;
@@ -218,10 +241,15 @@ public partial class ConnectionManagerViewModel : ViewModelBase
     private async Task TestConnection()
     {
         if (SelectedDriver == null) return;
+        var resource = GetResourceString();
+        if (IsResourceBusy(resource))
+        {
+            TestResult = string.Format(LocalizationService.Get("VM_ResourceInUse"), resource);
+            return;
+        }
         IsBusy = true; TestResult = LocalizationService.Get("VM_Testing");
         try
         {
-            var resource = GetResourceString();
             var driver = _pluginLoader.CreateDriver(SelectedDriver.Driver.DriverName)!;
             IConnectionProvider conn = UseSimulation
                 ? _visaService.OpenSimulated(resource)
@@ -243,10 +271,15 @@ public partial class ConnectionManagerViewModel : ViewModelBase
     private async Task Connect()
     {
         if (SelectedDriver == null) { StatusText = LocalizationService.Get("VM_SelectDriver"); return; }
+        var resource = GetResourceString();
+        if (IsResourceBusy(resource))
+        {
+            StatusText = string.Format(LocalizationService.Get("VM_ResourceInUse"), resource);
+            return;
+        }
         IsBusy = true; StatusText = LocalizationService.Get("VM_Connecting");
         try
         {
-            var resource = GetResourceString();
             var driver = _pluginLoader.CreateDriver(SelectedDriver.Driver.DriverName)!;
             IConnectionProvider conn;
             if (UseSimulation)
@@ -281,4 +314,13 @@ public partial class ConnectionManagerViewModel : ViewModelBase
         if (!string.IsNullOrWhiteSpace(SelectedResource)) return SelectedResource.Trim();
         return "SIM::INSTR";
     }
+
+    /// <summary>
+    /// Czy adres jest już zajęty przez połączony przyrząd. Zasoby symulowane
+    /// (SIM::) mogą być współdzielone, więc dla nich blokada nie obowiązuje.
+    /// </summary>
+    private bool IsResourceBusy(string resource) =>
+        !UseSimulation
+        && !resource.StartsWith("SIM::", StringComparison.OrdinalIgnoreCase)
+        && _mainVm?.IsResourceInUse(resource) == true;
 }

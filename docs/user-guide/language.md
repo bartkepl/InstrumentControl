@@ -47,8 +47,8 @@ UI strings are stored in XAML resource dictionaries under `src/InstrumentControl
 
 | File | Language | Entries |
 |---|---|---|
-| `Strings.en.xaml` | English | 282 |
-| `Strings.pl.xaml` | Polish | 282 |
+| `Strings.en.xaml` | English | 298 |
+| `Strings.pl.xaml` | Polish | 298 |
 
 Each file is a standard WPF `ResourceDictionary` containing `<sys:String>` entries:
 
@@ -93,6 +93,6 @@ The driver descriptions shown in the **Add Instrument** dialog come from `Driver
 ### Adding a Third Language
 
 1. Copy `Strings.en.xaml` to `Strings.xx.xaml` (where `xx` is the BCP 47 language tag, e.g. `de` for German)
-2. Translate all 282 string values (leave the `LogTab_*` keys in English)
+2. Translate all 298 string values (leave the `LogTab_*` keys in English)
 3. In `LocalizationService.SetLanguage()`, add `"xx"` to the list of supported codes and map it to the new file path
 4. Add the language option to the `AboutWindow` XAML combo-box items

@@ -14,6 +14,8 @@ function jp {
 $ErrorActionPreference = "Stop"
 $Root = $PSScriptRoot
 $OutDir = jp $Root "bin" $Configuration
+# Docelowa platforma (musi odpowiadac TargetFramework z Directory.Build.props).
+$Tfm = "net10.0-windows"
 
 Write-Host ""
 Write-Host "=== InstrumentControl Build ===" -ForegroundColor Cyan
@@ -71,43 +73,43 @@ Write-Host "   OK" -ForegroundColor Green
 $InstrumentsOut = jp $OutDir "instruments"
 New-Item -ItemType Directory -Force -Path $InstrumentsOut | Out-Null
 
-$hp = jp $Root "instruments" "HP34401A" "bin" $Configuration "net8.0-windows" "HP34401A.dll"
+$hp = jp $Root "instruments" "HP34401A" "bin" $Configuration $Tfm "HP34401A.dll"
 if (Test-Path $hp) {
     Copy-Item $hp $InstrumentsOut -Force
     Write-Host "   Skopiowano: HP34401A.dll" -ForegroundColor Green
 }
 
-$ag = jp $Root "instruments" "Agilent34970A" "bin" $Configuration "net8.0-windows" "Agilent34970A.dll"
+$ag = jp $Root "instruments" "Agilent34970A" "bin" $Configuration $Tfm "Agilent34970A.dll"
 if (Test-Path $ag) {
     Copy-Item $ag $InstrumentsOut -Force
     Write-Host "   Skopiowano: Agilent34970A.dll" -ForegroundColor Green
 }
 
-$k2 = jp $Root "instruments" "Keithley2000" "bin" $Configuration "net8.0-windows" "Keithley2000.dll"
+$k2 = jp $Root "instruments" "Keithley2000" "bin" $Configuration $Tfm "Keithley2000.dll"
 if (Test-Path $k2) {
     Copy-Item $k2 $InstrumentsOut -Force
     Write-Host "   Skopiowano: Keithley2000.dll" -ForegroundColor Green
 }
 
-$it = jp $Root "instruments" "ItechIT6922B" "bin" $Configuration "net8.0-windows" "ItechIT6922B.dll"
+$it = jp $Root "instruments" "ItechIT6922B" "bin" $Configuration $Tfm "ItechIT6922B.dll"
 if (Test-Path $it) {
     Copy-Item $it $InstrumentsOut -Force
     Write-Host "   Skopiowano: ItechIT6922B.dll" -ForegroundColor Green
 }
 
-$rtb = jp $Root "instruments" "RTB2004" "bin" $Configuration "net8.0-windows" "RTB2004.dll"
+$rtb = jp $Root "instruments" "RTB2004" "bin" $Configuration $Tfm "RTB2004.dll"
 if (Test-Path $rtb) {
     Copy-Item $rtb $InstrumentsOut -Force
     Write-Host "   Skopiowano: RTB2004.dll" -ForegroundColor Green
 }
 
-$cts = jp $Root "instruments" "CTSChamber" "bin" $Configuration "net8.0-windows" "CTSChamber.dll"
+$cts = jp $Root "instruments" "CTSChamber" "bin" $Configuration $Tfm "CTSChamber.dll"
 if (Test-Path $cts) {
     Copy-Item $cts $InstrumentsOut -Force
     Write-Host "   Skopiowano: CTSChamber.dll" -ForegroundColor Green
 }
 
-$rigol = jp $Root "instruments" "RigolDS1000Z" "bin" $Configuration "net8.0-windows" "RigolDS1000Z.dll"
+$rigol = jp $Root "instruments" "RigolDS1000Z" "bin" $Configuration $Tfm "RigolDS1000Z.dll"
 if (Test-Path $rigol) {
     Copy-Item $rigol $InstrumentsOut -Force
     Write-Host "   Skopiowano: RigolDS1000Z.dll" -ForegroundColor Green

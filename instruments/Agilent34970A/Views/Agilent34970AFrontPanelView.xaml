@@ -3,26 +3,26 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:vm="clr-namespace:Agilent34970A.Views"
              mc:Ignorable="d"
-             d:DesignHeight="620" d:DesignWidth="900"
+             d:DesignHeight="660" d:DesignWidth="960"
              Background="#D4D0CC">
 
     <UserControl.Resources>
-        <!-- ── Colours: authentic Agilent 34970A light gray body ── -->
+        <!-- ── Colours ── -->
         <SolidColorBrush x:Key="PanelBg"      Color="#D4D0CC"/>
         <SolidColorBrush x:Key="SidebarBg"    Color="#C0BCB8"/>
         <SolidColorBrush x:Key="HeaderBg"     Color="#B0ACA8"/>
         <SolidColorBrush x:Key="AccentBlue"   Color="#1A73C8"/>
         <SolidColorBrush x:Key="AccentGreen"  Color="#1E8040"/>
         <SolidColorBrush x:Key="AccentRed"    Color="#C02010"/>
-        <SolidColorBrush x:Key="AccentPurple" Color="#1565A0"/>
         <SolidColorBrush x:Key="AccentTeal"   Color="#0E7490"/>
         <SolidColorBrush x:Key="TextPrimary"  Color="#101010"/>
         <SolidColorBrush x:Key="TextMuted"    Color="#505050"/>
         <SolidColorBrush x:Key="ControlBg"    Color="#C8C4C0"/>
         <SolidColorBrush x:Key="BorderColor"  Color="#9A9694"/>
 
-        <!-- ── Base button style ── -->
+        <!-- ── Buttons ── -->
         <Style x:Key="ActionButton" TargetType="Button">
             <Setter Property="Foreground"  Value="{StaticResource TextPrimary}"/>
             <Setter Property="Background"  Value="{StaticResource AccentBlue}"/>
@@ -33,28 +33,19 @@
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="Button">
-                        <Border Background="{TemplateBinding Background}"
-                                CornerRadius="4"
+                        <Border Background="{TemplateBinding Background}" CornerRadius="4"
                                 Padding="{TemplateBinding Padding}">
-                            <ContentPresenter HorizontalAlignment="Center"
-                                              VerticalAlignment="Center"/>
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
                         </Border>
                         <ControlTemplate.Triggers>
-                            <Trigger Property="IsMouseOver" Value="True">
-                                <Setter Property="Opacity" Value="0.85"/>
-                            </Trigger>
-                            <Trigger Property="IsPressed" Value="True">
-                                <Setter Property="Opacity" Value="0.70"/>
-                            </Trigger>
-                            <Trigger Property="IsEnabled" Value="False">
-                                <Setter Property="Opacity" Value="0.40"/>
-                            </Trigger>
+                            <Trigger Property="IsMouseOver" Value="True"><Setter Property="Opacity" Value="0.85"/></Trigger>
+                            <Trigger Property="IsPressed" Value="True"><Setter Property="Opacity" Value="0.70"/></Trigger>
+                            <Trigger Property="IsEnabled" Value="False"><Setter Property="Opacity" Value="0.40"/></Trigger>
                         </ControlTemplate.Triggers>
                     </ControlTemplate>
                 </Setter.Value>
             </Setter>
         </Style>
-
         <Style x:Key="GreenButton" TargetType="Button" BasedOn="{StaticResource ActionButton}">
             <Setter Property="Background" Value="{StaticResource AccentGreen}"/>
         </Style>
@@ -65,14 +56,12 @@
             <Setter Property="Background" Value="{StaticResource AccentTeal}"/>
         </Style>
 
-        <!-- ── Label ── -->
         <Style x:Key="FieldLabel" TargetType="TextBlock">
             <Setter Property="Foreground"  Value="{StaticResource TextMuted}"/>
             <Setter Property="FontSize"    Value="11"/>
             <Setter Property="Margin"      Value="0,6,0,2"/>
         </Style>
 
-        <!-- ── TextBox ── -->
         <Style TargetType="TextBox">
             <Setter Property="Background"       Value="{StaticResource ControlBg}"/>
             <Setter Property="Foreground"       Value="{StaticResource TextPrimary}"/>
@@ -82,7 +71,6 @@
             <Setter Property="CaretBrush"       Value="{StaticResource TextPrimary}"/>
         </Style>
 
-        <!-- ── ComboBox ── -->
         <Style TargetType="ComboBox">
             <Setter Property="Background"       Value="{StaticResource ControlBg}"/>
             <Setter Property="Foreground"       Value="{StaticResource TextPrimary}"/>
@@ -91,7 +79,6 @@
             <Setter Property="Padding"          Value="6,4"/>
         </Style>
 
-        <!-- ── Expander ── -->
         <Style TargetType="Expander">
             <Setter Property="Foreground"  Value="{StaticResource TextPrimary}"/>
             <Setter Property="Background"  Value="{StaticResource ControlBg}"/>
@@ -100,7 +87,6 @@
             <Setter Property="Margin"      Value="0,4,0,0"/>
         </Style>
 
-        <!-- ── TabControl / TabItem ── -->
         <Style TargetType="TabControl">
             <Setter Property="Background"   Value="{StaticResource PanelBg}"/>
             <Setter Property="BorderBrush"  Value="{StaticResource BorderColor}"/>
@@ -113,23 +99,18 @@
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="TabItem">
-                        <Border x:Name="TabBorder"
-                                Background="{TemplateBinding Background}"
+                        <Border x:Name="TabBorder" Background="{TemplateBinding Background}"
                                 BorderBrush="{StaticResource BorderColor}"
-                                BorderThickness="1,1,1,0"
-                                CornerRadius="4,4,0,0"
-                                Margin="2,2,2,0"
-                                Padding="{TemplateBinding Padding}">
+                                BorderThickness="1,1,1,0" CornerRadius="4,4,0,0"
+                                Margin="2,2,2,0" Padding="{TemplateBinding Padding}">
                             <ContentPresenter ContentSource="Header"
-                                              HorizontalAlignment="Center"
-                                              VerticalAlignment="Center"
+                                              HorizontalAlignment="Center" VerticalAlignment="Center"
                                               TextBlock.Foreground="{Binding Foreground,
                                                   RelativeSource={RelativeSource TemplatedParent}}"/>
                         </Border>
                         <ControlTemplate.Triggers>
                             <Trigger Property="IsSelected" Value="True">
-                                <Setter TargetName="TabBorder" Property="Background"
-                                        Value="{StaticResource AccentBlue}"/>
+                                <Setter TargetName="TabBorder" Property="Background" Value="{StaticResource AccentBlue}"/>
                                 <Setter Property="Foreground" Value="White"/>
                             </Trigger>
                         </ControlTemplate.Triggers>
@@ -138,8 +119,7 @@
             </Setter>
         </Style>
 
-        <!-- ── DataGrid ── -->
-        <Style TargetType="DataGrid">
+        <Style x:Key="ResultsGrid" TargetType="DataGrid">
             <Setter Property="Background"           Value="{StaticResource ControlBg}"/>
             <Setter Property="Foreground"           Value="{StaticResource TextPrimary}"/>
             <Setter Property="BorderBrush"          Value="{StaticResource BorderColor}"/>
@@ -150,26 +130,26 @@
             <Setter Property="AutoGenerateColumns"  Value="False"/>
             <Setter Property="IsReadOnly"           Value="True"/>
             <Setter Property="SelectionMode"        Value="Single"/>
+            <Setter Property="CanUserResizeColumns" Value="True"/>
             <Setter Property="CanUserResizeRows"    Value="False"/>
             <Setter Property="HeadersVisibility"    Value="Column"/>
+            <Setter Property="ColumnWidth"          Value="Auto"/>
+            <Setter Property="ScrollViewer.HorizontalScrollBarVisibility" Value="Auto"/>
         </Style>
 
-        <!-- ── Digital bit toggle button ── -->
+        <!-- ── Digital bit toggle ── -->
         <Style x:Key="BitToggle" TargetType="ToggleButton">
-            <Setter Property="Width"   Value="34"/>
-            <Setter Property="Height"  Value="34"/>
+            <Setter Property="Width"   Value="32"/>
+            <Setter Property="Height"  Value="32"/>
             <Setter Property="Background"  Value="{StaticResource ControlBg}"/>
             <Setter Property="Foreground"  Value="{StaticResource TextMuted}"/>
             <Setter Property="BorderBrush" Value="{StaticResource BorderColor}"/>
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="ToggleButton">
-                        <Border Background="{TemplateBinding Background}"
-                                BorderBrush="{TemplateBinding BorderBrush}"
-                                BorderThickness="1"
-                                CornerRadius="4">
-                            <ContentPresenter HorizontalAlignment="Center"
-                                              VerticalAlignment="Center"/>
+                        <Border Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="1" CornerRadius="4">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
                         </Border>
                         <ControlTemplate.Triggers>
                             <Trigger Property="IsChecked" Value="True">
@@ -182,15 +162,289 @@
             </Setter>
         </Style>
 
-        <!-- ── Digital input indicator (Ellipse inside border) ── -->
         <Style x:Key="BitIndicator" TargetType="Ellipse">
-            <Setter Property="Width"  Value="22"/>
-            <Setter Property="Height" Value="22"/>
+            <Setter Property="Width"  Value="20"/>
+            <Setter Property="Height" Value="20"/>
             <Setter Property="Fill"   Value="#A0A098"/>
             <Setter Property="Stroke" Value="{StaticResource BorderColor}"/>
             <Setter Property="StrokeThickness" Value="1"/>
         </Style>
 
+        <!-- ════════════ DataTemplate: jeden port cyfrowy ════════════ -->
+        <DataTemplate DataType="{x:Type vm:DioPortViewModel}">
+            <Border Background="{StaticResource ControlBg}" BorderBrush="{StaticResource BorderColor}"
+                    BorderThickness="1" CornerRadius="6" Padding="12" Margin="0,0,0,0">
+                <StackPanel>
+                    <TextBlock Text="{Binding Title}" FontSize="11" FontWeight="Bold"
+                               Foreground="{StaticResource TextMuted}" Margin="0,0,0,8"/>
+
+                    <TextBlock Text="Wejście (odczyt)" FontSize="10"
+                               Foreground="{StaticResource TextMuted}" Margin="0,0,0,4"/>
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                        <StackPanel Margin="3,0"><Ellipse Style="{StaticResource BitIndicator}" Fill="{Binding InputBit7Brush}"/><TextBlock Text="7" FontSize="9" HorizontalAlignment="Center" Foreground="{StaticResource TextMuted}"/></StackPanel>
+                        <StackPanel Margin="3,0"><Ellipse Style="{StaticResource BitIndicator}" Fill="{Binding InputBit6Brush}"/><TextBlock Text="6" FontSize="9" HorizontalAlignment="Center" Foreground="{StaticResource TextMuted}"/></StackPanel>
+                        <StackPanel Margin="3,0"><Ellipse Style="{StaticResource BitIndicator}" Fill="{Binding InputBit5Brush}"/><TextBlock Text="5" FontSize="9" HorizontalAlignment="Center" Foreground="{StaticResource TextMuted}"/></StackPanel>
+                        <StackPanel Margin="3,0"><Ellipse Style="{StaticResource BitIndicator}" Fill="{Binding InputBit4Brush}"/><TextBlock Text="4" FontSize="9" HorizontalAlignment="Center" Foreground="{StaticResource TextMuted}"/></StackPanel>
+                        <Rectangle Width="1" Fill="{StaticResource BorderColor}" Margin="5,0"/>
+                        <StackPanel Margin="3,0"><Ellipse Style="{StaticResource BitIndicator}" Fill="{Binding InputBit3Brush}"/><TextBlock Text="3" FontSize="9" HorizontalAlignment="Center" Foreground="{StaticResource TextMuted}"/></StackPanel>
+                        <StackPanel Margin="3,0"><Ellipse Style="{StaticResource BitIndicator}" Fill="{Binding InputBit2Brush}"/><TextBlock Text="2" FontSize="9" HorizontalAlignment="Center" Foreground="{StaticResource TextMuted}"/></StackPanel>
+                        <StackPanel Margin="3,0"><Ellipse Style="{StaticResource BitIndicator}" Fill="{Binding InputBit1Brush}"/><TextBlock Text="1" FontSize="9" HorizontalAlignment="Center" Foreground="{StaticResource TextMuted}"/></StackPanel>
+                        <StackPanel Margin="3,0"><Ellipse Style="{StaticResource BitIndicator}" Fill="{Binding InputBit0Brush}"/><TextBlock Text="0" FontSize="9" HorizontalAlignment="Center" Foreground="{StaticResource TextMuted}"/></StackPanel>
+                    </StackPanel>
+                    <TextBlock Text="{Binding InputValue, StringFormat='0x{0:X2} ({0})'}"
+                               Foreground="{StaticResource TextPrimary}" HorizontalAlignment="Center" Margin="0,6,0,0"/>
+                    <Button Content="ODCZYTAJ" Style="{StaticResource TealButton}"
+                            Command="{Binding ReadCommand}" Margin="0,8,0,12"
+                            HorizontalAlignment="Center" Width="120"/>
+
+                    <TextBlock Text="Wyjście" FontSize="10"
+                               Foreground="{StaticResource TextMuted}" Margin="0,0,0,4"/>
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                        <ToggleButton Style="{StaticResource BitToggle}" IsChecked="{Binding OutputBit7}" Margin="2" Content="7"/>
+                        <ToggleButton Style="{StaticResource BitToggle}" IsChecked="{Binding OutputBit6}" Margin="2" Content="6"/>
+                        <ToggleButton Style="{StaticResource BitToggle}" IsChecked="{Binding OutputBit5}" Margin="2" Content="5"/>
+                        <ToggleButton Style="{StaticResource BitToggle}" IsChecked="{Binding OutputBit4}" Margin="2" Content="4"/>
+                        <Rectangle Width="1" Fill="{StaticResource BorderColor}" Margin="5,0"/>
+                        <ToggleButton Style="{StaticResource BitToggle}" IsChecked="{Binding OutputBit3}" Margin="2" Content="3"/>
+                        <ToggleButton Style="{StaticResource BitToggle}" IsChecked="{Binding OutputBit2}" Margin="2" Content="2"/>
+                        <ToggleButton Style="{StaticResource BitToggle}" IsChecked="{Binding OutputBit1}" Margin="2" Content="1"/>
+                        <ToggleButton Style="{StaticResource BitToggle}" IsChecked="{Binding OutputBit0}" Margin="2" Content="0"/>
+                    </StackPanel>
+                    <TextBlock Text="{Binding OutputValue, StringFormat='0x{0:X2} ({0})'}"
+                               Foreground="{StaticResource TextPrimary}" HorizontalAlignment="Center" Margin="0,6,0,0"/>
+                    <Button Content="ZAPISZ" Style="{StaticResource RedButton}"
+                            Command="{Binding WriteCommand}" Margin="0,8,0,0"
+                            HorizontalAlignment="Center" Width="120"/>
+                </StackPanel>
+            </Border>
+        </DataTemplate>
+
+        <!-- ════════════ DataTemplate: zakładka MUX 34901A ════════════ -->
+        <DataTemplate DataType="{x:Type vm:Mux34901AViewModel}">
+            <ScrollViewer VerticalScrollBarVisibility="Auto">
+                <StackPanel Margin="16">
+                    <TextBlock Text="POMIAR MULTIPLEKSERA — każdy kanał z własną funkcją"
+                               FontSize="12" FontWeight="Bold"
+                               Foreground="{StaticResource TextMuted}" Margin="0,0,0,4"/>
+                    <TextBlock Text="{Binding ChannelHint}" FontSize="10"
+                               Foreground="{StaticResource TextMuted}" TextWrapping="Wrap" Margin="0,0,0,10"/>
+
+                    <DataGrid ItemsSource="{Binding ChannelConfigs}"
+                              SelectedItem="{Binding SelectedConfigRow}"
+                              Style="{StaticResource ResultsGrid}"
+                              IsReadOnly="True" Height="190">
+                        <DataGrid.Columns>
+                            <DataGridTemplateColumn Header="Kanał" Width="Auto">
+                                <DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <ComboBox MinWidth="70" Margin="2" BorderThickness="0"
+                                                  ItemsSource="{Binding AvailableChannels}"
+                                                  SelectedItem="{Binding Channel, UpdateSourceTrigger=PropertyChanged}"/>
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.CellTemplate>
+                            </DataGridTemplateColumn>
+                            <DataGridTemplateColumn Header="Funkcja" Width="Auto">
+                                <DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <ComboBox MinWidth="110" Margin="2" BorderThickness="0"
+                                                  ItemsSource="{Binding FunctionOptions}"
+                                                  SelectedItem="{Binding Function, UpdateSourceTrigger=PropertyChanged}"/>
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.CellTemplate>
+                            </DataGridTemplateColumn>
+                            <DataGridTemplateColumn Header="Zakres" Width="Auto">
+                                <DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <ComboBox MinWidth="80" Margin="2" IsEditable="True"
+                                                  Text="{Binding Range, UpdateSourceTrigger=LostFocus}">
+                                            <ComboBoxItem Content="AUTO"/>
+                                            <ComboBoxItem Content="DEF"/>
+                                            <ComboBoxItem Content="MIN"/>
+                                            <ComboBoxItem Content="MAX"/>
+                                        </ComboBox>
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.CellTemplate>
+                            </DataGridTemplateColumn>
+                            <DataGridTextColumn Header="Param" Width="Auto" MinWidth="50"
+                                                Binding="{Binding Param}"/>
+                            <DataGridTextColumn Header="NPLC" Width="Auto" MinWidth="50"
+                                                Binding="{Binding Nplc}"/>
+                            <DataGridTextColumn Header="Rozdz." Width="Auto" MinWidth="50"
+                                                Binding="{Binding Resolution}"/>
+                            <DataGridTextColumn Header="Skalowanie Mx+B" Width="*" MinWidth="120"
+                                                Binding="{Binding ScaleSummary}"/>
+                        </DataGrid.Columns>
+                    </DataGrid>
+
+                    <!-- Buttons -->
+                    <WrapPanel Margin="0,10,0,0">
+                        <Button Content="+ Wiersz" Style="{StaticResource ActionButton}"
+                                Command="{Binding AddRowCommand}" Height="32" Margin="0,0,8,8"/>
+                        <Button Content="− Usuń" Style="{StaticResource RedButton}"
+                                Command="{Binding RemoveRowCommand}" Height="32" Margin="0,0,8,8"/>
+                        <Button Content="Konfig. kanału…" Style="{StaticResource ActionButton}"
+                                Command="{Binding OpenChannelConfigCommand}" Height="32" Margin="0,0,8,8"/>
+                        <Button Content="Konfig. skanu…" Style="{StaticResource ActionButton}"
+                                Command="{Binding OpenScanConfigCommand}" Height="32" Margin="0,0,8,8"/>
+                        <Button Content="▶  SKANUJ" Style="{StaticResource GreenButton}"
+                                Command="{Binding ScanCommand}" Height="32" Width="120" Margin="0,0,8,8"/>
+                        <Button Width="110" Height="32" Margin="0,0,8,8">
+                            <Button.Style>
+                                <Style TargetType="Button" BasedOn="{StaticResource ActionButton}">
+                                    <Setter Property="Content" Value="▶  CIĄGŁY"/>
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding IsContinuousScan}" Value="True">
+                                            <Setter Property="Content" Value="■  STOP"/>
+                                            <Setter Property="Background" Value="{StaticResource AccentRed}"/>
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </Button.Style>
+                            <Button.Command><Binding Path="ToggleContinuousScanCommand"/></Button.Command>
+                        </Button>
+                        <ComboBox ItemsSource="{Binding ScanIntervals}"
+                                  SelectedItem="{Binding SelectedScanInterval}"
+                                  Height="32" Width="80" Margin="0,0,0,8"/>
+                    </WrapPanel>
+
+                    <TextBlock Text="WYNIKI" FontSize="10" FontWeight="Bold"
+                               Foreground="{StaticResource TextMuted}" Margin="0,12,0,6"/>
+                    <DataGrid ItemsSource="{Binding ScanResults}" Style="{StaticResource ResultsGrid}" Height="220">
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Header="Kanał"     Width="Auto" MinWidth="60"  Binding="{Binding ChannelId}"/>
+                            <DataGridTextColumn Header="Wartość"   Width="Auto" MinWidth="110" Binding="{Binding Value, StringFormat=G8}"/>
+                            <DataGridTextColumn Header="Jednostka" Width="Auto" MinWidth="80"  Binding="{Binding Unit}"/>
+                            <DataGridTextColumn Header="Funkcja"   Width="Auto" MinWidth="100" Binding="{Binding Function}"/>
+                            <DataGridTextColumn Header="Czas"      Width="Auto" MinWidth="100" Binding="{Binding Timestamp, StringFormat=HH:mm:ss.fff}"/>
+                        </DataGrid.Columns>
+                    </DataGrid>
+                </StackPanel>
+            </ScrollViewer>
+        </DataTemplate>
+
+        <!-- ════════════ DataTemplate: zakładka 34907A ════════════ -->
+        <DataTemplate DataType="{x:Type vm:Multi34907AViewModel}">
+            <ScrollViewer VerticalScrollBarVisibility="Auto">
+                <StackPanel Margin="16">
+                    <TextBlock Text="MODUŁ WIELOFUNKCYJNY 34907A"
+                               FontSize="12" FontWeight="Bold"
+                               Foreground="{StaticResource TextMuted}" Margin="0,0,0,8"/>
+
+                    <!-- DAC — dwa wyjścia obok siebie -->
+                    <TextBlock Text="{Binding DacRangeHint}" FontSize="10"
+                               Foreground="{StaticResource TextMuted}" Margin="0,0,0,6"/>
+
+                    <Grid Margin="0,0,0,8">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="12"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+
+                        <!-- DAC 1 -->
+                        <Border Grid.Column="0" Background="{StaticResource ControlBg}"
+                                BorderBrush="{StaticResource BorderColor}" BorderThickness="1"
+                                CornerRadius="6" Padding="12">
+                            <StackPanel>
+                                <TextBlock Text="DAC 1" FontWeight="Bold" FontSize="13"
+                                           Foreground="{StaticResource TextPrimary}"/>
+                                <Grid Margin="0,6,0,0">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="Auto"/>
+                                    </Grid.ColumnDefinitions>
+                                    <TextBox Grid.Column="0"
+                                             Text="{Binding Dac1Voltage, StringFormat=F4, UpdateSourceTrigger=PropertyChanged}"
+                                             FontFamily="Consolas" FontSize="14" VerticalContentAlignment="Center"/>
+                                    <StackPanel Grid.Column="1" Margin="6,0,0,0">
+                                        <Button Content="▲" Width="26" Height="16" Padding="0" FontSize="9"
+                                                Style="{StaticResource ActionButton}" Command="{Binding Dac1UpCommand}"/>
+                                        <Button Content="▼" Width="26" Height="16" Padding="0" FontSize="9" Margin="0,2,0,0"
+                                                Style="{StaticResource ActionButton}" Command="{Binding Dac1DownCommand}"/>
+                                    </StackPanel>
+                                </Grid>
+                                <Button Content="Ustaw DAC 1" Style="{StaticResource GreenButton}"
+                                        Command="{Binding SetDac1Command}" Margin="0,8,0,0"/>
+                            </StackPanel>
+                        </Border>
+
+                        <!-- DAC 2 -->
+                        <Border Grid.Column="2" Background="{StaticResource ControlBg}"
+                                BorderBrush="{StaticResource BorderColor}" BorderThickness="1"
+                                CornerRadius="6" Padding="12">
+                            <StackPanel>
+                                <TextBlock Text="DAC 2" FontWeight="Bold" FontSize="13"
+                                           Foreground="{StaticResource TextPrimary}"/>
+                                <Grid Margin="0,6,0,0">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="Auto"/>
+                                    </Grid.ColumnDefinitions>
+                                    <TextBox Grid.Column="0"
+                                             Text="{Binding Dac2Voltage, StringFormat=F4, UpdateSourceTrigger=PropertyChanged}"
+                                             FontFamily="Consolas" FontSize="14" VerticalContentAlignment="Center"/>
+                                    <StackPanel Grid.Column="1" Margin="6,0,0,0">
+                                        <Button Content="▲" Width="26" Height="16" Padding="0" FontSize="9"
+                                                Style="{StaticResource ActionButton}" Command="{Binding Dac2UpCommand}"/>
+                                        <Button Content="▼" Width="26" Height="16" Padding="0" FontSize="9" Margin="0,2,0,0"
+                                                Style="{StaticResource ActionButton}" Command="{Binding Dac2DownCommand}"/>
+                                    </StackPanel>
+                                </Grid>
+                                <Button Content="Ustaw DAC 2" Style="{StaticResource GreenButton}"
+                                        Command="{Binding SetDac2Command}" Margin="0,8,0,0"/>
+                            </StackPanel>
+                        </Border>
+                    </Grid>
+
+                    <StackPanel Orientation="Horizontal" Margin="0,0,0,14">
+                        <TextBlock Text="Krok DAC [V]:" Style="{StaticResource FieldLabel}"
+                                   VerticalAlignment="Center" Margin="0,0,8,0"/>
+                        <TextBox Text="{Binding DacStep, StringFormat=F3, UpdateSourceTrigger=PropertyChanged}"
+                                 Width="80" FontFamily="Consolas"/>
+                    </StackPanel>
+
+                    <!-- Digital I/O: dwa porty obok siebie -->
+                    <TextBlock Text="CYFROWE I/O" FontSize="11" FontWeight="Bold"
+                               Foreground="{StaticResource TextMuted}" Margin="0,0,0,6"/>
+                    <Grid Margin="0,0,0,14">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="12"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <ContentControl Grid.Column="0" Content="{Binding Port1}"/>
+                        <ContentControl Grid.Column="2" Content="{Binding Port2}"/>
+                    </Grid>
+
+                    <!-- Totalizer -->
+                    <Border Background="{StaticResource ControlBg}" BorderBrush="{StaticResource AccentTeal}"
+                            BorderThickness="1" CornerRadius="6" Padding="14">
+                        <StackPanel>
+                            <TextBlock Text="TOTALIZATOR IMPULSÓW (kanał s03)"
+                                       FontSize="11" FontWeight="Bold"
+                                       Foreground="{StaticResource AccentTeal}" Margin="0,0,0,10"/>
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="Auto"/>
+                                    <ColumnDefinition Width="8"/>
+                                    <ColumnDefinition Width="Auto"/>
+                                </Grid.ColumnDefinitions>
+                                <Border Grid.Column="0" Background="#051210" BorderBrush="{StaticResource AccentTeal}"
+                                        BorderThickness="1" CornerRadius="3" Padding="12,4" Margin="0,0,8,0">
+                                    <TextBlock Text="{Binding TotalizerValueText}" Foreground="{StaticResource AccentTeal}"
+                                               FontFamily="Consolas" FontSize="16" MinWidth="80" TextAlignment="Right"/>
+                                </Border>
+                                <Button Grid.Column="1" Content="ODCZYTAJ" Style="{StaticResource TealButton}"
+                                        Command="{Binding ReadTotalizerCommand}" Width="90" Height="30"/>
+                                <Button Grid.Column="3" Content="RESET" Style="{StaticResource RedButton}"
+                                        Command="{Binding ResetTotalizerCommand}" Width="70" Height="30"/>
+                            </Grid>
+                        </StackPanel>
+                    </Border>
+                </StackPanel>
+            </ScrollViewer>
+        </DataTemplate>
     </UserControl.Resources>
 
     <Grid>
@@ -199,567 +453,80 @@
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
 
-        <!-- ══════════════════════ MAIN AREA ══════════════════════ -->
         <Grid Grid.Row="0">
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="210"/>
+                <ColumnDefinition Width="220"/>
                 <ColumnDefinition Width="*"/>
             </Grid.ColumnDefinitions>
 
-            <!-- ═══════════ LEFT SIDEBAR ═══════════ -->
-            <Border Grid.Column="0"
-                    Background="{StaticResource SidebarBg}"
-                    BorderBrush="{StaticResource BorderColor}"
-                    BorderThickness="0,0,1,0">
+            <!-- ═══ SIDEBAR ═══ -->
+            <Border Grid.Column="0" Background="{StaticResource SidebarBg}"
+                    BorderBrush="{StaticResource BorderColor}" BorderThickness="0,0,1,0">
                 <StackPanel>
-                    <!-- Instrument header -->
                     <Border Background="{StaticResource HeaderBg}" Padding="12,14">
                         <StackPanel>
-                            <TextBlock Text="AGILENT"
-                                       FontSize="11" FontWeight="Bold"
-                                       Foreground="{StaticResource AccentBlue}"/>
-                            <TextBlock Text="34970A"
-                                       FontSize="24" FontWeight="Bold"
-                                       Foreground="{StaticResource TextPrimary}"/>
-                            <TextBlock Text="Data Acquisition / Switch Unit"
-                                       FontSize="10"
-                                       Foreground="{StaticResource TextMuted}"
-                                       TextWrapping="Wrap"/>
+                            <TextBlock Text="AGILENT" FontSize="11" FontWeight="Bold" Foreground="{StaticResource AccentBlue}"/>
+                            <TextBlock Text="34970A" FontSize="24" FontWeight="Bold" Foreground="{StaticResource TextPrimary}"/>
+                            <TextBlock Text="Data Acquisition / Switch Unit" FontSize="10"
+                                       Foreground="{StaticResource TextMuted}" TextWrapping="Wrap"/>
                         </StackPanel>
                     </Border>
 
-                    <!-- Card config -->
-                    <TextBlock Text="KONFIGURACJA KART"
-                               FontSize="10" FontWeight="Bold"
-                               Foreground="{StaticResource TextMuted}"
-                               Margin="12,12,12,4"/>
+                    <TextBlock Text="KONFIGURACJA KART" FontSize="10" FontWeight="Bold"
+                               Foreground="{StaticResource TextMuted}" Margin="12,12,12,4"/>
+                    <Button Content="WYKRYJ KARTY" Style="{StaticResource ActionButton}"
+                            Command="{Binding DetectCardsCommand}" Margin="12,2,12,6" Height="30"/>
 
-                    <!-- Slot 100 -->
                     <Expander Header="Slot 100" Margin="8,4,8,0" IsExpanded="True">
                         <StackPanel Margin="8,4,8,8">
                             <TextBlock Text="Typ karty:" Style="{StaticResource FieldLabel}"/>
-                            <ComboBox ItemsSource="{Binding CardTypes}"
-                                      SelectedItem="{Binding Slot100CardType}"/>
+                            <ComboBox ItemsSource="{Binding CardTypes}" SelectedItem="{Binding Slot100CardType}"/>
                         </StackPanel>
                     </Expander>
-
-                    <!-- Slot 200 -->
                     <Expander Header="Slot 200" Margin="8,4,8,0">
                         <StackPanel Margin="8,4,8,8">
                             <TextBlock Text="Typ karty:" Style="{StaticResource FieldLabel}"/>
-                            <ComboBox ItemsSource="{Binding CardTypes}"
-                                      SelectedItem="{Binding Slot200CardType}"/>
+                            <ComboBox ItemsSource="{Binding CardTypes}" SelectedItem="{Binding Slot200CardType}"/>
                         </StackPanel>
                     </Expander>
-
-                    <!-- Slot 300 -->
                     <Expander Header="Slot 300" Margin="8,4,8,0">
                         <StackPanel Margin="8,4,8,8">
                             <TextBlock Text="Typ karty:" Style="{StaticResource FieldLabel}"/>
-                            <ComboBox ItemsSource="{Binding CardTypes}"
-                                      SelectedItem="{Binding Slot300CardType}"/>
+                            <ComboBox ItemsSource="{Binding CardTypes}" SelectedItem="{Binding Slot300CardType}"/>
                         </StackPanel>
                     </Expander>
 
-                    <!-- Status -->
-                    <Border Background="#B8B4B0" Margin="8,16,8,8"
-                            BorderBrush="{StaticResource BorderColor}"
+                    <Border Background="#B8B4B0" Margin="8,16,8,8" BorderBrush="{StaticResource BorderColor}"
                             BorderThickness="1" CornerRadius="4" Padding="8">
                         <StackPanel>
                             <TextBlock Text="STATUS" FontSize="10" FontWeight="Bold"
-                                       Foreground="{StaticResource TextMuted}"
-                                       Margin="0,0,0,4"/>
-                            <TextBlock Text="{Binding StatusText}"
-                                       Foreground="{StaticResource AccentGreen}"
+                                       Foreground="{StaticResource TextMuted}" Margin="0,0,0,4"/>
+                            <TextBlock Text="{Binding StatusText}" Foreground="{StaticResource AccentGreen}"
                                        FontSize="11" TextWrapping="Wrap"/>
                         </StackPanel>
                     </Border>
                 </StackPanel>
             </Border>
 
-            <!-- ═══════════ RIGHT PANEL ═══════════ -->
-            <TabControl Grid.Column="1" Margin="8">
-
-                <!-- ─── Tab 1: Skanowanie ─── -->
-                <TabItem Header="Skanowanie">
-                    <ScrollViewer VerticalScrollBarVisibility="Auto">
-                        <StackPanel Margin="16">
-                            <TextBlock Text="SKANOWANIE KANAŁÓW"
-                                       FontSize="12" FontWeight="Bold"
-                                       Foreground="{StaticResource TextMuted}"
-                                       Margin="0,0,0,12"/>
-
-                            <Grid>
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="*"/>
-                                    <ColumnDefinition Width="16"/>
-                                    <ColumnDefinition Width="160"/>
-                                </Grid.ColumnDefinitions>
-                                <Grid.RowDefinitions>
-                                    <RowDefinition/>
-                                    <RowDefinition/>
-                                </Grid.RowDefinitions>
-
-                                <!-- Channel list -->
-                                <StackPanel Grid.Column="0" Grid.Row="0">
-                                    <TextBlock Text="Lista kanałów (np. 101,102,201:205):"
-                                               Style="{StaticResource FieldLabel}"/>
-                                    <TextBox Text="{Binding ChannelList, UpdateSourceTrigger=PropertyChanged}"
-                                             FontFamily="Consolas"/>
-                                </StackPanel>
-
-                                <!-- Function -->
-                                <StackPanel Grid.Column="2" Grid.Row="0">
-                                    <TextBlock Text="Funkcja:" Style="{StaticResource FieldLabel}"/>
-                                    <ComboBox ItemsSource="{Binding AvailableFunctions}"
-                                              SelectedItem="{Binding SelectedFunction}"/>
-                                </StackPanel>
-
-                                <!-- Scan buttons row -->
-                                <Grid Grid.Column="0" Grid.ColumnSpan="3" Grid.Row="1" Margin="0,10,0,0">
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="*"/>
-                                        <ColumnDefinition Width="8"/>
-                                        <ColumnDefinition Width="Auto"/>
-                                        <ColumnDefinition Width="8"/>
-                                        <ColumnDefinition Width="80"/>
-                                        <ColumnDefinition Width="Auto"/>
-                                    </Grid.ColumnDefinitions>
-                                    <Button Grid.Column="0"
-                                            Content="▶  SKANUJ"
-                                            Style="{StaticResource ActionButton}"
-                                            Command="{Binding ScanCommand}"
-                                            Height="34" FontSize="13"/>
-                                    <Button Grid.Column="2" Width="120" Height="34">
-                                        <Button.Style>
-                                            <Style TargetType="Button" BasedOn="{StaticResource ActionButton}">
-                                                <Setter Property="Content" Value="▶  CIĄGŁY"/>
-                                                <Setter Property="Background" Value="{StaticResource AccentBlue}"/>
-                                                <Style.Triggers>
-                                                    <DataTrigger Binding="{Binding IsContinuousScan}" Value="True">
-                                                        <Setter Property="Content" Value="■  STOP"/>
-                                                        <Setter Property="Background" Value="{StaticResource AccentRed}"/>
-                                                    </DataTrigger>
-                                                </Style.Triggers>
-                                            </Style>
-                                        </Button.Style>
-                                        <Button.Command>
-                                            <Binding Path="ToggleContinuousScanCommand"/>
-                                        </Button.Command>
-                                    </Button>
-                                    <TextBlock Grid.Column="4"
-                                               Text="{DynamicResource FP_Interval}" Foreground="{StaticResource TextMuted}"
-                                               FontSize="11" VerticalAlignment="Center" HorizontalAlignment="Right"/>
-                                    <ComboBox Grid.Column="5"
-                                              ItemsSource="{Binding ScanIntervals}"
-                                              SelectedItem="{Binding SelectedScanInterval}"
-                                              Width="75" Height="34" Margin="4,0,0,0"/>
-                                </Grid>
-                            </Grid>
-
-                            <!-- Results DataGrid -->
-                            <TextBlock Text="WYNIKI" FontSize="10" FontWeight="Bold"
-                                       Foreground="{StaticResource TextMuted}"
-                                       Margin="0,16,0,6"/>
-
-                            <DataGrid ItemsSource="{Binding ScanResults}"
-                                      Height="240">
-                                <DataGrid.Columns>
-                                    <DataGridTextColumn Header="Kanał"     Width="80"
-                                                        Binding="{Binding ChannelId}"/>
-                                    <DataGridTextColumn Header="Wartość"   Width="*"
-                                                        Binding="{Binding Value, StringFormat=G8}"/>
-                                    <DataGridTextColumn Header="Jednostka" Width="80"
-                                                        Binding="{Binding Unit}"/>
-                                    <DataGridTextColumn Header="Funkcja"   Width="90"
-                                                        Binding="{Binding Function}"/>
-                                    <DataGridTextColumn Header="Czas"      Width="100"
-                                                        Binding="{Binding Timestamp, StringFormat=HH:mm:ss.fff}"/>
-                                </DataGrid.Columns>
-                            </DataGrid>
-                        </StackPanel>
-                    </ScrollViewer>
-                </TabItem>
-
-                <!-- ─── Tab 2: DAC Wyjścia ─── -->
-                <TabItem Header="DAC Wyjścia">
-                    <ScrollViewer VerticalScrollBarVisibility="Auto">
-                        <StackPanel Margin="16">
-                            <TextBlock Text="WYJŚCIA DAC (34907A)"
-                                       FontSize="12" FontWeight="Bold"
-                                       Foreground="{StaticResource TextMuted}"
-                                       Margin="0,0,0,16"/>
-
-                            <!-- Slot selector -->
-                            <StackPanel Orientation="Horizontal" Margin="0,0,0,16">
-                                <TextBlock Text="Slot (34907A):"
-                                           Style="{StaticResource FieldLabel}"
-                                           VerticalAlignment="Center" Margin="0,0,8,0"/>
-                                <ComboBox ItemsSource="{Binding AvailableSlots}"
-                                          SelectedItem="{Binding SelectedSlotFor34907A}"
-                                          Width="90"/>
-                            </StackPanel>
-
-                            <!-- DAC 1 -->
-                            <Border Background="{StaticResource ControlBg}"
-                                    BorderBrush="{StaticResource BorderColor}"
-                                    BorderThickness="1" CornerRadius="6"
-                                    Padding="16" Margin="0,0,0,12">
-                                <Grid>
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="Auto"/>
-                                        <ColumnDefinition Width="*"/>
-                                        <ColumnDefinition Width="Auto"/>
-                                    </Grid.ColumnDefinitions>
-                                    <TextBlock Grid.Column="0" Text="DAC 1"
-                                               FontWeight="Bold" FontSize="14"
-                                               Foreground="{StaticResource TextPrimary}"
-                                               VerticalAlignment="Center"
-                                               Margin="0,0,16,0"/>
-                                    <TextBox Grid.Column="1"
-                                             Text="{Binding Dac1Voltage, StringFormat=F4, UpdateSourceTrigger=PropertyChanged}"
-                                             FontFamily="Consolas" FontSize="14"
-                                             VerticalContentAlignment="Center"/>
-                                    <StackPanel Grid.Column="2" Orientation="Horizontal" Margin="8,0,0,0">
-                                        <TextBlock Text="V" Foreground="{StaticResource TextMuted}"
-                                                   VerticalAlignment="Center" Margin="0,0,12,0"/>
-                                        <Button Content="Ustaw"
-                                                Style="{StaticResource GreenButton}"
-                                                Command="{Binding SetDac1Command}"/>
-                                    </StackPanel>
-                                </Grid>
-                            </Border>
-
-                            <!-- DAC 2 -->
-                            <Border Background="{StaticResource ControlBg}"
-                                    BorderBrush="{StaticResource BorderColor}"
-                                    BorderThickness="1" CornerRadius="6"
-                                    Padding="16">
-                                <Grid>
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="Auto"/>
-                                        <ColumnDefinition Width="*"/>
-                                        <ColumnDefinition Width="Auto"/>
-                                    </Grid.ColumnDefinitions>
-                                    <TextBlock Grid.Column="0" Text="DAC 2"
-                                               FontWeight="Bold" FontSize="14"
-                                               Foreground="{StaticResource TextPrimary}"
-                                               VerticalAlignment="Center"
-                                               Margin="0,0,16,0"/>
-                                    <TextBox Grid.Column="1"
-                                             Text="{Binding Dac2Voltage, StringFormat=F4, UpdateSourceTrigger=PropertyChanged}"
-                                             FontFamily="Consolas" FontSize="14"
-                                             VerticalContentAlignment="Center"/>
-                                    <StackPanel Grid.Column="2" Orientation="Horizontal" Margin="8,0,0,0">
-                                        <TextBlock Text="V" Foreground="{StaticResource TextMuted}"
-                                                   VerticalAlignment="Center" Margin="0,0,12,0"/>
-                                        <Button Content="Ustaw"
-                                                Style="{StaticResource GreenButton}"
-                                                Command="{Binding SetDac2Command}"/>
-                                    </StackPanel>
-                                </Grid>
-                            </Border>
-                        </StackPanel>
-                    </ScrollViewer>
-                </TabItem>
-
-                <!-- ─── Tab 3: Digital I/O ─── -->
-                <TabItem Header="Digital I/O">
-                    <ScrollViewer VerticalScrollBarVisibility="Auto">
-                        <StackPanel Margin="16">
-                            <TextBlock Text="CYFROWE I/O (34907A)"
-                                       FontSize="12" FontWeight="Bold"
-                                       Foreground="{StaticResource TextMuted}"
-                                       Margin="0,0,0,16"/>
-
-                            <!-- Input indicators -->
-                            <Border Background="{StaticResource ControlBg}"
-                                    BorderBrush="{StaticResource BorderColor}"
-                                    BorderThickness="1" CornerRadius="6"
-                                    Padding="16" Margin="0,0,0,12">
-                                <StackPanel>
-                                    <TextBlock Text="WEJŚCIE CYFROWE (tylko odczyt)"
-                                               FontSize="11" FontWeight="Bold"
-                                               Foreground="{StaticResource TextMuted}"
-                                               Margin="0,0,0,10"/>
-                                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-                                        <!-- Bit 7 down to 0 -->
-                                        <StackPanel Margin="4,0">
-                                            <Ellipse Style="{StaticResource BitIndicator}"
-                                                     Fill="{Binding InputBit7Brush}"/>
-                                            <TextBlock Text="7" FontSize="9"
-                                                       HorizontalAlignment="Center"
-                                                       Foreground="{StaticResource TextMuted}"/>
-                                        </StackPanel>
-                                        <StackPanel Margin="4,0">
-                                            <Ellipse Style="{StaticResource BitIndicator}"
-                                                     Fill="{Binding InputBit6Brush}"/>
-                                            <TextBlock Text="6" FontSize="9"
-                                                       HorizontalAlignment="Center"
-                                                       Foreground="{StaticResource TextMuted}"/>
-                                        </StackPanel>
-                                        <StackPanel Margin="4,0">
-                                            <Ellipse Style="{StaticResource BitIndicator}"
-                                                     Fill="{Binding InputBit5Brush}"/>
-                                            <TextBlock Text="5" FontSize="9"
-                                                       HorizontalAlignment="Center"
-                                                       Foreground="{StaticResource TextMuted}"/>
-                                        </StackPanel>
-                                        <StackPanel Margin="4,0">
-                                            <Ellipse Style="{StaticResource BitIndicator}"
-                                                     Fill="{Binding InputBit4Brush}"/>
-                                            <TextBlock Text="4" FontSize="9"
-                                                       HorizontalAlignment="Center"
-                                                       Foreground="{StaticResource TextMuted}"/>
-                                        </StackPanel>
-                                        <!-- separator -->
-                                        <Rectangle Width="1" Fill="{StaticResource BorderColor}"
-                                                   Margin="8,0"/>
-                                        <StackPanel Margin="4,0">
-                                            <Ellipse Style="{StaticResource BitIndicator}"
-                                                     Fill="{Binding InputBit3Brush}"/>
-                                            <TextBlock Text="3" FontSize="9"
-                                                       HorizontalAlignment="Center"
-                                                       Foreground="{StaticResource TextMuted}"/>
-                                        </StackPanel>
-                                        <StackPanel Margin="4,0">
-                                            <Ellipse Style="{StaticResource BitIndicator}"
-                                                     Fill="{Binding InputBit2Brush}"/>
-                                            <TextBlock Text="2" FontSize="9"
-                                                       HorizontalAlignment="Center"
-                                                       Foreground="{StaticResource TextMuted}"/>
-                                        </StackPanel>
-                                        <StackPanel Margin="4,0">
-                                            <Ellipse Style="{StaticResource BitIndicator}"
-                                                     Fill="{Binding InputBit1Brush}"/>
-                                            <TextBlock Text="1" FontSize="9"
-                                                       HorizontalAlignment="Center"
-                                                       Foreground="{StaticResource TextMuted}"/>
-                                        </StackPanel>
-                                        <StackPanel Margin="4,0">
-                                            <Ellipse Style="{StaticResource BitIndicator}"
-                                                     Fill="{Binding InputBit0Brush}"/>
-                                            <TextBlock Text="0" FontSize="9"
-                                                       HorizontalAlignment="Center"
-                                                       Foreground="{StaticResource TextMuted}"/>
-                                        </StackPanel>
-                                    </StackPanel>
-                                    <TextBlock Text="{Binding DigitalInputValue, StringFormat='Wartość: 0x{0:X2} ({0})'}"
-                                               Foreground="{StaticResource TextPrimary}"
-                                               HorizontalAlignment="Center"
-                                               Margin="0,8,0,0"/>
-                                    <Button Content="ODCZYTAJ"
-                                            Style="{StaticResource TealButton}"
-                                            Command="{Binding ReadDigitalCommand}"
-                                            Margin="0,10,0,0" HorizontalAlignment="Center"
-                                            Width="120"/>
-                                </StackPanel>
-                            </Border>
-
-                            <!-- Output toggles -->
-                            <Border Background="{StaticResource ControlBg}"
-                                    BorderBrush="{StaticResource BorderColor}"
-                                    BorderThickness="1" CornerRadius="6"
-                                    Padding="16" Margin="0,0,0,12">
-                                <StackPanel>
-                                    <TextBlock Text="WYJŚCIE CYFROWE"
-                                               FontSize="11" FontWeight="Bold"
-                                               Foreground="{StaticResource TextMuted}"
-                                               Margin="0,0,0,10"/>
-                                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-                                        <ToggleButton Style="{StaticResource BitToggle}"
-                                                      IsChecked="{Binding OutputBit7}" Margin="3" Content="7"/>
-                                        <ToggleButton Style="{StaticResource BitToggle}"
-                                                      IsChecked="{Binding OutputBit6}" Margin="3" Content="6"/>
-                                        <ToggleButton Style="{StaticResource BitToggle}"
-                                                      IsChecked="{Binding OutputBit5}" Margin="3" Content="5"/>
-                                        <ToggleButton Style="{StaticResource BitToggle}"
-                                                      IsChecked="{Binding OutputBit4}" Margin="3" Content="4"/>
-                                        <Rectangle Width="1" Fill="{StaticResource BorderColor}"
-                                                   Margin="6,0"/>
-                                        <ToggleButton Style="{StaticResource BitToggle}"
-                                                      IsChecked="{Binding OutputBit3}" Margin="3" Content="3"/>
-                                        <ToggleButton Style="{StaticResource BitToggle}"
-                                                      IsChecked="{Binding OutputBit2}" Margin="3" Content="2"/>
-                                        <ToggleButton Style="{StaticResource BitToggle}"
-                                                      IsChecked="{Binding OutputBit1}" Margin="3" Content="1"/>
-                                        <ToggleButton Style="{StaticResource BitToggle}"
-                                                      IsChecked="{Binding OutputBit0}" Margin="3" Content="0"/>
-                                    </StackPanel>
-                                    <TextBlock Text="{Binding DigitalOutputValue, StringFormat='Wartość: 0x{0:X2} ({0})'}"
-                                               Foreground="{StaticResource TextPrimary}"
-                                               HorizontalAlignment="Center"
-                                               Margin="0,8,0,0"/>
-                                    <Button Content="ZAPISZ"
-                                            Style="{StaticResource RedButton}"
-                                            Command="{Binding WriteDigitalCommand}"
-                                            Margin="0,10,0,0" HorizontalAlignment="Center"
-                                            Width="120"/>
-                                </StackPanel>
-                            </Border>
-
-                            <!-- Totalizer section -->
-                            <Border Background="{StaticResource ControlBg}"
-                                    BorderBrush="{StaticResource AccentTeal}"
-                                    BorderThickness="1" CornerRadius="6"
-                                    Padding="16">
-                                <StackPanel>
-                                    <TextBlock Text="TOTALIZATOR IMPULSÓW (34907A)"
-                                               FontSize="11" FontWeight="Bold"
-                                               Foreground="{StaticResource AccentTeal}"
-                                               Margin="0,0,0,10"/>
-                                    <Grid>
-                                        <Grid.ColumnDefinitions>
-                                            <ColumnDefinition Width="Auto"/>
-                                            <ColumnDefinition Width="*"/>
-                                            <ColumnDefinition Width="Auto"/>
-                                            <ColumnDefinition Width="8"/>
-                                            <ColumnDefinition Width="Auto"/>
-                                            <ColumnDefinition Width="8"/>
-                                            <ColumnDefinition Width="Auto"/>
-                                        </Grid.ColumnDefinitions>
-                                        <TextBlock Grid.Column="0" Text="Slot:"
-                                                   Style="{StaticResource FieldLabel}"
-                                                   VerticalAlignment="Center" Margin="0,0,8,0"/>
-                                        <ComboBox Grid.Column="1"
-                                                  ItemsSource="{Binding TotalizerSlots}"
-                                                  SelectedItem="{Binding TotalizerSlot}"
-                                                  Width="80" Height="30"/>
-                                        <Border Grid.Column="2"
-                                                Background="#051210" BorderBrush="{StaticResource AccentTeal}"
-                                                BorderThickness="1" CornerRadius="3"
-                                                Padding="12,4" Margin="8,0">
-                                            <TextBlock Text="{Binding TotalizerValueText}"
-                                                       Foreground="{StaticResource AccentTeal}"
-                                                       FontFamily="Consolas" FontSize="16"
-                                                       MinWidth="80" TextAlignment="Right"/>
-                                        </Border>
-                                        <Button Grid.Column="4" Content="ODCZYTAJ"
-                                                Style="{StaticResource TealButton}"
-                                                Command="{Binding ReadTotalizerCommand}"
-                                                Width="90" Height="30"/>
-                                        <Button Grid.Column="6" Content="RESET"
-                                                Style="{StaticResource RedButton}"
-                                                Command="{Binding ResetTotalizerCommand}"
-                                                Width="70" Height="30"/>
-                                    </Grid>
-                                </StackPanel>
-                            </Border>
-                        </StackPanel>
-                    </ScrollViewer>
-                </TabItem>
-
-                <!-- ─── Tab 4: Temperatura TC ─── -->
-                <TabItem Header="Temperatura">
-                    <ScrollViewer VerticalScrollBarVisibility="Auto">
-                        <StackPanel Margin="16">
-                            <TextBlock Text="POMIAR TEMPERATURY TC / RTD"
-                                       FontSize="12" FontWeight="Bold"
-                                       Foreground="{StaticResource TextMuted}"
-                                       Margin="0,0,0,12"/>
-
-                            <Grid>
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="*"/>
-                                    <ColumnDefinition Width="16"/>
-                                    <ColumnDefinition Width="160"/>
-                                </Grid.ColumnDefinitions>
-                                <Grid.RowDefinitions>
-                                    <RowDefinition/>
-                                    <RowDefinition/>
-                                    <RowDefinition/>
-                                </Grid.RowDefinitions>
-
-                                <!-- Channel list -->
-                                <StackPanel Grid.Column="0" Grid.Row="0">
-                                    <TextBlock Text="Lista kanałów (np. 101,102):"
-                                               Style="{StaticResource FieldLabel}"/>
-                                    <TextBox Text="{Binding TempChannelList, UpdateSourceTrigger=PropertyChanged}"
-                                             FontFamily="Consolas"/>
-                                </StackPanel>
-
-                                <!-- TC type -->
-                                <StackPanel Grid.Column="2" Grid.Row="0">
-                                    <TextBlock Text="Typ termoelementa:" Style="{StaticResource FieldLabel}"/>
-                                    <ComboBox ItemsSource="{Binding TcTypes}"
-                                              SelectedItem="{Binding SelectedTempTcType}"/>
-                                </StackPanel>
-
-                                <!-- Scan buttons -->
-                                <Grid Grid.Column="0" Grid.ColumnSpan="3" Grid.Row="1" Margin="0,10,0,0">
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="*"/>
-                                        <ColumnDefinition Width="8"/>
-                                        <ColumnDefinition Width="Auto"/>
-                                        <ColumnDefinition Width="8"/>
-                                        <ColumnDefinition Width="80"/>
-                                        <ColumnDefinition Width="Auto"/>
-                                    </Grid.ColumnDefinitions>
-                                    <Button Grid.Column="0"
-                                            Content="▶  ZMIERZ TEMP"
-                                            Style="{StaticResource TealButton}"
-                                            Command="{Binding ScanTemperatureCommand}"
-                                            Height="34" FontSize="12"/>
-                                    <Button Grid.Column="2" Width="120" Height="34">
-                                        <Button.Style>
-                                            <Style TargetType="Button" BasedOn="{StaticResource ActionButton}">
-                                                <Setter Property="Content" Value="▶  CIĄGŁY"/>
-                                                <Setter Property="Background" Value="{StaticResource AccentTeal}"/>
-                                                <Style.Triggers>
-                                                    <DataTrigger Binding="{Binding IsContinuousTempScan}" Value="True">
-                                                        <Setter Property="Content" Value="■  STOP"/>
-                                                        <Setter Property="Background" Value="{StaticResource AccentRed}"/>
-                                                    </DataTrigger>
-                                                </Style.Triggers>
-                                            </Style>
-                                        </Button.Style>
-                                        <Button.Command>
-                                            <Binding Path="ToggleContinuousTempScanCommand"/>
-                                        </Button.Command>
-                                    </Button>
-                                    <TextBlock Grid.Column="4"
-                                               Text="{DynamicResource FP_Interval}" Foreground="{StaticResource TextMuted}"
-                                               FontSize="11" VerticalAlignment="Center" HorizontalAlignment="Right"/>
-                                    <ComboBox Grid.Column="5"
-                                              ItemsSource="{Binding ScanIntervals}"
-                                              SelectedItem="{Binding SelectedTempScanInterval}"
-                                              Width="75" Height="34" Margin="4,0,0,0"/>
-                                </Grid>
-                            </Grid>
-
-                            <!-- Results DataGrid -->
-                            <TextBlock Text="WYNIKI TEMPERATURY" FontSize="10" FontWeight="Bold"
-                                       Foreground="{StaticResource TextMuted}"
-                                       Margin="0,16,0,6"/>
-
-                            <DataGrid ItemsSource="{Binding TempResults}"
-                                      Height="220">
-                                <DataGrid.Columns>
-                                    <DataGridTextColumn Header="Kanał"     Width="80"
-                                                        Binding="{Binding ChannelId}"/>
-                                    <DataGridTextColumn Header="Temp [°C]" Width="*"
-                                                        Binding="{Binding Value, StringFormat=F3}"/>
-                                    <DataGridTextColumn Header="Jednostka" Width="70"
-                                                        Binding="{Binding Unit}"/>
-                                    <DataGridTextColumn Header="TC"        Width="50"
-                                                        Binding="{Binding Function}"/>
-                                    <DataGridTextColumn Header="Czas"      Width="100"
-                                                        Binding="{Binding Timestamp, StringFormat=HH:mm:ss.fff}"/>
-                                </DataGrid.Columns>
-                            </DataGrid>
-                        </StackPanel>
-                    </ScrollViewer>
-                </TabItem>
-
-            </TabControl>
+            <!-- ═══ DYNAMIC CARD TABS ═══ -->
+            <Grid Grid.Column="1">
+                <TabControl ItemsSource="{Binding CardTabs}" SelectedItem="{Binding SelectedTab}"
+                            Margin="8" Visibility="{Binding TabsVisibility}">
+                    <TabControl.ItemTemplate>
+                        <DataTemplate><TextBlock Text="{Binding Header}"/></DataTemplate>
+                    </TabControl.ItemTemplate>
+                </TabControl>
+                <TextBlock Text="Brak skonfigurowanych kart. Kliknij WYKRYJ KARTY lub wybierz typ karty dla slotu."
+                           Visibility="{Binding EmptyVisibility}"
+                           HorizontalAlignment="Center" VerticalAlignment="Center"
+                           Foreground="{StaticResource TextMuted}" TextWrapping="Wrap"
+                           FontSize="13" TextAlignment="Center" Margin="40"/>
+            </Grid>
         </Grid>
 
-        <!-- ══════════════════════ BOTTOM BAR ══════════════════════ -->
-        <Border Grid.Row="1"
-                Background="{StaticResource HeaderBg}"
-                BorderBrush="{StaticResource BorderColor}"
-                BorderThickness="0,1,0,0"
-                Padding="12,8">
+        <!-- ═══ BOTTOM BAR ═══ -->
+        <Border Grid.Row="1" Background="{StaticResource HeaderBg}"
+                BorderBrush="{StaticResource BorderColor}" BorderThickness="0,1,0,0" Padding="12,8">
             <Grid>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="Auto"/>
@@ -767,28 +534,14 @@
                     <ColumnDefinition Width="*"/>
                     <ColumnDefinition Width="Auto"/>
                 </Grid.ColumnDefinitions>
-
-                <Button Grid.Column="0" Content="RESET"
-                        Style="{StaticResource RedButton}"
-                        Command="{Binding ResetCommand}"
-                        Margin="0,0,8,0"/>
-
-                <Button Grid.Column="1" Content="STATUS"
-                        Style="{StaticResource ActionButton}"
+                <Button Grid.Column="0" Content="RESET" Style="{StaticResource RedButton}"
+                        Command="{Binding ResetCommand}" Margin="0,0,8,0"/>
+                <Button Grid.Column="1" Content="STATUS" Style="{StaticResource ActionButton}"
                         Command="{Binding QueryStatusCommand}"/>
-
-                <TextBlock Grid.Column="2"
-                           Text="{Binding StatusText}"
-                           Foreground="{StaticResource TextMuted}"
-                           VerticalAlignment="Center"
-                           Margin="16,0,0,0"
-                           FontSize="11"/>
-
-                <TextBlock Grid.Column="3"
-                           Text="Agilent 34970A v1.0"
-                           Foreground="#808080"
-                           VerticalAlignment="Center"
-                           FontSize="10"/>
+                <TextBlock Grid.Column="2" Text="{Binding StatusText}" Foreground="{StaticResource TextMuted}"
+                           VerticalAlignment="Center" Margin="16,0,0,0" FontSize="11"/>
+                <TextBlock Grid.Column="3" Text="Agilent 34970A v2.1" Foreground="#808080"
+                           VerticalAlignment="Center" FontSize="10"/>
             </Grid>
         </Border>
     </Grid>

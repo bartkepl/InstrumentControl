@@ -17,10 +17,10 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Setup .NET 8
+      - name: Setup .NET 10
         uses: actions/setup-dotnet@v4
         with:
-          dotnet-version: '8.0.x'
+          dotnet-version: '10.0.x'
 
       # ── Version ──────────────────────────────────────────────────────────────
       # VERSION file contains "MAJOR.MINOR" (e.g. "1.0").
@@ -101,14 +101,15 @@ jobs:
         shell: pwsh
         run: |
           $dest = "artifacts/app/instruments"
+          $tfm  = "net10.0-windows"
           New-Item -ItemType Directory -Force -Path $dest | Out-Null
-          Copy-Item "instruments/HP34401A/bin/Release/net8.0-windows/HP34401A.dll"           $dest
-          Copy-Item "instruments/Agilent34970A/bin/Release/net8.0-windows/Agilent34970A.dll" $dest
-          Copy-Item "instruments/Keithley2000/bin/Release/net8.0-windows/Keithley2000.dll"   $dest
-          Copy-Item "instruments/ItechIT6922B/bin/Release/net8.0-windows/ItechIT6922B.dll" $dest
-          Copy-Item "instruments/RTB2004/bin/Release/net8.0-windows/RTB2004.dll"           $dest
-          Copy-Item "instruments/CTSChamber/bin/Release/net8.0-windows/CTSChamber.dll"     $dest
-          Copy-Item "instruments/RigolDS1000Z/bin/Release/net8.0-windows/RigolDS1000Z.dll" $dest
+          Copy-Item "instruments/HP34401A/bin/Release/$tfm/HP34401A.dll"           $dest
+          Copy-Item "instruments/Agilent34970A/bin/Release/$tfm/Agilent34970A.dll" $dest
+          Copy-Item "instruments/Keithley2000/bin/Release/$tfm/Keithley2000.dll"   $dest
+          Copy-Item "instruments/ItechIT6922B/bin/Release/$tfm/ItechIT6922B.dll" $dest
+          Copy-Item "instruments/RTB2004/bin/Release/$tfm/RTB2004.dll"           $dest
+          Copy-Item "instruments/CTSChamber/bin/Release/$tfm/CTSChamber.dll"     $dest
+          Copy-Item "instruments/RigolDS1000Z/bin/Release/$tfm/RigolDS1000Z.dll" $dest
 
       - name: Create release archive
         shell: pwsh

@@ -1,6 +1,6 @@
 # Architecture
 
-InstrumentControl is a layered .NET 8 WPF application. This page describes the major layers, their responsibilities, and how they interact.
+InstrumentControl is a layered .NET 10 WPF application. This page describes the major layers, their responsibilities, and how they interact.
 
 ---
 

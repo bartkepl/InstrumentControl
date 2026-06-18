@@ -20,10 +20,23 @@ public class Agilent34970ADriver : InstrumentDriverBase
     public override string[] SupportedResourcePatterns =>
         new[] { "GPIB?*::?*::INSTR", "USB?*::?*::INSTR" };
 
-    // ── Card management ───────────────────────────────────────────────────────
-    /// <summary>Slot number → Card object (Card34901A or Card34907A).</summary>
-    public Dictionary<int, object> Cards { get; } = new();
+    /// <summary>Poprawne numery slotów (forma SCPI).</summary>
+    public static readonly int[] Slots = { 100, 200, 300 };
 
+    // ── Card management (per-karta) ─────────────────────────────────────────────
+
+    /// <summary>Slot → obiekt karty (CardBase: Card34901A, Card34907A, GenericCard).</summary>
+    public Dictionary<int, CardBase> Cards { get; } = new();
+
+    /// <summary>Ręczna konfiguracja karty (tryb offline / symulacja).</summary>
+    public void SetCard(int slot, string? model)
+    {
+        var card = CardBase.Create(slot, model);
+        if (card == null) Cards.Remove(slot);
+        else Cards[slot] = card;
+    }
+
+    // Zgodność wstecz z wcześniejszym API.
     public void AddCard34901A(int slot)
     {
         Cards[slot] = new Card34901A(slot);
@@ -36,76 +49,252 @@ public class Agilent34970ADriver : InstrumentDriverBase
         RaiseStatus($"Skonfigurowano kartę 34907A w slocie {slot}");
     }
 
-    // ── Scanning ──────────────────────────────────────────────────────────────
+    /// <summary>
+    /// Wykrywa karty zainstalowane w slotach przy pomocy SYSTem:CTYPe?.
+    /// Aktualizuje <see cref="Cards"/> i zwraca mapę slot → numer modelu
+    /// (pusty string dla pustego slotu).
+    /// </summary>
+    public async Task<IReadOnlyDictionary<int, string>> DetectCardsAsync()
+    {
+        var detected = new Dictionary<int, string>();
+        Cards.Clear();
+
+        foreach (int slot in Slots)
+        {
+            string model;
+            try
+            {
+                // Odpowiedź: "<firma>,<model>,<nr seryjny>,<wersja>", np.
+                // "Agilent Technologies,34901A,0,1.0"; pusty slot → model "0".
+                string resp = await Query($"SYST:CTYP? {slot}");
+                model = ParseModelFromCtype(resp);
+            }
+            catch (Exception ex)
+            {
+                detected[slot] = "";
+                RaiseStatus($"Slot {slot}: błąd odczytu typu karty ({ex.Message})");
+                continue;
+            }
+
+            detected[slot] = model;
+            var card = CardBase.Create(slot, model);
+            if (card != null)
+            {
+                Cards[slot] = card;
+                RaiseStatus($"Slot {slot}: wykryto {card.DisplayName}");
+            }
+            else
+            {
+                RaiseStatus($"Slot {slot}: pusty");
+            }
+        }
+
+        return detected;
+    }
+
+    private static string ParseModelFromCtype(string ctypResponse)
+    {
+        // Drugie pole = numer modelu. "0" oznacza pusty slot.
+        var parts = ctypResponse.Split(',');
+        if (parts.Length < 2) return "";
+        string model = parts[1].Trim();
+        return model is "0" or "" ? "" : model;
+    }
+
+    // ── Skanowanie mieszane (per-kanał) ─────────────────────────────────────────
 
     /// <summary>
-    /// Configure a list of channels in a single slot with a given function, scan them,
-    /// and return one MeasurementResult per channel.
+    /// Skanuje zbiór kanałów, gdzie KAŻDY kanał ma własną funkcję pomiarową.
+    /// Pozwala to zmierzyć w jednym przebiegu np. 2× napięcie i 1× RTD 4W.
+    /// Sekwencja: CONF per kanał → NPLC/skalowanie per kanał → ustawienia skanu
+    /// (wyzwalanie, timer, liczba przebiegów, opóźnienie) → ROUT:SCAN → READ?.
     /// </summary>
     public async Task<List<MeasurementResult>> ScanAsync(
-        int slot,
-        IEnumerable<int> channels,
-        MuxFunction function,
-        string range = "AUTO")
+        IReadOnlyList<ChannelMeasurement> channels, ScanSettings? settings = null)
     {
-        // Build the SCPI channel list using the card if registered, otherwise build manually.
-        string channelList;
-        string confCommand;
+        if (channels.Count == 0) return new List<MeasurementResult>();
+        settings ??= new ScanSettings();
 
-        var channelArray = channels.ToList();
-
-        if (Cards.TryGetValue(slot, out var cardObj) && cardObj is Card34901A card)
+        // 1. Walidacja względem fizycznej karty w danym slocie (jeśli znana).
+        foreach (var ch in channels)
         {
-            channelList = card.GetChannelList(channelArray).TrimStart('@'); // "101,102,103"
-            confCommand = card.BuildConfCommand(function, range, channelArray);
-        }
-        else
-        {
-            // Build manually
-            var nums = channelArray.Select(ch => (slot + ch).ToString());
-            channelList = string.Join(",", nums);
-            confCommand = BuildConfCommandManual(function, range, channelList);
+            int slot = SlotOf(ch.Channel);
+            if (Cards.TryGetValue(slot, out var card) && card is Card34901A mux)
+                mux.Validate(ch);
         }
 
-        return await ExecuteScan(channelList, confCommand, function);
+        // 1b. Pomiar 4-przewodowy (FRES / RTD 4W) rezerwuje kanał źródłowy n ORAZ parę n+10.
+        //     Para nie może być osobno skonfigurowana na inny pomiar.
+        var present = new HashSet<int>(channels.Select(c => c.Channel));
+        foreach (var ch in channels)
+        {
+            if (ch.Function is not (MuxFunction.OHM4W or MuxFunction.TEMP_RTD4W)) continue;
+            int paired = ch.Channel + 10;
+            if (present.Contains(paired))
+                throw new InvalidOperationException(
+                    $"Kanał {paired} jest zarezerwowany jako para 4-przewodowa kanału {ch.Channel} " +
+                    $"(pomiar {ch.Function}) i nie może być osobno konfigurowany w tym skanie.");
+        }
+
+        // 2. Konfiguracja każdego kanału osobno: funkcja, NPLC, skalowanie Mx+B.
+        foreach (var ch in channels)
+        {
+            await Write(ch.BuildConfCommand());
+            string? nplc = ch.BuildNplcCommand();
+            if (nplc != null) await Write(nplc);
+            foreach (var scaleCmd in ch.BuildScalingCommands())
+                await Write(scaleCmd);
+        }
+
+        // 3. Lista skanu = wszystkie kanały w zadanej kolejności.
+        string list = string.Join(",", channels.Select(c => c.Channel));
+        await Write($"ROUT:SCAN (@{list})");
+
+        // 4. Opóźnienie kanału (jeśli zadane).
+        if (settings.ChannelDelay >= 0)
+            await Write($"ROUT:CHAN:DEL {settings.ChannelDelay.ToString(CultureInfo.InvariantCulture)},(@{list})");
+
+        // 5. Wyzwalanie / odstęp / liczba przebiegów.
+        await Write($"TRIG:SOUR {settings.ScpiTriggerSource}");
+        await Write($"TRIG:COUN {Math.Max(1, settings.ScanCount)}");
+        if (settings.IsTimer)
+            await Write($"TRIG:TIM {settings.TimerInterval.ToString(CultureInfo.InvariantCulture)}");
+
+        // 6. READ? inicjuje przebieg(i) i blokuje do zakończenia skanu.
+        int sweeps = Math.Max(1, settings.ScanCount);
+        int timeoutMs = Math.Max(8000, channels.Count * sweeps * 1500);
+        string response = await QueryWithTimeout("READ?", timeoutMs);
+
+        // 7. Parsowanie — wartości w kolejności listy skanu (round-robin przy wielu przebiegach).
+        var values = ParseDoubleArray(response);
+        var results = new List<MeasurementResult>();
+        for (int i = 0; i < values.Count; i++)
+        {
+            var ch = channels[i % channels.Count];
+            var r = new MeasurementResult
+            {
+                InstrumentName = DriverName,
+                ChannelId = ch.Channel.ToString(),
+                Function = ch.Function.ToString(),
+                Value = values[i],
+                Unit = ch.Unit,
+                IsValid = !double.IsNaN(values[i])
+            };
+            results.Add(r);
+            RaiseMeasurement(r);
+        }
+
+        return results;
     }
 
     /// <summary>
-    /// Scan an arbitrary set of channels specified as a SCPI channel list like "101,102,201:205".
-    /// The function is always DC Voltage (intended as a quick multi-channel sweep).
-    /// For typed scans use ScanAsync.
+    /// Skan z jedną wspólną funkcją dla całej listy kanałów (np. "101,102,201:205").
     /// </summary>
-    public async Task<List<MeasurementResult>> ScanChannelListAsync(string scpiChannelList)
+    public Task<List<MeasurementResult>> ScanUniformAsync(
+        string channelSpec, MuxFunction function, string range = "AUTO", TcType tcType = TcType.K)
     {
-        // Expand ranges like 201:205 → 201,202,203,204,205
-        string expandedList = ExpandChannelList(scpiChannelList);
-        string confCommand = $"CONF:VOLT:DC AUTO,DEF,(@{expandedList})";
-        return await ExecuteScan(expandedList, confCommand, MuxFunction.VDC);
+        var channels = ExpandToInts(channelSpec)
+            .Select(ch => new ChannelMeasurement(ch, function, range) { TcType = tcType })
+            .ToList();
+        return ScanAsync(channels);
     }
 
-    // ── DAC / Digital ─────────────────────────────────────────────────────────
+    /// <summary>Szybki skan napięcia DC po liście kanałów SCPI (np. "101,102,201:205").</summary>
+    public Task<List<MeasurementResult>> ScanChannelListAsync(string scpiChannelList) =>
+        ScanUniformAsync(scpiChannelList, MuxFunction.VDC);
+
+    /// <summary>
+    /// Skan kanałów w jednym slocie z jedną funkcją (kanały 1-bazowe).
+    /// </summary>
+    public Task<List<MeasurementResult>> ScanAsync(
+        int slot, IEnumerable<int> channels, MuxFunction function, string range = "AUTO")
+    {
+        var list = channels
+            .Select(ch => new ChannelMeasurement(slot + ch, function, range))
+            .ToList();
+        return ScanAsync(list);
+    }
+
+    /// <summary>Pomiar temperatury termoparą dla listy kanałów.</summary>
+    public Task<List<MeasurementResult>> MeasureTemperatureTCAsync(string channelList, string tcType = "K")
+    {
+        var tc = Enum.TryParse<TcType>(tcType, ignoreCase: true, out var t) ? t : TcType.K;
+        return ScanUniformAsync(channelList, MuxFunction.TEMP_TC, "AUTO", tc);
+    }
+
+    /// <summary>
+    /// Parsuje mieszaną specyfikację kanałów, gdzie każdy kanał ma własną funkcję.
+    /// Format wpisów (rozdzielane ';' lub nową linią): <c>kanał=FUNK[:param][@zakres]</c>
+    /// np. <c>101=VDC; 102=VDC@10; 103=RTD4W:85; 104=TC:K</c>.
+    /// </summary>
+    public List<ChannelMeasurement> ParseChannelSpec(string spec)
+    {
+        var list = new List<ChannelMeasurement>();
+        if (string.IsNullOrWhiteSpace(spec)) return list;
+
+        foreach (var raw in spec.Split(new[] { ';', '\n', '\r' }, StringSplitOptions.RemoveEmptyEntries))
+        {
+            var entry = raw.Trim();
+            if (entry.Length == 0) continue;
+
+            string range = "AUTO";
+            int at = entry.IndexOf('@');
+            if (at >= 0)
+            {
+                range = entry[(at + 1)..].Trim();
+                entry = entry[..at].Trim();
+            }
+
+            var eq = entry.Split('=', 2);
+            if (eq.Length != 2 || !int.TryParse(eq[0].Trim(), out int channel)) continue;
+
+            var fp = eq[1].Split(':', 2);
+            string func = fp[0].Trim();
+            string param = fp.Length > 1 ? fp[1].Trim() : "";
+
+            list.Add(ChannelMeasurement.FromUi(channel, func, range, param));
+        }
+
+        return list;
+    }
+
+    /// <summary>Skan na podstawie mieszanej specyfikacji (patrz <see cref="ParseChannelSpec"/>).</summary>
+    public Task<List<MeasurementResult>> ScanSpecAsync(string spec) => ScanAsync(ParseChannelSpec(spec));
+
+    // ── 34907A: DAC ─────────────────────────────────────────────────────────────
 
     public async Task SetDacAsync(int slot, int dacChannel, double voltage)
     {
         var card = GetCard34907A(slot);
-        string cmd = card.BuildSetDacCommand(dacChannel, voltage);
-        await Write(cmd);
-        RaiseStatus($"DAC{dacChannel} slot {slot}: {voltage:F4} V");
+        await Write(card.BuildSetDacCommand(dacChannel, voltage));
+        await ThrowOnDeviceError($"DAC{dacChannel} (slot {slot})");
+        RaiseStatus($"DAC{dacChannel} slot {slot}: {voltage:F4} V (kanał {card.DacChannel(dacChannel)})");
     }
 
-    public async Task SetDigitalOutputAsync(int slot, byte value)
+    public async Task<double> ReadDacAsync(int slot, int dacChannel)
     {
         var card = GetCard34907A(slot);
-        string cmd = card.BuildDigitalWriteCommand(value);
-        await Write(cmd);
-        RaiseStatus($"Digital OUT slot {slot}: 0x{value:X2}");
+        return await QueryDouble(card.BuildReadDacCommand(dacChannel));
     }
 
-    public async Task<byte> ReadDigitalInputAsync(int slot)
+    // ── 34907A: Digital I/O ─────────────────────────────────────────────────────
+
+    public Task SetDigitalOutputAsync(int slot, byte value) => SetDigitalOutputAsync(slot, 1, value);
+
+    public async Task SetDigitalOutputAsync(int slot, int port, byte value)
     {
         var card = GetCard34907A(slot);
-        string cmd = card.BuildDigitalReadCommand();
-        string response = await Query(cmd);
+        await Write(card.BuildDigitalWriteCommand(port, value));
+        await ThrowOnDeviceError($"Digital OUT port {port} (slot {slot})");
+        RaiseStatus($"Digital OUT slot {slot} port {port}: 0x{value:X2}");
+    }
+
+    public Task<byte> ReadDigitalInputAsync(int slot) => ReadDigitalInputAsync(slot, 1);
+
+    public async Task<byte> ReadDigitalInputAsync(int slot, int port)
+    {
+        var card = GetCard34907A(slot);
+        string response = await Query(card.BuildDigitalReadCommand(port));
         if (byte.TryParse(response.Trim(), out byte result))
             return result;
         if (double.TryParse(response.Trim(), NumberStyles.Float, CultureInfo.InvariantCulture, out double d))
@@ -113,31 +302,38 @@ public class Agilent34970ADriver : InstrumentDriverBase
         throw new InvalidOperationException($"Nieprawidłowa odpowiedź na Digital READ: '{response}'");
     }
 
-    // ── Temperature TC scan ───────────────────────────────────────────────────
-
-    public async Task<List<MeasurementResult>> MeasureTemperatureTCAsync(string channelList, string tcType = "K")
-    {
-        string expandedList = ExpandChannelList(channelList);
-        string confCommand = $"CONF:TEMP TC,{tcType},(@{expandedList})";
-        return await ExecuteScan(expandedList, confCommand, MuxFunction.TEMP_TC);
-    }
-
-    // ── Totalizer (34907A) ────────────────────────────────────────────────────
+    // ── 34907A: Totalizer (kanał s03) ───────────────────────────────────────────
 
     public async Task<double> ReadTotalizerAsync(int slot)
     {
-        string response = await Query($"MEAS:TOT? (@{slot}01)");
-        return double.TryParse(response.Trim(), System.Globalization.NumberStyles.Float,
-            CultureInfo.InvariantCulture, out double d) ? d : double.NaN;
+        var card = GetCard34907A(slot);
+        string response = await Query(card.BuildTotalizerReadCommand());
+        return double.TryParse(response.Trim(), NumberStyles.Float, CultureInfo.InvariantCulture, out double d)
+            ? d : double.NaN;
     }
 
     public async Task ResetTotalizerAsync(int slot)
     {
-        await Write($"SENS:TOT:CLE (@{slot}01)");
-        RaiseStatus($"Totalizer slot {slot} — reset");
+        var card = GetCard34907A(slot);
+        await Write(card.BuildTotalizerResetCommand());
+        RaiseStatus($"Totalizer slot {slot} — reset (kanał {card.TotalizerChannel})");
     }
 
-    // ── Plugin integration ────────────────────────────────────────────────────
+    // ── Diagnostyka błędów SCPI ─────────────────────────────────────────────────
+
+    /// <summary>Odczyt kolejki błędów: SYSTem:ERRor? → "&lt;kod&gt;,\"&lt;opis&gt;\"".</summary>
+    public Task<string> ReadDeviceErrorAsync() => Query("SYST:ERR?");
+
+    /// <summary>Rzuca wyjątek, jeśli przyrząd zgłosił błąd (kod != 0).</summary>
+    private async Task ThrowOnDeviceError(string context)
+    {
+        string err = (await Query("SYST:ERR?")).Trim();
+        var parts = err.Split(',', 2);
+        if (parts.Length >= 1 && int.TryParse(parts[0].Trim(), out int code) && code != 0)
+            throw new InvalidOperationException($"{context}: przyrząd zgłosił błąd {err}");
+    }
+
+    // ── Plugin integration ──────────────────────────────────────────────────────
 
     public override FrameworkElement CreateFrontPanel() =>
         new Agilent34970AFrontPanelView(this);
@@ -150,87 +346,29 @@ public class Agilent34970ADriver : InstrumentDriverBase
         Agilent34970ABlocks.RegisterAll();
     }
 
-    // ── Private helpers ───────────────────────────────────────────────────────
+    // ── Private helpers ─────────────────────────────────────────────────────────
 
-    private async Task<List<MeasurementResult>> ExecuteScan(
-        string expandedChannelList,
-        string confCommand,
-        MuxFunction function)
+    private async Task<string> QueryWithTimeout(string command, int timeoutMs)
     {
-        // 1. Configure measurement
-        await Write(confCommand);
-
-        // 2. Set scan list
-        await Write($"ROUT:SCAN (@{expandedChannelList})");
-
-        // 3. Trigger a single sweep
-        await Write("INIT");
-
-        // 4. Wait for completion and fetch
-        await Task.Delay(500); // allow instrument to settle
-        string fetchResponse = await Query("FETCH?");
-
-        // 5. Parse response
-        var channelNumbers = ParseChannelNumbers(expandedChannelList);
-        var values = ParseDoubleArray(fetchResponse);
-
-        var results = new List<MeasurementResult>();
-        for (int i = 0; i < Math.Min(channelNumbers.Count, values.Count); i++)
-        {
-            var r = new MeasurementResult
-            {
-                InstrumentName = DriverName,
-                ChannelId = channelNumbers[i].ToString(),
-                Function = function.ToString(),
-                Value = values[i],
-                Unit = GetUnit(function),
-                IsValid = !double.IsNaN(values[i])
-            };
-            results.Add(r);
-            RaiseMeasurement(r);
-        }
-
-        return results;
+        if (Connection == null) throw new InvalidOperationException("Brak połączenia");
+        return await Connection.QueryAsync(command, timeoutMs);
     }
-
-    private static string BuildConfCommandManual(MuxFunction function, string range, string channelList) =>
-        function switch
-        {
-            MuxFunction.VDC    => $"CONF:VOLT:DC {range},DEF,(@{channelList})",
-            MuxFunction.VAC    => $"CONF:VOLT:AC {range},DEF,(@{channelList})",
-            MuxFunction.OHM2W  => $"CONF:RES {range},DEF,(@{channelList})",
-            MuxFunction.OHM4W  => $"CONF:FRES {range},DEF,(@{channelList})",
-            MuxFunction.TEMP_TC  => $"CONF:TEMP TC,K,(@{channelList})",
-            MuxFunction.TEMP_RTD => $"CONF:TEMP RTD,85,(@{channelList})",
-            MuxFunction.FREQ   => $"CONF:FREQ {range},DEF,(@{channelList})",
-            MuxFunction.PERIOD => $"CONF:PER {range},DEF,(@{channelList})",
-            _ => throw new ArgumentOutOfRangeException(nameof(function))
-        };
-
-    private static string GetUnit(MuxFunction function) => function switch
-    {
-        MuxFunction.VDC or MuxFunction.VAC => "V",
-        MuxFunction.OHM2W or MuxFunction.OHM4W => "Ω",
-        MuxFunction.TEMP_TC or MuxFunction.TEMP_RTD => "°C",
-        MuxFunction.FREQ => "Hz",
-        MuxFunction.PERIOD => "s",
-        _ => ""
-    };
 
     private Card34907A GetCard34907A(int slot)
     {
         if (!Cards.TryGetValue(slot, out var cardObj) || cardObj is not Card34907A card)
             throw new InvalidOperationException(
-                $"Slot {slot} nie zawiera karty 34907A. Użyj AddCard34907A(slot) najpierw.");
+                $"Slot {slot} nie zawiera karty 34907A. Najpierw wykryj karty lub dodaj 34907A.");
         return card;
     }
 
-    /// <summary>
-    /// Expands a channel list that may contain ranges (e.g. "101,201:205") to a flat comma-separated list.
-    /// </summary>
-    private static string ExpandChannelList(string input)
+    /// <summary>Slot kanału bezwzględnego: 101 → 100, 215 → 200.</summary>
+    private static int SlotOf(int absChannel) => absChannel / 100 * 100;
+
+    /// <summary>Rozwija listę kanałów z zakresami (np. "101,201:205") do listy int.</summary>
+    private static List<int> ExpandToInts(string input)
     {
-        var result = new List<string>();
+        var result = new List<int>();
         foreach (var token in input.Split(',', StringSplitOptions.RemoveEmptyEntries))
         {
             var trimmed = token.Trim();
@@ -242,24 +380,13 @@ public class Agilent34970ADriver : InstrumentDriverBase
                     && int.TryParse(parts[1], out int end))
                 {
                     for (int ch = start; ch <= end; ch++)
-                        result.Add(ch.ToString());
+                        result.Add(ch);
                 }
             }
-            else
+            else if (int.TryParse(trimmed, out int ch))
             {
-                result.Add(trimmed);
-            }
-        }
-        return string.Join(",", result);
-    }
-
-    private static List<int> ParseChannelNumbers(string expandedList)
-    {
-        var result = new List<int>();
-        foreach (var token in expandedList.Split(',', StringSplitOptions.RemoveEmptyEntries))
-        {
-            if (int.TryParse(token.Trim(), out int ch))
                 result.Add(ch);
+            }
         }
         return result;
     }
@@ -270,10 +397,8 @@ public class Agilent34970ADriver : InstrumentDriverBase
         foreach (var token in response.Split(',', StringSplitOptions.RemoveEmptyEntries))
         {
             result.Add(double.TryParse(
-                token.Trim(),
-                NumberStyles.Float,
-                CultureInfo.InvariantCulture,
-                out double d) ? d : double.NaN);
+                token.Trim(), NumberStyles.Float, CultureInfo.InvariantCulture, out double d)
+                ? d : double.NaN);
         }
         return result;
     }

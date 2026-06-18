@@ -1,7 +1,7 @@
 # InstrumentControl
 
 **Universal Windows instrument control software** for VISA/GPIB/serial lab equipment.  
-Built with .NET 8 WPF, a plugin DLL architecture, and a visual Scratch-like sequence editor.
+Built with .NET 10 WPF, a plugin DLL architecture, and a visual Scratch-like sequence editor.
 
 [![Build](https://github.com/bartkepl/InstrumentControl/actions/workflows/release.yml/badge.svg)](https://github.com/bartkepl/InstrumentControl/actions/workflows/release.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
@@ -28,7 +28,7 @@ Built with .NET 8 WPF, a plugin DLL architecture, and a visual Scratch-like sequ
 | Instrument | Type | Interface | Sequence blocks |
 |---|---|---|---|
 | HP 34401A | 6½-digit DMM | VISA (GPIB/USB/RS-232) | MeasureDCV, MeasureACV, MeasureDCI, MeasureACI, MeasureResistance, MeasureFrequency, MeasurePeriod, MeasureTemperature |
-| Agilent 34970A | DAQ / Switch Unit | VISA (GPIB/USB) | ScanChannels, SetDAC, SetDigitalOutput, MeasureTemperature, MeasureVoltage |
+| Agilent 34970A | DAQ / Switch Unit | VISA (GPIB/USB) | DetectCards, ScanChannels, ScanMixed, MeasureChannel, SetDAC, SetDigitalOutput, ReadDigitalInput, ReadTotalizer |
 | Keithley 2000 | 6½-digit DMM | VISA (GPIB/USB) | MeasureDCV, MeasureACV, MeasureDCI, MeasureACI, MeasureResistance, MeasureFrequency, MeasurePeriod, MeasureTemperature |
 | ITECH IT6922B | DC Power Supply (60 V / 5 A) | VISA (USB/LAN/GPIB) | SetVoltage, SetCurrent, SetOutput, MeasureVoltage, MeasureCurrent, MeasurePower, SetOVP, SetOCP |
 | R&S RTB2004 | 4-channel oscilloscope 300 MHz | VISA (LAN/USB) | SetChannel, SetTimebase, SetTrigger, Run, Stop, Single, Autoscale, Measure, ReadWaveform |
@@ -53,14 +53,14 @@ UI strings are stored in XAML resource dictionaries inside `src/InstrumentContro
 
 | File | Language |
 |---|---|
-| `Strings.en.xaml` | English (282 entries) |
-| `Strings.pl.xaml` | Polish (282 entries) |
+| `Strings.en.xaml` | English (298 entries) |
+| `Strings.pl.xaml` | Polish (298 entries) |
 
 All XAML bindings use `{DynamicResource Key}` so the switch is live. `LocalizationService` (singleton, initialized in `App.xaml.cs`) handles loading the saved language on startup and swapping the active resource dictionary when the user changes the setting.
 
 Two categories are intentionally kept in English in **both** languages: the **log tab headers** (`LogTab_*`) and other purely technical log text, since instrument logs are read in English. Instrument driver descriptions shown in the *Add Instrument* dialog are localized through `DriverDesc_<DriverName>` keys.
 
-To add a third language, create `Strings.xx.xaml` with the same 282 keys and register `"xx"` as a supported code in `LocalizationService.SetLanguage()`.
+To add a third language, create `Strings.xx.xaml` with the same 298 keys and register `"xx"` as a supported code in `LocalizationService.SetLanguage()`.
 
 ---
 
@@ -71,7 +71,7 @@ To add a third language, create `Strings.xx.xaml` with the same 282 keys and reg
 | Windows | 10 or 11, 64-bit |
 | NI-VISA *(optional)* | 21.x or newer |
 
-**.NET 8 Runtime is not required** — the installer and ZIP both include the runtime (self-contained build).
+**.NET 10 Runtime is not required** — the installer and ZIP both include the runtime (self-contained build).
 
 Without NI-VISA the application starts in **simulation mode** — all VISA calls return a configurable default value, so you can develop and test sequences without physical hardware.
 
@@ -122,7 +122,7 @@ To guard against a broken release causing an endless download → restart → do
 
 ## Building from Source
 
-**Prerequisites:** .NET 8 SDK, Windows 10/11 64-bit
+**Prerequisites:** .NET 10 SDK, Windows 10/11 64-bit
 
 ```powershell
 git clone https://github.com/bartkepl/InstrumentControl.git
@@ -143,7 +143,7 @@ bin\Release\
     RTB2004.dll
     CTSChamber.dll
     RigolDS1000Z.dll
-  ... (.NET 8 runtime + WPF files — self-contained, no separate runtime install needed)
+  ... (.NET 10 runtime + WPF files — self-contained, no separate runtime install needed)
 ```
 
 For a debug build:
@@ -208,7 +208,7 @@ InstrumentControl.sln
 ```xml
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFramework>net8.0-windows</TargetFramework>
+    <!-- TargetFramework (net10.0-windows) jest dziedziczony z Directory.Build.props -->
     <UseWPF>true</UseWPF>
     <AssemblyName>YourInstrument</AssemblyName>
     <RootNamespace>YourInstrument</RootNamespace>
