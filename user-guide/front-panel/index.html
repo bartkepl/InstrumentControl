@@ -1642,7 +1642,11 @@
 </table>
 <hr />
 <h2 id="agilent-34970a-daq-front-panel">Agilent 34970A — DAQ Front Panel<a class="headerlink" href="#agilent-34970a-daq-front-panel" title="Permanent link">&para;</a></h2>
-<p>The 34970A front panel shows the installed cards and allows:</p>
+<p>The 34970A panel is organised <strong>per card</strong>: the sidebar configures the slots and the main
+area shows <strong>one tab per installed card</strong> (built dynamically). The <strong>WYKRYJ KARTY</strong>
+(Detect cards) button queries each slot with <code>SYST:CTYP?</code> and fills in the detected types.</p>
+<p><strong>34901A multiplexer tab</strong> — an editable grid where every row measures a different function
+in the same scan (e.g. 2× VDC + 1× RTD 4W). The grid enforces the card rules live:</p>
 <table>
 <thead>
 <tr>
@@ -1652,27 +1656,56 @@
 </thead>
 <tbody>
 <tr>
-<td><strong>Card slot view</strong></td>
-<td>Lists installed cards (34901A analog, 34907A digital) with their channel ranges</td>
+<td><strong>Channel</strong></td>
+<td>Slot-aware dropdown; a channel used in one row disappears from the others</td>
 </tr>
 <tr>
-<td><strong>Scan</strong></td>
-<td>Starts a single scan across all configured channels</td>
+<td><strong>Function</strong></td>
+<td>Channels 21/22 are restricted to current (CURR_DC/AC); a 4-wire row reserves channel <em>n</em> <strong>and</strong> <em>n+10</em></td>
 </tr>
 <tr>
-<td><strong>Channel readings</strong></td>
-<td>Grid showing the last measured value for each channel</td>
+<td><strong>Range</strong></td>
+<td>AUTO/DEF/MIN/MAX or a numeric value (validated)</td>
 </tr>
 <tr>
-<td><strong>DAC outputs</strong></td>
-<td>Set voltage on DAC channels (34907A card)</td>
+<td><strong>Konfig. kanału…</strong></td>
+<td>Dialog for resolution, NPLC and Mx+B scaling</td>
 </tr>
 <tr>
-<td><strong>Digital I/O</strong></td>
-<td>Byte-level read/write for DIO ports</td>
+<td><strong>Konfig. skanu…</strong></td>
+<td>Dialog for trigger source, timer interval, sweep count, channel delay</td>
+</tr>
+<tr>
+<td><strong>Scan / Continuous</strong></td>
+<td>Single sweep or repeated polling; results land in the readings grid</td>
 </tr>
 </tbody>
 </table>
+<p><strong>34907A multifunction tab</strong> — DAC, digital I/O and totalizer on one tab (the tab <em>is</em> the card):</p>
+<table>
+<thead>
+<tr>
+<th>Control</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>DAC 1 / DAC 2</strong></td>
+<td>Set-point with ▲/▼ step buttons (configurable step), ±12 V</td>
+</tr>
+<tr>
+<td><strong>Digital I/O</strong></td>
+<td>Both ports (s01, s02) shown side by side, byte read/write with bit toggles</td>
+</tr>
+<tr>
+<td><strong>Totalizer</strong></td>
+<td>Read / reset the pulse counter (s03)</td>
+</tr>
+</tbody>
+</table>
+<p>See the <a href="../instruments/agilent34970a/">Agilent 34970A instrument page</a> for channel mapping
+and SCPI details.</p>
 <hr />
 <h2 id="cts-chamber-environmental-chamber-front-panel">CTS Chamber — Environmental Chamber Front Panel<a class="headerlink" href="#cts-chamber-environmental-chamber-front-panel" title="Permanent link">&para;</a></h2>
 <table>

@@ -1374,7 +1374,7 @@
 <a href="https://github.com/bartkepl/InstrumentControl/blob/main/LICENSE"><img alt="License: MIT" src="https://img.shields.io/badge/License-MIT-blue.svg" /></a></p>
 <hr />
 <h2 id="what-is-instrumentcontrol">What is InstrumentControl?<a class="headerlink" href="#what-is-instrumentcontrol" title="Permanent link">&para;</a></h2>
-<p>InstrumentControl is a .NET 8 WPF desktop application that lets you <strong>connect, control, and automate laboratory instruments</strong> without writing any code. It supports standard VISA instruments (GPIB, USB-TMC, LAN/VXI-11) and custom RS-232 devices through a plugin architecture.</p>
+<p>InstrumentControl is a .NET 10 WPF desktop application that lets you <strong>connect, control, and automate laboratory instruments</strong> without writing any code. It supports standard VISA instruments (GPIB, USB-TMC, LAN/VXI-11) and custom RS-232 devices through a plugin architecture.</p>
 <p>Key capabilities at a glance:</p>
 <table>
 <thead>
@@ -1499,7 +1499,7 @@
 <hr />
 <h2 id="architecture-overview">Architecture Overview<a class="headerlink" href="#architecture-overview" title="Permanent link">&para;</a></h2>
 <pre class="mermaid"><code>graph TD
-    A[InstrumentControl.App&lt;br/&gt;WPF executable] --&gt; B[InstrumentControl.Core&lt;br/&gt;.NET 8 library]
+    A[InstrumentControl.App&lt;br/&gt;WPF executable] --&gt; B[InstrumentControl.Core&lt;br/&gt;.NET 10 library]
     B --&gt; C[IInstrumentDriver]
     B --&gt; D[ISequenceBlock]
     B --&gt; E[IConnectionProvider]

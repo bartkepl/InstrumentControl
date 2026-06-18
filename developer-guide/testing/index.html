@@ -1374,7 +1374,7 @@
 <p>Automated tests cover the <strong>UI-independent core logic</strong> — the parts that are deterministic and don't need a real instrument or a WPF dispatcher. They run locally and gate every CI build.</p>
 <hr />
 <h2 id="test-project">Test project<a class="headerlink" href="#test-project" title="Permanent link">&para;</a></h2>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>tests/InstrumentControl.Core.Tests/   # xUnit, net8.0-windows
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>tests/InstrumentControl.Core.Tests/   # xUnit, net10.0-windows
 </code></pre></div>
 <p>The project references only <code>InstrumentControl.Core</code>, so it builds fast and has no plugin/UI dependencies. It is part of <code>InstrumentControl.sln</code>.</p>
 <table>
