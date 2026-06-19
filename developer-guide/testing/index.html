@@ -1221,13 +1221,41 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#test-project" class="md-nav__link">
+  <a href="#test-projects" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Test project
+        Test projects
       
     </span>
   </a>
+  
+    <nav class="md-nav" aria-label="Test projects">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#instrumentcontrolcoretests" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        InstrumentControl.Core.Tests
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#instrumentcontrolinstrumentstests" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        InstrumentControl.Instruments.Tests
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
   
 </li>
       
@@ -1243,6 +1271,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#coverage" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Coverage
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#continuous-integration" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1250,6 +1289,34 @@
       
     </span>
   </a>
+  
+    <nav class="md-nav" aria-label="Continuous integration">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#releaseyml" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        release.yml
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#coverageyml" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        coverage.yml
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
   
 </li>
       
@@ -1307,13 +1374,41 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#test-project" class="md-nav__link">
+  <a href="#test-projects" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Test project
+        Test projects
       
     </span>
   </a>
+  
+    <nav class="md-nav" aria-label="Test projects">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#instrumentcontrolcoretests" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        InstrumentControl.Core.Tests
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#instrumentcontrolinstrumentstests" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        InstrumentControl.Instruments.Tests
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
   
 </li>
       
@@ -1329,6 +1424,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#coverage" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Coverage
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#continuous-integration" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1336,6 +1442,34 @@
       
     </span>
   </a>
+  
+    <nav class="md-nav" aria-label="Continuous integration">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#releaseyml" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        release.yml
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#coverageyml" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        coverage.yml
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
   
 </li>
       
@@ -1371,58 +1505,148 @@
 
 
 <h1 id="testing-ci">Testing &amp; CI<a class="headerlink" href="#testing-ci" title="Permanent link">&para;</a></h1>
-<p>Automated tests cover the <strong>UI-independent core logic</strong> — the parts that are deterministic and don't need a real instrument or a WPF dispatcher. They run locally and gate every CI build.</p>
+<p>Automated tests cover the <strong>UI-independent logic</strong> — everything except the WPF view layer. They run locally and gate every CI build, and a coverage report + badge are produced on every push.</p>
 <hr />
-<h2 id="test-project">Test project<a class="headerlink" href="#test-project" title="Permanent link">&para;</a></h2>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>tests/InstrumentControl.Core.Tests/   # xUnit, net10.0-windows
+<h2 id="test-projects">Test projects<a class="headerlink" href="#test-projects" title="Permanent link">&para;</a></h2>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>tests/InstrumentControl.Core.Tests/          # xUnit, net10.0-windows — Core library
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>tests/InstrumentControl.Instruments.Tests/   # xUnit, net10.0-windows — all 7 instrument plugins
 </code></pre></div>
-<p>The project references only <code>InstrumentControl.Core</code>, so it builds fast and has no plugin/UI dependencies. It is part of <code>InstrumentControl.sln</code>.</p>
+<p>Both are part of <code>InstrumentControl.sln</code>.</p>
+<h3 id="instrumentcontrolcoretests"><code>InstrumentControl.Core.Tests</code><a class="headerlink" href="#instrumentcontrolcoretests" title="Permanent link">&para;</a></h3>
+<p>References only <code>InstrumentControl.Core</code>.</p>
 <table>
 <thead>
 <tr>
-<th>Test file</th>
+<th>Area</th>
 <th>What it covers</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td><code>SequenceEngineTests.cs</code></td>
-<td>Engine state machine: empty sequence, minimal Start→End run, <code>Stop</code> cancellation, Pause/Resume during a loop</td>
+<td><code>SequenceEngineTests</code></td>
+<td>Engine state machine: empty sequence, Start→End run, <code>Stop</code> cancellation, Pause/Resume</td>
 </tr>
 <tr>
-<td><code>LoopBlockTests.cs</code></td>
-<td><code>LoopBlock</code>: fixed iteration count + counter variable, infinite loop stopped by cancellation, pause gate halts iteration</td>
+<td><code>LoopBlockTests</code></td>
+<td>Fixed iteration count + counter, infinite loop stopped by cancellation, pause gate</td>
 </tr>
 <tr>
-<td><code>SequenceContextTests.cs</code></td>
-<td>Variables round-trip, the pause gate (<code>SetPaused</code> / <code>WaitIfPausedAsync</code>), and cancellation while paused</td>
+<td><code>BuiltInBlocksTests</code></td>
+<td>Start/End/EndLoop/Wait/LogMessage/SetVariable/Condition/AddToChart/SaveCsv execution and routing</td>
 </tr>
 <tr>
-<td><code>InstrumentDriverBaseTests.cs</code></td>
-<td><code>*IDN?</code> parsing (firmware/serial) and the Disconnect → Reconnect round-trip</td>
+<td><code>MathBlockTests</code></td>
+<td>The recursive-descent math evaluator: operators, precedence, functions, constants, variables, error paths</td>
+</tr>
+<tr>
+<td><code>DataManagerTests</code></td>
+<td>Thread-safe storage, CSV export (header/append/escaping), series and parameter queries</td>
+</tr>
+<tr>
+<td><code>SimulatedConnectionProviderTests</code></td>
+<td>Simulated transport for DMM, power supply, oscilloscope and chamber commands</td>
+</tr>
+<tr>
+<td><code>VisaServiceTests</code></td>
+<td>Simulation-mode resource discovery and session creation (no NI-VISA needed)</td>
+</tr>
+<tr>
+<td><code>PluginLoaderTests</code></td>
+<td>Reflection-based driver discovery, <code>CreateDriver</code>, metadata</td>
+</tr>
+<tr>
+<td><code>ModelsTests</code> / <code>SequenceBlockBaseTests</code> / <code>BlockRegistryTests</code></td>
+<td>Models, serialization/clone, the block registry</td>
+</tr>
+<tr>
+<td><code>InstrumentDriverBaseTests</code> / <code>InstrumentDriverBaseExtraTests</code></td>
+<td><code>*IDN?</code> parsing, connect/disconnect/reconnect, reset, query helpers</td>
+</tr>
+</tbody>
+</table>
+<h3 id="instrumentcontrolinstrumentstests"><code>InstrumentControl.Instruments.Tests</code><a class="headerlink" href="#instrumentcontrolinstrumentstests" title="Permanent link">&para;</a></h3>
+<p>References <code>InstrumentControl.Core</code> and all seven plugin projects. It verifies the exact SCPI strings each driver generates, using a recording fake connection (<code>RecordingConnection</code>) that captures every written command and returns canned query responses.</p>
+<table>
+<thead>
+<tr>
+<th>Area</th>
+<th>What it covers</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>HP34401ADriverTests</code> / <code>Keithley2000DriverTests</code></td>
+<td>DMM <code>CONF</code>/<code>SENS</code>/<code>READ?</code>, config cache, MATH, limit test, burst, display</td>
+</tr>
+<tr>
+<td><code>ItechIT6922BDriverTests</code></td>
+<td>Power-supply set/measure, OVP/OCP, operating-mode decoding</td>
+</tr>
+<tr>
+<td><code>RTB2004DriverTests</code> / <code>RigolDS1000ZDriverTests</code></td>
+<td>Scope channel/timebase/trigger/acquire, measurements, waveform parsing, IEEE binary block, source normalization</td>
+</tr>
+<tr>
+<td><code>Agilent34970ADriverTests</code> / <code>Agilent34970ACardsTests</code></td>
+<td>Card detection, mixed scans, DAC/DIO/totalizer, and the 34901A/34907A card model</td>
+</tr>
+<tr>
+<td><code>CTSChamberDriverTests</code></td>
+<td>Chamber protocol over the simulation fast-path (temperature, ramps, start/stop, state)</td>
+</tr>
+<tr>
+<td><code>InstrumentBlocksTests</code></td>
+<td>Metadata of every plugin block + execution of every sequence block against a connected driver</td>
 </tr>
 </tbody>
 </table>
 <hr />
 <h2 id="running-the-tests">Running the tests<a class="headerlink" href="#running-the-tests" title="Permanent link">&para;</a></h2>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="c"># From the repository root</span>
-<a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a><span class="n">dotnet</span> <span class="n">test</span> <span class="n">tests</span><span class="p">/</span><span class="n">InstrumentControl</span><span class="p">.</span><span class="n">Core</span><span class="p">.</span><span class="n">Tests</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="c"># Everything</span>
+<a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a><span class="n">dotnet</span> <span class="n">test</span>
+<a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a>
+<a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a><span class="c"># A single project</span>
+<a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a><span class="n">dotnet</span> <span class="n">test</span> <span class="n">tests</span><span class="p">/</span><span class="n">InstrumentControl</span><span class="p">.</span><span class="n">Core</span><span class="p">.</span><span class="n">Tests</span>
 </code></pre></div>
 <p>All tests are expected to pass with no failures and no skips.</p>
 <hr />
-<h2 id="continuous-integration">Continuous integration<a class="headerlink" href="#continuous-integration" title="Permanent link">&para;</a></h2>
-<p>The GitHub Actions workflow <code>.github/workflows/release.yml</code> runs on every push and pull request to <code>main</code>. The <strong>test step runs before the build and publish steps</strong>:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Run tests</span>
-<a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a><span class="w">  </span><span class="nt">run</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">dotnet test tests/InstrumentControl.Core.Tests --nologo -v q</span>
+<h2 id="coverage">Coverage<a class="headerlink" href="#coverage" title="Permanent link">&para;</a></h2>
+<p>Coverage is collected with <strong>coverlet</strong> and rendered with <strong>ReportGenerator</strong>.</p>
+<ul>
+<li>Configuration lives in <code>coverlet.runsettings</code>: it includes the eight product assemblies (Core + 7 plugins) and <strong>excludes the WPF view layer</strong> (<code>*/Views/</code>, <code>*.xaml.cs</code>, <code>LiveDataWindow</code>) plus auto-property accessors, so the metric reflects testable logic only.</li>
+<li>ReportGenerator is pinned as a local tool in <code>.config/dotnet-tools.json</code>.</li>
+</ul>
+<p>Generate an HTML report locally:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="n">dotnet</span> <span class="n">tool</span> <span class="n">restore</span>
+<a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a><span class="n">dotnet</span> <span class="n">test</span> <span class="n">tests</span><span class="p">/</span><span class="n">InstrumentControl</span><span class="p">.</span><span class="n">Core</span><span class="p">.</span><span class="n">Tests</span>        <span class="p">-</span><span class="n">-settings</span> <span class="n">coverlet</span><span class="p">.</span><span class="n">runsettings</span> <span class="p">-</span><span class="n">-collect</span><span class="p">:</span><span class="s2">&quot;XPlat Code Coverage&quot;</span> <span class="p">-</span><span class="n">-results-directory</span> <span class="n">TestResults</span><span class="p">/</span><span class="n">core</span>
+<a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a><span class="n">dotnet</span> <span class="n">test</span> <span class="n">tests</span><span class="p">/</span><span class="n">InstrumentControl</span><span class="p">.</span><span class="n">Instruments</span><span class="p">.</span><span class="n">Tests</span> <span class="p">-</span><span class="n">-settings</span> <span class="n">coverlet</span><span class="p">.</span><span class="n">runsettings</span> <span class="p">-</span><span class="n">-collect</span><span class="p">:</span><span class="s2">&quot;XPlat Code Coverage&quot;</span> <span class="p">-</span><span class="n">-results-directory</span> <span class="n">TestResults</span><span class="p">/</span><span class="n">instruments</span>
+<a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a><span class="n">dotnet</span> <span class="n">reportgenerator</span> <span class="n">-reports</span><span class="p">:</span><span class="s2">&quot;TestResults/**/coverage.cobertura.xml&quot;</span> <span class="n">-targetdir</span><span class="p">:</span><span class="n">coveragereport</span> <span class="n">-reporttypes</span><span class="p">:</span><span class="s2">&quot;Html;TextSummary&quot;</span>
+<a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a><span class="c"># open coveragereport/index.html</span>
 </code></pre></div>
-<p>If any test fails, the job stops there — no artifact, Velopack package, or GitHub Release is produced. This makes a green test run a hard prerequisite for a release.</p>
+<div class="admonition warning">
+<p class="admonition-title">Use separate result directories</p>
+<p>Run each test project into its <strong>own</strong> <code>--results-directory</code>. Pointing both runs at the same directory can intermittently produce one empty Cobertura file, silently dropping that project's coverage. ReportGenerator then merges <code>TestResults/**/coverage.cobertura.xml</code>.</p>
+</div>
+<hr />
+<h2 id="continuous-integration">Continuous integration<a class="headerlink" href="#continuous-integration" title="Permanent link">&para;</a></h2>
+<p>Two workflows run on every push and pull request to <code>main</code>:</p>
+<h3 id="releaseyml"><code>release.yml</code><a class="headerlink" href="#releaseyml" title="Permanent link">&para;</a></h3>
+<p>The <strong>test step runs before build and publish</strong>:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Run tests</span>
+<a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a><span class="w">  </span><span class="nt">run</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">dotnet test tests/InstrumentControl.Core.Tests --nologo -v q</span>
+</code></pre></div>
+<p>If a test fails, no artifact, Velopack package, or GitHub Release is produced — a green test run is a hard prerequisite for a release.</p>
+<h3 id="coverageyml"><code>coverage.yml</code><a class="headerlink" href="#coverageyml" title="Permanent link">&para;</a></h3>
+<p>Runs both test projects on <code>windows-latest</code>, merges coverage, posts a Markdown summary to the run, and uploads the full HTML report as an artifact. On pushes to <code>main</code> it publishes the report and the coverage badge to the dedicated <strong><code>badges</code></strong> branch using the built-in <code>GITHUB_TOKEN</code> (no external service or secret required). The badge in the project README points at the raw SVG on that branch.</p>
 <hr />
 <h2 id="writing-new-tests">Writing new tests<a class="headerlink" href="#writing-new-tests" title="Permanent link">&para;</a></h2>
 <ul>
-<li>Keep tests free of WPF/dispatcher dependencies so they stay in <code>InstrumentControl.Core.Tests</code> and run in CI. Logic that needs the UI thread belongs in the App project and is not unit-tested here.</li>
-<li>For driver/connection behavior, implement a lightweight in-memory <code>IConnectionProvider</code> (see the <code>FakeConnection</code> helper in <code>InstrumentDriverBaseTests.cs</code>) instead of touching real VISA. The <code>SimulatedConnectionProvider</code> in <code>VisaService</code> is also available for higher-level scenarios.</li>
-<li>Async tests should be <code>async Task</code> and <code>await</code> the operation rather than blocking, to avoid deadlocks (xUnit flags blocking waits).</li>
-<li>Register block types before use — block classes self-register in a static constructor, so referencing the type once (e.g. <code>_ = new LoopBlock();</code>) ensures <code>BlockRegistry</code> knows about it.</li>
+<li>Keep tests free of WPF/dispatcher dependencies. Logic that needs the UI thread belongs in the App project and is not unit-tested here.</li>
+<li>For driver/connection behavior use <code>RecordingConnection</code> (instruments tests) or a lightweight <code>IConnectionProvider</code> such as <code>FakeConnection</code> (Core tests); the <code>SimulatedConnectionProvider</code> in <code>VisaService</code> covers higher-level scenarios. Never touch real VISA in a test.</li>
+<li>The CTS driver opens a real COM port unless the connection reports <code>ConnectionType == "SIMULATION"</code> — set that on the fake connection to exercise the simulation fast-path.</li>
+<li>Async tests should be <code>async Task</code> and <code>await</code> the operation rather than blocking (xUnit flags blocking waits).</li>
+<li>Block classes self-register in a static constructor, so referencing the type once (e.g. <code>_ = new LoopBlock();</code>) ensures <code>BlockRegistry</code> knows about it.</li>
+<li>Numeric SCPI arguments are formatted with <code>InvariantCulture</code>, so <code>1e-3</code> serializes as <code>0.001</code> (not <code>1E-03</code>).</li>
 </ul>
 
 
