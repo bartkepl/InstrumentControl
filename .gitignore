@@ -39,7 +39,10 @@ ehthumbs.db
 
 # Test results
 TestResults/
+coveragereport/
 *.trx
 *.coverage
 *.coveragexml
 CLAUDE.md
+TODO.md
+TODO_progress.md

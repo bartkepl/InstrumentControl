@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Konfiguracja zbierania pokrycia kodu (coverlet collector).
+  Uruchamiane przez: dotnet test (settings coverlet.runsettings)
+
+  Zakres pokrycia = logika niezalezna od UI:
+    InstrumentControl.Core  (silnik sekwencji, bloki, serwisy, modele)
+    wszystkie 7 pluginow instrumentow (drivery SCPI + bloki)
+  Warstwa WPF (Views, code-behind .xaml.cs, LiveDataWindow) jest wykluczona,
+  bo nie nadaje sie do testow jednostkowych (patrz Exclude / ExcludeByFile).
+-->
+<RunSettings>
+  <DataCollectionRunSettings>
+    <DataCollectors>
+      <DataCollector friendlyName="XPlat code coverage">
+        <Configuration>
+          <Format>cobertura</Format>
+          <!-- Tylko nasze assembly; pomijamy zaleznosci (OxyPlot, MVVM toolkit itd.) -->
+          <Include>[InstrumentControl.Core]*,[HP34401A]*,[Agilent34970A]*,[Keithley2000]*,[ItechIT6922B]*,[RTB2004]*,[CTSChamber]*,[RigolDS1000Z]*</Include>
+          <!-- Wyklucz warstwe widokow WPF (po przestrzeni nazw) -->
+          <Exclude>[*]*.Views.*</Exclude>
+          <ExcludeByAttribute>GeneratedCodeAttribute,CompilerGeneratedAttribute,ExcludeFromCodeCoverageAttribute,DebuggerNonUserCodeAttribute</ExcludeByAttribute>
+          <!-- Wyklucz pliki UI (XAML code-behind, okna WPF) po sciezce -->
+          <ExcludeByFile>**/Views/**/*.cs,**/*.xaml.cs,**/LiveDataWindow.cs</ExcludeByFile>
+          <!-- Auto-property get/set sa trywialne; nie liczymy ich do metryki -->
+          <SkipAutoProps>true</SkipAutoProps>
+          <UseSourceLink>true</UseSourceLink>
+        </Configuration>
+      </DataCollector>
+    </DataCollectors>
+  </DataCollectionRunSettings>
+</RunSettings>

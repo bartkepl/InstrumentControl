@@ -4,6 +4,8 @@
 Built with .NET 10 WPF, a plugin DLL architecture, and a visual Scratch-like sequence editor.
 
 [![Build](https://github.com/bartkepl/InstrumentControl/actions/workflows/release.yml/badge.svg)](https://github.com/bartkepl/InstrumentControl/actions/workflows/release.yml)
+[![Coverage](https://github.com/bartkepl/InstrumentControl/actions/workflows/coverage.yml/badge.svg)](https://github.com/bartkepl/InstrumentControl/actions/workflows/coverage.yml)
+[![Code coverage](https://raw.githubusercontent.com/bartkepl/InstrumentControl/badges/badge_linecoverage.svg)](https://github.com/bartkepl/InstrumentControl/actions/workflows/coverage.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 
 ---
@@ -156,13 +158,39 @@ For a debug build:
 
 ## Testing
 
-Unit tests live in `tests/InstrumentControl.Core.Tests` (xUnit) and cover the UI-independent core logic — the sequence engine state machine, `LoopBlock` iteration/cancellation, the pause gate in `SequenceContext`, and `*IDN?` parsing / reconnect in `InstrumentDriverBase`.
+Unit tests (xUnit) cover the UI-independent logic — everything except the WPF view layer:
+
+| Project | Covers |
+|---|---|
+| `tests/InstrumentControl.Core.Tests` | sequence engine, all built-in blocks, the math expression evaluator, `DataManager` CSV export, `PluginLoader`, the simulated/VISA transport, models and `InstrumentDriverBase` |
+| `tests/InstrumentControl.Instruments.Tests` | all 7 instrument plugins — SCPI command generation per driver (verified through a recording fake connection), the Agilent card model, and execution of every sequence block |
 
 ```powershell
+# run everything
+dotnet test
+
+# a single project
 dotnet test tests/InstrumentControl.Core.Tests
 ```
 
-The GitHub Actions workflow (`release.yml`) runs `dotnet test` **before** the build/publish steps on every push and pull request, so a failing test blocks the release. See the [Testing & CI](docs/developer-guide/testing.md) guide for details.
+### Coverage
+
+Coverage is collected with **coverlet** (config in `coverlet.runsettings`) and reported with **ReportGenerator** (pinned in `.config/dotnet-tools.json`). The WPF view layer (`*/Views/`, `*.xaml.cs`, `LiveDataWindow`) is intentionally excluded, so the metric reflects testable logic only.
+
+Generate an HTML report locally:
+
+```powershell
+dotnet tool restore
+dotnet test tests/InstrumentControl.Core.Tests        --settings coverlet.runsettings --collect:"XPlat Code Coverage" --results-directory TestResults/core
+dotnet test tests/InstrumentControl.Instruments.Tests --settings coverlet.runsettings --collect:"XPlat Code Coverage" --results-directory TestResults/instruments
+dotnet reportgenerator -reports:"TestResults/**/coverage.cobertura.xml" -targetdir:coveragereport -reporttypes:"Html;TextSummary"
+# open coveragereport/index.html
+```
+
+Two GitHub Actions workflows run on every push and pull request to `main`:
+
+- `release.yml` runs `dotnet test` **before** build/publish, so a failing test blocks the release.
+- `coverage.yml` runs both test projects, merges coverage, posts the summary to the run, and (on `main`) publishes the coverage badge to the `badges` branch — which is what the badge at the top of this file points to.
 
 ## Project Structure
 

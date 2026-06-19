@@ -1,0 +1,82 @@
+name: Code Coverage
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: write   # required to push the generated badge to the "badges" branch
+
+jobs:
+  coverage:
+    # WPF plugin projects target net10.0-windows, so tests must run on Windows.
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup .NET 10
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '10.0.x'
+
+      - name: Restore local tools (ReportGenerator)
+        run: dotnet tool restore
+
+      # ── Run tests with coverage ───────────────────────────────────────────────
+      # Each test project writes to its own results directory to avoid the
+      # collector race that can drop one project's coverage when two runs share
+      # a directory. Both Cobertura files are merged in the next step.
+      - name: Test - Core
+        run: >
+          dotnet test tests/InstrumentControl.Core.Tests
+          --settings coverlet.runsettings
+          --collect:"XPlat Code Coverage"
+          --results-directory TestResults/core
+          --nologo
+
+      - name: Test - Instruments
+        run: >
+          dotnet test tests/InstrumentControl.Instruments.Tests
+          --settings coverlet.runsettings
+          --collect:"XPlat Code Coverage"
+          --results-directory TestResults/instruments
+          --nologo
+
+      # ── Merge coverage + generate report/badges ───────────────────────────────
+      - name: Generate coverage report
+        run: >
+          dotnet reportgenerator
+          -reports:"TestResults/**/coverage.cobertura.xml"
+          -targetdir:coveragereport
+          -reporttypes:"Html;Cobertura;Badges;MarkdownSummaryGithub;TextSummary"
+          -title:"InstrumentControl coverage"
+
+      - name: Write coverage to job summary
+        if: always()
+        shell: pwsh
+        run: Get-Content coveragereport/SummaryGithub.md | Out-File -Append $env:GITHUB_STEP_SUMMARY -Encoding utf8
+
+      - name: Upload coverage report artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-report
+          path: coveragereport
+
+      # ── Publish badge to the dedicated "badges" branch (main only) ────────────
+      # Uses the built-in GITHUB_TOKEN — no external account or secret required.
+      # The README references the raw SVG from this branch.
+      - name: Publish coverage badge
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_branch: badges
+          publish_dir: coveragereport
+          keep_files: false
+          commit_message: "docs: update coverage report and badge"

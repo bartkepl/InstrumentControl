@@ -29,6 +29,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{0AB3BF05
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "InstrumentControl.Core.Tests", "tests\InstrumentControl.Core.Tests\InstrumentControl.Core.Tests.csproj", "{E7CBF826-5385-4B72-B3A8-F08233AE691A}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "InstrumentControl.Instruments.Tests", "tests\InstrumentControl.Instruments.Tests\InstrumentControl.Instruments.Tests.csproj", "{4444AC7F-80C4-40CF-9957-C859C033A6BF}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -159,6 +161,18 @@ Global
 		{E7CBF826-5385-4B72-B3A8-F08233AE691A}.Release|x64.Build.0 = Release|Any CPU
 		{E7CBF826-5385-4B72-B3A8-F08233AE691A}.Release|x86.ActiveCfg = Release|Any CPU
 		{E7CBF826-5385-4B72-B3A8-F08233AE691A}.Release|x86.Build.0 = Release|Any CPU
+		{4444AC7F-80C4-40CF-9957-C859C033A6BF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4444AC7F-80C4-40CF-9957-C859C033A6BF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4444AC7F-80C4-40CF-9957-C859C033A6BF}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{4444AC7F-80C4-40CF-9957-C859C033A6BF}.Debug|x64.Build.0 = Debug|Any CPU
+		{4444AC7F-80C4-40CF-9957-C859C033A6BF}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{4444AC7F-80C4-40CF-9957-C859C033A6BF}.Debug|x86.Build.0 = Debug|Any CPU
+		{4444AC7F-80C4-40CF-9957-C859C033A6BF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4444AC7F-80C4-40CF-9957-C859C033A6BF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4444AC7F-80C4-40CF-9957-C859C033A6BF}.Release|x64.ActiveCfg = Release|Any CPU
+		{4444AC7F-80C4-40CF-9957-C859C033A6BF}.Release|x64.Build.0 = Release|Any CPU
+		{4444AC7F-80C4-40CF-9957-C859C033A6BF}.Release|x86.ActiveCfg = Release|Any CPU
+		{4444AC7F-80C4-40CF-9957-C859C033A6BF}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -174,5 +188,6 @@ Global
 		{F1E2D3C4-B5A6-4789-CD01-EF2345678901} = {633B7475-F431-4E92-FA2B-6E7B56E46D72}
 		{D5A6B7C8-E9F0-4321-ABCD-EF1234567890} = {633B7475-F431-4E92-FA2B-6E7B56E46D72}
 		{E7CBF826-5385-4B72-B3A8-F08233AE691A} = {0AB3BF05-4346-4AA6-1389-037BE0695223}
+		{4444AC7F-80C4-40CF-9957-C859C033A6BF} = {0AB3BF05-4346-4AA6-1389-037BE0695223}
 	EndGlobalSection
 EndGlobal
