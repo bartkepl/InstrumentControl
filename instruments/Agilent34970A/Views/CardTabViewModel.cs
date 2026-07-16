@@ -27,7 +27,13 @@ public abstract partial class CardTabViewModel : ObservableObject
     protected bool EnsureConnected()
     {
         if (Driver.IsConnected) return true;
-        SetStatus("Instrument nie jest połączony.");
+        SetStatus(T("FP_A34970A_NotConnected", "Instrument is not connected."));
         return false;
     }
+
+    protected static string T(string key, string fallback) =>
+        System.Windows.Application.Current?.TryFindResource(key) as string ?? fallback;
+
+    protected static string T(string key, string fallback, params object[] args) =>
+        string.Format(T(key, fallback), args);
 }

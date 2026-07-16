@@ -19,14 +19,14 @@ public partial class CTSChamberFrontPanelViewModel : ObservableObject
     [ObservableProperty] private bool   _isRunning;
     [ObservableProperty] private bool   _isError;
     [ObservableProperty] private bool   _isPaused;
-    [ObservableProperty] private string _stateLabel = "STOP";
+    [ObservableProperty] private string _stateLabel = "---";
     [ObservableProperty] private Brush  _stateBrush = Brushes.Gray;
 
     // ── UI state ──────────────────────────────────────────────────────────────
     [ObservableProperty] private bool   _isConnected;
     [ObservableProperty] private bool   _isMeasuring;
     [ObservableProperty] private bool   _isContinuous;
-    [ObservableProperty] private string _statusText = "Brak połączenia";
+    [ObservableProperty] private string _statusText = "Not connected";
 
     // ── Setpoint inputs ───────────────────────────────────────────────────────
     [ObservableProperty] private string _temperatureSetpoint = "25.0";
@@ -40,6 +40,7 @@ public partial class CTSChamberFrontPanelViewModel : ObservableObject
         new() { "1000", "2000", "5000", "10000", "30000", "60000" };
 
     private CancellationTokenSource? _continuousCts;
+    private readonly EventHandler _languageChangedHandler;
 
     public CTSChamberFrontPanelViewModel(CTSChamberDriver driver)
     {
@@ -51,9 +52,22 @@ public partial class CTSChamberFrontPanelViewModel : ObservableObject
         driver.StatusChanged       += OnStatusChanged;
         driver.ErrorOccurred       += OnErrorOccurred;
 
-        AppLocalization.LanguageChanged += (_, _) =>
+        _languageChangedHandler = (_, _) =>
             System.Windows.Application.Current?.Dispatcher.InvokeAsync(() =>
                 StatusText = FpConnected(IsConnected));
+        AppLocalization.LanguageChanged += _languageChangedHandler;
+    }
+
+    // Called when the front panel is torn down (e.g. the user switches to a
+    // different connected instrument) so this ViewModel stops reacting to driver
+    // events and can be garbage collected instead of leaking as a "zombie"
+    // listener that keeps handling every future measurement/status update.
+    public void Detach()
+    {
+        _driver.MeasurementReceived     -= OnMeasurementReceived;
+        _driver.StatusChanged           -= OnStatusChanged;
+        _driver.ErrorOccurred           -= OnErrorOccurred;
+        AppLocalization.LanguageChanged -= _languageChangedHandler;
     }
 
     // ── Event handlers ────────────────────────────────────────────────────────
@@ -81,7 +95,7 @@ public partial class CTSChamberFrontPanelViewModel : ObservableObject
     {
         System.Windows.Application.Current.Dispatcher.InvokeAsync(() =>
         {
-            StatusText    = $"BŁĄD: {ex.Message}";
+            StatusText    = T("FP_ErrGeneric", "Error: {0}", ex.Message);
             DisplayActual = "ERR";
         });
     }
@@ -99,7 +113,7 @@ public partial class CTSChamberFrontPanelViewModel : ObservableObject
             DisplaySetpoint = setpoint.ToString("+0.0;-0.0", CultureInfo.InvariantCulture);
             StatusText = $"OK  {DateTime.Now:HH:mm:ss.fff}";
         }
-        catch (Exception ex) { StatusText = $"Błąd odczytu: {ex.Message}"; }
+        catch (Exception ex) { StatusText = T("FP_CTS_ErrRead", "Read error: {0}", ex.Message); }
         finally { IsMeasuring = false; }
     }
 
@@ -114,29 +128,29 @@ public partial class CTSChamberFrontPanelViewModel : ObservableObject
             IsPaused  = paused;
             UpdateStateIndicator(running, error, paused);
         }
-        catch (Exception ex) { StatusText = $"Błąd odczytu stanu: {ex.Message}"; }
+        catch (Exception ex) { StatusText = T("FP_CTS_ErrReadState", "State read error: {0}", ex.Message); }
     }
 
     private void UpdateStateIndicator(bool running, bool error, bool paused)
     {
         if (error)
         {
-            StateLabel = "BŁĄD";
+            StateLabel = T("FP_CTS_StateError", "ERROR");
             StateBrush = new SolidColorBrush(Color.FromRgb(0xFF, 0x44, 0x44));
         }
         else if (paused)
         {
-            StateLabel = "PAUZA";
+            StateLabel = T("FP_CTS_StatePaused", "PAUSED");
             StateBrush = new SolidColorBrush(Color.FromRgb(0xFF, 0xAA, 0x00));
         }
         else if (running)
         {
-            StateLabel = "PRACA";
+            StateLabel = T("FP_CTS_StateRunning", "RUNNING");
             StateBrush = new SolidColorBrush(Color.FromRgb(0x00, 0xFF, 0x44));
         }
         else
         {
-            StateLabel = "STOP";
+            StateLabel = T("FP_CTS_StateStopped", "STOP");
             StateBrush = new SolidColorBrush(Color.FromRgb(0x88, 0x88, 0x88));
         }
     }
@@ -146,7 +160,7 @@ public partial class CTSChamberFrontPanelViewModel : ObservableObject
     [RelayCommand]
     private async Task ReadTemperatureAsync()
     {
-        if (!_driver.IsConnected) { StatusText = "Nie połączono"; return; }
+        if (!_driver.IsConnected) { StatusText = T("FP_NotConnected", "Not connected"); return; }
         await RefreshTemperatureAsync();
         await RefreshStateAsync();
     }
@@ -154,105 +168,106 @@ public partial class CTSChamberFrontPanelViewModel : ObservableObject
     [RelayCommand]
     private async Task ChamberStartAsync()
     {
-        if (!_driver.IsConnected) { StatusText = "Nie połączono"; return; }
+        if (!_driver.IsConnected) { StatusText = T("FP_NotConnected", "Not connected"); return; }
         try
         {
             await _driver.ChamberStartAsync();
             IsRunning  = true;
             IsPaused   = false;
-            StateLabel = "PRACA";
+            StateLabel = T("FP_CTS_StateRunning", "RUNNING");
             StateBrush = new SolidColorBrush(Color.FromRgb(0x00, 0xFF, 0x44));
         }
-        catch (Exception ex) { StatusText = $"Błąd Start: {ex.Message}"; }
+        catch (Exception ex) { StatusText = T("FP_CTS_ErrStart", "Start error: {0}", ex.Message); }
     }
 
     [RelayCommand]
     private async Task ChamberStopAsync()
     {
-        if (!_driver.IsConnected) { StatusText = "Nie połączono"; return; }
+        if (!_driver.IsConnected) { StatusText = T("FP_NotConnected", "Not connected"); return; }
         try
         {
             await _driver.ChamberStopAsync();
             IsRunning  = false;
             IsPaused   = false;
-            StateLabel = "STOP";
+            StateLabel = T("FP_CTS_StateStopped", "STOP");
             StateBrush = new SolidColorBrush(Color.FromRgb(0x88, 0x88, 0x88));
         }
-        catch (Exception ex) { StatusText = $"Błąd Stop: {ex.Message}"; }
+        catch (Exception ex) { StatusText = T("FP_CTS_ErrStop", "Stop error: {0}", ex.Message); }
     }
 
     [RelayCommand]
     private async Task ChamberPauseAsync()
     {
-        if (!_driver.IsConnected) { StatusText = "Nie połączono"; return; }
+        if (!_driver.IsConnected) { StatusText = T("FP_NotConnected", "Not connected"); return; }
         try
         {
             await _driver.ChamberPauseAsync();
             IsPaused   = true;
-            StateLabel = "PAUZA";
+            StateLabel = T("FP_CTS_StatePaused", "PAUSED");
             StateBrush = new SolidColorBrush(Color.FromRgb(0xFF, 0xAA, 0x00));
         }
-        catch (Exception ex) { StatusText = $"Błąd Pauza: {ex.Message}"; }
+        catch (Exception ex) { StatusText = T("FP_CTS_ErrPause", "Pause error: {0}", ex.Message); }
     }
 
     [RelayCommand]
     private async Task ChamberResumeAsync()
     {
-        if (!_driver.IsConnected) { StatusText = "Nie połączono"; return; }
+        if (!_driver.IsConnected) { StatusText = T("FP_NotConnected", "Not connected"); return; }
         try
         {
             await _driver.ChamberResumeAsync();
             IsPaused   = false;
             IsRunning  = true;
-            StateLabel = "PRACA";
+            StateLabel = T("FP_CTS_StateRunning", "RUNNING");
             StateBrush = new SolidColorBrush(Color.FromRgb(0x00, 0xFF, 0x44));
         }
-        catch (Exception ex) { StatusText = $"Błąd Wznów: {ex.Message}"; }
+        catch (Exception ex) { StatusText = T("FP_CTS_ErrResume", "Resume error: {0}", ex.Message); }
     }
 
     [RelayCommand]
     private async Task ApplyTemperatureAsync()
     {
-        if (!_driver.IsConnected) { StatusText = "Nie połączono"; return; }
+        if (!_driver.IsConnected) { StatusText = T("FP_NotConnected", "Not connected"); return; }
         if (!double.TryParse(TemperatureSetpoint.Replace(',', '.'),
                 NumberStyles.Float, CultureInfo.InvariantCulture, out double t)
             || t < -75 || t > 185)
         {
-            StatusText = "Nieprawidłowa temperatura (−75 … 185 °C)";
+            StatusText = T("FP_CTS_InvalidTemp", "Invalid temperature (−75 … 185 °C)");
             return;
         }
         try
         {
             await _driver.SetTemperatureAsync(t);
             DisplaySetpoint = t.ToString("+0.0;-0.0", CultureInfo.InvariantCulture);
-            StatusText = $"Temperatura zadana: {t:F1} °C";
+            StatusText = T("FP_CTS_TempSet", "Setpoint temperature: {0} °C", t.ToString("F1", CultureInfo.InvariantCulture));
         }
-        catch (Exception ex) { StatusText = $"Błąd SetTemp: {ex.Message}"; }
+        catch (Exception ex) { StatusText = T("FP_CTS_ErrSetTemp", "SetTemp error: {0}", ex.Message); }
     }
 
     [RelayCommand]
     private async Task ApplyRampAsync()
     {
-        if (!_driver.IsConnected) { StatusText = "Nie połączono"; return; }
+        if (!_driver.IsConnected) { StatusText = T("FP_NotConnected", "Not connected"); return; }
         if (!double.TryParse(RampUpInput.Replace(',', '.'),
                 NumberStyles.Float, CultureInfo.InvariantCulture, out double up) || up < 0.01)
         {
-            StatusText = "Nieprawidłowy gradient wzrostu (≥ 0.01 K/min)";
+            StatusText = T("FP_CTS_InvalidRampUp", "Invalid ramp-up gradient (≥ 0.01 K/min)");
             return;
         }
         if (!double.TryParse(RampDownInput.Replace(',', '.'),
                 NumberStyles.Float, CultureInfo.InvariantCulture, out double down) || down < 0.01)
         {
-            StatusText = "Nieprawidłowy gradient spadku (≥ 0.01 K/min)";
+            StatusText = T("FP_CTS_InvalidRampDown", "Invalid ramp-down gradient (≥ 0.01 K/min)");
             return;
         }
         try
         {
             await _driver.SetRampUpAsync(up);
             await _driver.SetRampDownAsync(down);
-            StatusText = $"Gradienty: wzrost={up:F1} K/min, spadek={down:F1} K/min";
+            StatusText = T("FP_CTS_RampSet", "Gradients: up={0} K/min, down={1} K/min",
+                up.ToString("F1", CultureInfo.InvariantCulture), down.ToString("F1", CultureInfo.InvariantCulture));
         }
-        catch (Exception ex) { StatusText = $"Błąd SetRamp: {ex.Message}"; }
+        catch (Exception ex) { StatusText = T("FP_CTS_ErrSetRamp", "SetRamp error: {0}", ex.Message); }
     }
 
     [RelayCommand(AllowConcurrentExecutions = true)]
@@ -264,7 +279,7 @@ public partial class CTSChamberFrontPanelViewModel : ObservableObject
             return;
         }
 
-        if (!_driver.IsConnected) { StatusText = "Nie połączono"; return; }
+        if (!_driver.IsConnected) { StatusText = T("FP_NotConnected", "Not connected"); return; }
 
         IsContinuous   = true;
         _continuousCts = new CancellationTokenSource();
@@ -284,11 +299,17 @@ public partial class CTSChamberFrontPanelViewModel : ObservableObject
         finally
         {
             IsContinuous = false;
-            StatusText   = $"Auto-pomiar zatrzymany  {DateTime.Now:HH:mm:ss}";
+            StatusText   = T("FP_CTS_AutoMeasureStopped", "Auto-measure stopped {0}", DateTime.Now.ToString("HH:mm:ss"));
         }
     }
 
     private static string FpConnected(bool connected) => connected
-        ? System.Windows.Application.Current?.TryFindResource("FP_Connected") as string ?? "Connected"
-        : System.Windows.Application.Current?.TryFindResource("FP_NotConnected") as string ?? "Not connected";
+        ? T("FP_Connected", "Connected")
+        : T("FP_NotConnected", "Not connected");
+
+    private static string T(string key, string fallback) =>
+        System.Windows.Application.Current?.TryFindResource(key) as string ?? fallback;
+
+    private static string T(string key, string fallback, params object[] args) =>
+        string.Format(T(key, fallback), args);
 }

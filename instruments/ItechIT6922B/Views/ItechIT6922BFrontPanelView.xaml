@@ -6,21 +6,24 @@
              mc:Ignorable="d"
              d:DesignHeight="700" d:DesignWidth="780"
              MinWidth="660" MinHeight="560"
-             Background="#262A3E">
+             Background="#F0F2F8">
 
     <UserControl.Resources>
         <BooleanToVisibilityConverter x:Key="BoolToVis"/>
 
-        <SolidColorBrush x:Key="PanelBg"        Color="#262A3E"/>
-        <SolidColorBrush x:Key="BezelBg"         Color="#1E2240"/>
-        <SolidColorBrush x:Key="DisplayBg"       Color="#000000"/>
-        <SolidColorBrush x:Key="DisplayGreen"    Color="#00FF7F"/>
-        <SolidColorBrush x:Key="DisplayDimGreen" Color="#003A1A"/>
-        <SolidColorBrush x:Key="SectionBg"       Color="#323658"/>
-        <SolidColorBrush x:Key="BorderColor"     Color="#505880"/>
-        <SolidColorBrush x:Key="LabelFg"         Color="#B0BAD8"/>
+        <!-- ── Colours: light ITECH theme (dark navy/blue text on light panels,
+             LCD readout keeps an authentic black background with green digits) ── -->
+        <SolidColorBrush x:Key="PanelBg"        Color="#F0F2F8"/>
+        <SolidColorBrush x:Key="BezelBg"         Color="#E2E6F0"/>
+        <SolidColorBrush x:Key="DisplayBg"       Color="#060606"/>
+        <SolidColorBrush x:Key="DisplayGreen"    Color="#00E676"/>
+        <SolidColorBrush x:Key="DisplayDimGreen" Color="#0E5A2C"/>
+        <SolidColorBrush x:Key="SectionBg"       Color="#FFFFFF"/>
+        <SolidColorBrush x:Key="BorderColor"     Color="#C7CCDC"/>
+        <SolidColorBrush x:Key="LabelFg"         Color="#4B5372"/>
+        <SolidColorBrush x:Key="ValueFg"         Color="#16223D"/>
         <SolidColorBrush x:Key="ItechBlue"       Color="#0066CC"/>
-        <SolidColorBrush x:Key="StatusBg"        Color="#1E2240"/>
+        <SolidColorBrush x:Key="StatusBg"        Color="#E2E6F0"/>
 
         <Style x:Key="FieldLabel" TargetType="TextBlock">
             <Setter Property="Foreground" Value="{StaticResource LabelFg}"/>
@@ -33,12 +36,12 @@
             <Setter Property="Height" Value="26"/>
             <Setter Property="FontFamily" Value="Consolas"/>
             <Setter Property="FontSize" Value="12"/>
-            <Setter Property="Background" Value="#1C2038"/>
-            <Setter Property="Foreground" Value="#90C8FF"/>
+            <Setter Property="Background" Value="#FFFFFF"/>
+            <Setter Property="Foreground" Value="{StaticResource ValueFg}"/>
             <Setter Property="BorderBrush" Value="{StaticResource BorderColor}"/>
             <Setter Property="BorderThickness" Value="1"/>
             <Setter Property="Padding" Value="4,2"/>
-            <Setter Property="CaretBrush" Value="#90C8FF"/>
+            <Setter Property="CaretBrush" Value="{StaticResource ValueFg}"/>
         </Style>
 
         <Style x:Key="ActionBtn" TargetType="Button">
@@ -77,7 +80,7 @@
         </Style>
 
         <Style x:Key="SectionTitle" TargetType="TextBlock">
-            <Setter Property="Foreground" Value="#5599EE"/>
+            <Setter Property="Foreground" Value="#0A56B8"/>
             <Setter Property="FontSize" Value="9"/>
             <Setter Property="FontFamily" Value="Segoe UI"/>
             <Setter Property="FontWeight" Value="Bold"/>
@@ -102,7 +105,7 @@
             </Grid.RowDefinitions>
 
             <!-- ── Brand strip ─────────────────────────────────────────────── -->
-            <Border Grid.Row="0" Background="#161A2E" CornerRadius="5,5,0,0" Padding="14,8">
+            <Border Grid.Row="0" Background="#DCE2F2" CornerRadius="5,5,0,0" Padding="14,8">
                 <Grid>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="Auto"/>
@@ -112,17 +115,17 @@
                     <StackPanel Grid.Column="0" VerticalAlignment="Center">
                         <TextBlock Text="ITECH" Foreground="{StaticResource ItechBlue}"
                                    FontFamily="Arial" FontSize="12" FontWeight="Bold"/>
-                        <TextBlock Text="Electronic" Foreground="#4488CC"
+                        <TextBlock Text="Electronic" Foreground="#4B6FA8"
                                    FontFamily="Arial" FontSize="7"/>
                     </StackPanel>
                     <TextBlock Grid.Column="1" Text="IT6922B"
-                               Foreground="White" FontFamily="Arial" FontSize="24" FontWeight="Bold"
+                               Foreground="#16223D" FontFamily="Arial" FontSize="24" FontWeight="Bold"
                                HorizontalAlignment="Center" VerticalAlignment="Center"/>
                     <StackPanel Grid.Column="2" VerticalAlignment="Center">
-                        <TextBlock Text="PROGRAMMABLE" Foreground="#6688AA" FontSize="8" HorizontalAlignment="Right"/>
+                        <TextBlock Text="PROGRAMMABLE" Foreground="#5A6483" FontSize="8" HorizontalAlignment="Right"/>
                         <TextBlock Text="DC POWER SUPPLY" Foreground="{StaticResource ItechBlue}"
                                    FontSize="8" FontWeight="Bold" HorizontalAlignment="Right"/>
-                        <TextBlock Text="60V / 5A" Foreground="#88AACC" FontSize="9" HorizontalAlignment="Right"/>
+                        <TextBlock Text="60V / 5A" Foreground="#4B5372" FontSize="9" HorizontalAlignment="Right"/>
                     </StackPanel>
                 </Grid>
             </Border>
@@ -149,7 +152,7 @@
                                    FontFamily="Consolas" FontSize="38" FontWeight="Bold"
                                    HorizontalAlignment="Right">
                             <TextBlock.Effect>
-                                <DropShadowEffect Color="#00FF7F" BlurRadius="10" ShadowDepth="0" Opacity="0.4"/>
+                                <DropShadowEffect Color="#00E676" BlurRadius="10" ShadowDepth="0" Opacity="0.4"/>
                             </TextBlock.Effect>
                         </TextBlock>
                         <TextBlock Text="V" Foreground="{StaticResource DisplayGreen}"
@@ -165,7 +168,7 @@
                                    FontFamily="Consolas" FontSize="38" FontWeight="Bold"
                                    HorizontalAlignment="Right">
                             <TextBlock.Effect>
-                                <DropShadowEffect Color="#00FF7F" BlurRadius="10" ShadowDepth="0" Opacity="0.4"/>
+                                <DropShadowEffect Color="#00E676" BlurRadius="10" ShadowDepth="0" Opacity="0.4"/>
                             </TextBlock.Effect>
                         </TextBlock>
                         <TextBlock Text="A" Foreground="{StaticResource DisplayGreen}"
@@ -214,15 +217,15 @@
                     </Grid.ColumnDefinitions>
 
                     <StackPanel Grid.Column="0" Orientation="Vertical">
-                        <TextBlock Text="OUTPUT" Style="{StaticResource SectionTitle}"/>
+                        <TextBlock Text="{DynamicResource FP_IT6922B_Output}" Style="{StaticResource SectionTitle}"/>
                         <StackPanel Orientation="Horizontal">
                             <Ellipse Width="10" Height="10" VerticalAlignment="Center" Margin="0,0,8,0">
                                 <Ellipse.Style>
                                     <Style TargetType="Ellipse">
-                                        <Setter Property="Fill" Value="#441111"/>
+                                        <Setter Property="Fill" Value="#C7CCDC"/>
                                         <Style.Triggers>
                                             <DataTrigger Binding="{Binding OutputEnabled}" Value="True">
-                                                <Setter Property="Fill" Value="#00FF44"/>
+                                                <Setter Property="Fill" Value="#00B24A"/>
                                             </DataTrigger>
                                         </Style.Triggers>
                                     </Style>
@@ -232,11 +235,11 @@
                                 <TextBlock.Style>
                                     <Style TargetType="TextBlock">
                                         <Setter Property="Text" Value="OFF"/>
-                                        <Setter Property="Foreground" Value="#884444"/>
+                                        <Setter Property="Foreground" Value="#8A93AC"/>
                                         <Style.Triggers>
                                             <DataTrigger Binding="{Binding OutputEnabled}" Value="True">
                                                 <Setter Property="Text" Value="ON"/>
-                                                <Setter Property="Foreground" Value="#00FF44"/>
+                                                <Setter Property="Foreground" Value="#00993D"/>
                                             </DataTrigger>
                                         </Style.Triggers>
                                     </Style>
@@ -248,11 +251,11 @@
                     <StackPanel Grid.Column="2" Orientation="Horizontal" HorizontalAlignment="Right">
                         <Button Width="80" Command="{Binding OutputOnCommand}"
                                 Background="#006622" Foreground="White"
-                                Style="{StaticResource ActionBtn}" Content="OUTPUT ON"
+                                Style="{StaticResource ActionBtn}" Content="{DynamicResource FP_IT6922B_OutputOn}"
                                 FontSize="11" Margin="0,0,6,0"/>
                         <Button Width="80" Command="{Binding OutputOffCommand}"
                                 Background="#660022" Foreground="White"
-                                Style="{StaticResource ActionBtn}" Content="OUTPUT OFF"
+                                Style="{StaticResource ActionBtn}" Content="{DynamicResource FP_IT6922B_OutputOff}"
                                 FontSize="11"/>
                     </StackPanel>
                 </Grid>
@@ -271,7 +274,7 @@
 
                     <!-- Voltage -->
                     <StackPanel Grid.Column="0">
-                        <TextBlock Text="NAPIĘCIE WYJŚCIOWE" Style="{StaticResource SectionTitle}"/>
+                        <TextBlock Text="{DynamicResource FP_IT6922B_OutputVoltage}" Style="{StaticResource SectionTitle}"/>
                         <Grid>
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="Auto"/>
@@ -286,7 +289,7 @@
                                      Style="{StaticResource ValueBox}"/>
                             <TextBlock Grid.Column="2" Text="V"
                                        Style="{StaticResource FieldLabel}" Margin="4,0,8,0"/>
-                            <Button Grid.Column="3" Content="USTAW" Width="55"
+                            <Button Grid.Column="3" Content="{DynamicResource FP_IT6922B_Set}" Width="55"
                                     Background="{StaticResource ItechBlue}"
                                     Style="{StaticResource SmBtn}"
                                     Command="{Binding ApplyVoltageCommand}"/>
@@ -295,7 +298,7 @@
 
                     <!-- Current -->
                     <StackPanel Grid.Column="2">
-                        <TextBlock Text="LIMIT PRĄDU" Style="{StaticResource SectionTitle}"/>
+                        <TextBlock Text="{DynamicResource FP_IT6922B_CurrentLimit}" Style="{StaticResource SectionTitle}"/>
                         <Grid>
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="Auto"/>
@@ -310,7 +313,7 @@
                                      Style="{StaticResource ValueBox}"/>
                             <TextBlock Grid.Column="2" Text="A"
                                        Style="{StaticResource FieldLabel}" Margin="4,0,8,0"/>
-                            <Button Grid.Column="3" Content="USTAW" Width="55"
+                            <Button Grid.Column="3" Content="{DynamicResource FP_IT6922B_Set}" Width="55"
                                     Background="#006688"
                                     Style="{StaticResource SmBtn}"
                                     Command="{Binding ApplyCurrentCommand}"/>
@@ -330,7 +333,7 @@
                         <RowDefinition Height="Auto"/>
                     </Grid.RowDefinitions>
 
-                    <TextBlock Grid.Row="0" Text="OCHRONA" Style="{StaticResource SectionTitle}"/>
+                    <TextBlock Grid.Row="0" Text="{DynamicResource FP_IT6922B_Protection}" Style="{StaticResource SectionTitle}"/>
 
                     <Grid Grid.Row="2">
                         <Grid.ColumnDefinitions>
@@ -343,7 +346,7 @@
 
                         <!-- OVP -->
                         <StackPanel Grid.Column="0">
-                            <TextBlock Text="OVP (Nadnapięcie)" Foreground="#8866AA"
+                            <TextBlock Text="{DynamicResource FP_IT6922B_OvpLabel}" Foreground="#6A3FA0"
                                        FontSize="9" FontFamily="Segoe UI" Margin="0,0,0,4"/>
                             <Grid>
                                 <Grid.ColumnDefinitions>
@@ -370,7 +373,7 @@
 
                         <!-- OCP -->
                         <StackPanel Grid.Column="2">
-                            <TextBlock Text="OCP (Nadprąd)" Foreground="#884444"
+                            <TextBlock Text="{DynamicResource FP_IT6922B_OcpLabel}" Foreground="#A13030"
                                        FontSize="9" FontFamily="Segoe UI" Margin="0,0,0,4"/>
                             <Grid>
                                 <Grid.ColumnDefinitions>
@@ -396,7 +399,7 @@
                         </StackPanel>
 
                         <!-- Clear -->
-                        <Button Grid.Column="4" Content="CLR PROT" Width="80"
+                        <Button Grid.Column="4" Content="{DynamicResource FP_IT6922B_ClrProt}" Width="80"
                                 Background="#333344" Foreground="#AAAACC"
                                 Style="{StaticResource SmBtn}"
                                 Command="{Binding ClearProtectionCommand}"/>
@@ -423,11 +426,11 @@
                     <Button Grid.Column="0" Width="120" Command="{Binding ToggleContinuousCommand}">
                         <Button.Style>
                             <Style TargetType="Button" BasedOn="{StaticResource ActionBtn}">
-                                <Setter Property="Content" Value="▶  CIĄGŁY POMIAR"/>
+                                <Setter Property="Content" Value="{DynamicResource FP_IT6922B_ContinuousStart}"/>
                                 <Setter Property="Background" Value="{StaticResource ItechBlue}"/>
                                 <Style.Triggers>
                                     <DataTrigger Binding="{Binding IsContinuous}" Value="True">
-                                        <Setter Property="Content" Value="■  STOP"/>
+                                        <Setter Property="Content" Value="{DynamicResource FP_IT6922B_ContinuousStop}"/>
                                         <Setter Property="Background" Value="#880022"/>
                                     </DataTrigger>
                                 </Style.Triggers>
@@ -440,13 +443,13 @@
                     <ComboBox Grid.Column="4"
                               ItemsSource="{Binding Intervals}"
                               SelectedItem="{Binding SelectedInterval}"
-                              Height="26" Background="#1C2038" Foreground="#90C8FF"
+                              Height="26" Background="#FFFFFF" Foreground="{StaticResource ValueFg}"
                               BorderBrush="{StaticResource BorderColor}"
                               FontFamily="Consolas"/>
                     <TextBlock Grid.Column="5" Text="ms"
                                Style="{StaticResource FieldLabel}" Margin="4,0,0,0"/>
 
-                    <Button Grid.Column="7" Content="▶ LIVE" Width="60" Height="26"
+                    <Button Grid.Column="7" Content="{DynamicResource FP_IT6922B_Live}" Width="60" Height="26"
                             Background="#004455" Foreground="#80E8FF"
                             Style="{StaticResource SmBtn}"
                             Command="{Binding OpenLiveWindowCommand}"/>
@@ -462,15 +465,15 @@
                     <ColumnDefinition Width="10"/>
                     <ColumnDefinition Width="120"/>
                 </Grid.ColumnDefinitions>
-                <Button Grid.Column="0" Content="▶  POMIAR JEDNORAZOWY"
+                <Button Grid.Column="0" Content="{DynamicResource FP_IT6922B_MeasureOnce}"
                         Style="{StaticResource ActionBtn}"
                         Background="#003366"
                         Command="{Binding MeasureOnceCommand}"/>
-                <Button Grid.Column="2" Content="⟳  ODCZYT NASTAW"
+                <Button Grid.Column="2" Content="{DynamicResource FP_IT6922B_ReadSetpoints}"
                         Style="{StaticResource ActionBtn}"
                         Background="#1A2040"
                         Command="{Binding ReadSetpointsCommand}"/>
-                <Button Grid.Column="4" Content="⟳  RESET"
+                <Button Grid.Column="4" Content="{DynamicResource FP_IT6922B_Reset}"
                         Style="{StaticResource ActionBtn}"
                         Background="#440011"
                         Command="{Binding ResetCommand}"/>
@@ -489,7 +492,7 @@
                     <Ellipse Grid.Column="0" Width="8" Height="8" VerticalAlignment="Center" Margin="0,0,6,0">
                         <Ellipse.Style>
                             <Style TargetType="Ellipse">
-                                <Setter Property="Fill" Value="#333355"/>
+                                <Setter Property="Fill" Value="#AEB4C8"/>
                                 <Style.Triggers>
                                     <DataTrigger Binding="{Binding IsConnected}" Value="True">
                                         <Setter Property="Fill" Value="{StaticResource ItechBlue}"/>
@@ -505,7 +508,7 @@
                                VerticalAlignment="Center" TextTrimming="CharacterEllipsis"/>
                     <TextBlock Grid.Column="2"
                                Text="ITECH IT6922B  |  60V / 5A"
-                               Foreground="#445566" FontFamily="Consolas" FontSize="9"
+                               Foreground="#5A6483" FontFamily="Consolas" FontSize="9"
                                VerticalAlignment="Center"/>
                 </Grid>
             </Border>

@@ -6,21 +6,24 @@
              mc:Ignorable="d"
              d:DesignHeight="680" d:DesignWidth="700"
              MinWidth="580" MinHeight="560"
-             Background="#252840">
+             Background="#F0F2F8">
 
     <UserControl.Resources>
         <BooleanToVisibilityConverter x:Key="BoolToVis"/>
 
-        <SolidColorBrush x:Key="PanelBg"      Color="#252840"/>
-        <SolidColorBrush x:Key="SectionBg"    Color="#303355"/>
-        <SolidColorBrush x:Key="BorderColor"  Color="#505880"/>
-        <SolidColorBrush x:Key="LabelFg"      Color="#B0BAD8"/>
-        <SolidColorBrush x:Key="DisplayBg"    Color="#000000"/>
+        <!-- ── Colours: light theme (dark text on light panels; the temperature
+             readouts keep an authentic black LCD background) ── -->
+        <SolidColorBrush x:Key="PanelBg"      Color="#F0F2F8"/>
+        <SolidColorBrush x:Key="SectionBg"    Color="#FFFFFF"/>
+        <SolidColorBrush x:Key="BorderColor"  Color="#C7CCDC"/>
+        <SolidColorBrush x:Key="LabelFg"      Color="#4B5372"/>
+        <SolidColorBrush x:Key="ValueFg"      Color="#16223D"/>
+        <SolidColorBrush x:Key="DisplayBg"    Color="#060606"/>
         <SolidColorBrush x:Key="AmberFg"      Color="#FF9900"/>
-        <SolidColorBrush x:Key="GreenFg"      Color="#00FF7F"/>
-        <SolidColorBrush x:Key="DimAmber"     Color="#402800"/>
-        <SolidColorBrush x:Key="DimGreen"     Color="#003A1A"/>
-        <SolidColorBrush x:Key="StatusBg"     Color="#1E2040"/>
+        <SolidColorBrush x:Key="GreenFg"      Color="#00E676"/>
+        <SolidColorBrush x:Key="DimAmber"     Color="#7A4A00"/>
+        <SolidColorBrush x:Key="DimGreen"     Color="#0E5A2C"/>
+        <SolidColorBrush x:Key="StatusBg"     Color="#E2E6F0"/>
         <SolidColorBrush x:Key="CTSOrange"    Color="#E05A00"/>
 
         <Style x:Key="FieldLabel" TargetType="TextBlock">
@@ -34,12 +37,12 @@
             <Setter Property="Height" Value="26"/>
             <Setter Property="FontFamily" Value="Consolas"/>
             <Setter Property="FontSize" Value="12"/>
-            <Setter Property="Background" Value="#1C2038"/>
-            <Setter Property="Foreground" Value="#80C0FF"/>
+            <Setter Property="Background" Value="#FFFFFF"/>
+            <Setter Property="Foreground" Value="{StaticResource ValueFg}"/>
             <Setter Property="BorderBrush" Value="{StaticResource BorderColor}"/>
             <Setter Property="BorderThickness" Value="1"/>
             <Setter Property="Padding" Value="4,2"/>
-            <Setter Property="CaretBrush" Value="#80C0FF"/>
+            <Setter Property="CaretBrush" Value="{StaticResource ValueFg}"/>
             <Setter Property="VerticalContentAlignment" Value="Center"/>
         </Style>
 
@@ -77,8 +80,13 @@
             <Setter Property="FontFamily" Value="Segoe UI"/>
             <Setter Property="FontSize" Value="10"/>
             <Setter Property="FontWeight" Value="SemiBold"/>
-            <Setter Property="Foreground" Value="#8898C8"/>
+            <Setter Property="Foreground" Value="#0A56B8"/>
             <Setter Property="Margin" Value="0,0,0,6"/>
+        </Style>
+
+        <!-- Same role as SectionHeader but for labels sitting on the black LCD panels -->
+        <Style x:Key="DisplayHeader" TargetType="TextBlock" BasedOn="{StaticResource SectionHeader}">
+            <Setter Property="Foreground" Value="#8AA0D8"/>
         </Style>
 
     </UserControl.Resources>
@@ -95,7 +103,7 @@
         </Grid.RowDefinitions>
 
         <!-- ── Header ──────────────────────────────────────────────────────── -->
-        <Border Grid.Row="0" Background="#1E2040" CornerRadius="6" Padding="12,8" Margin="0,0,0,8">
+        <Border Grid.Row="0" Background="#DCE2F2" CornerRadius="6" Padding="12,8" Margin="0,0,0,8">
             <Grid>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="Auto"/>
@@ -105,15 +113,12 @@
 
                 <StackPanel Grid.Column="0" Orientation="Horizontal" VerticalAlignment="Center">
                     <Ellipse Width="10" Height="10" Margin="0,0,8,0">
-                        <Ellipse.Fill>
-                            <SolidColorBrush Color="{Binding IsConnected, Converter={x:Null}}" />
-                        </Ellipse.Fill>
                         <Ellipse.Style>
                             <Style TargetType="Ellipse">
-                                <Setter Property="Fill" Value="#444"/>
+                                <Setter Property="Fill" Value="#AEB4C8"/>
                                 <Style.Triggers>
                                     <DataTrigger Binding="{Binding IsConnected}" Value="True">
-                                        <Setter Property="Fill" Value="#00FF44"/>
+                                        <Setter Property="Fill" Value="#00B24A"/>
                                     </DataTrigger>
                                 </Style.Triggers>
                             </Style>
@@ -121,16 +126,16 @@
                     </Ellipse>
                     <TextBlock Text="CTS" Foreground="{StaticResource CTSOrange}"
                                FontFamily="Segoe UI" FontSize="18" FontWeight="Bold"/>
-                    <TextBlock Text=" T-40/50" Foreground="#D0D8F0"
+                    <TextBlock Text=" T-40/50" Foreground="#16223D"
                                FontFamily="Segoe UI" FontSize="18" FontWeight="Light"/>
                 </StackPanel>
 
-                <TextBlock Grid.Column="1" Text="Komora Środowiskowa" Foreground="#606880"
+                <TextBlock Grid.Column="1" Text="{DynamicResource FP_CTS_ChamberTitle}" Foreground="#5A6483"
                            FontFamily="Segoe UI" FontSize="11" VerticalAlignment="Center"
                            HorizontalAlignment="Center"/>
 
                 <TextBlock Grid.Column="2" Text="RS-232 · 19200 · O/8/1"
-                           Foreground="#404860" FontFamily="Consolas" FontSize="10"
+                           Foreground="#5A6483" FontFamily="Consolas" FontSize="10"
                            VerticalAlignment="Center"/>
             </Grid>
         </Border>
@@ -148,7 +153,7 @@
                     BorderBrush="{StaticResource BorderColor}" BorderThickness="1"
                     CornerRadius="4" Padding="12,10">
                 <StackPanel>
-                    <TextBlock Text="TEMPERATURA AKTUALNA" Style="{StaticResource SectionHeader}"
+                    <TextBlock Text="TEMPERATURA AKTUALNA" Style="{StaticResource DisplayHeader}"
                                HorizontalAlignment="Center"/>
                     <TextBlock Text="{Binding DisplayActual}"
                                FontFamily="Consolas" FontSize="42" FontWeight="Bold"
@@ -165,7 +170,7 @@
                     BorderBrush="{StaticResource BorderColor}" BorderThickness="1"
                     CornerRadius="4" Padding="12,10">
                 <StackPanel>
-                    <TextBlock Text="TEMPERATURA ZADANA" Style="{StaticResource SectionHeader}"
+                    <TextBlock Text="TEMPERATURA ZADANA" Style="{StaticResource DisplayHeader}"
                                HorizontalAlignment="Center"/>
                     <TextBlock Text="{Binding DisplaySetpoint}"
                                FontFamily="Consolas" FontSize="42" FontWeight="Bold"
@@ -188,7 +193,7 @@
                     <RowDefinition Height="Auto"/>
                 </Grid.RowDefinitions>
 
-                <TextBlock Grid.Row="0" Text="STEROWANIE KOMORĄ" Style="{StaticResource SectionHeader}"/>
+                <TextBlock Grid.Row="0" Text="{DynamicResource FP_CTS_ChamberControl}" Style="{StaticResource SectionHeader}"/>
 
                 <Grid Grid.Row="1">
                     <Grid.ColumnDefinitions>
@@ -203,22 +208,22 @@
                         <ColumnDefinition Width="80"/>
                     </Grid.ColumnDefinitions>
 
-                    <Button Grid.Column="0" Content="START"
+                    <Button Grid.Column="0" Content="{DynamicResource FP_CTS_Start}"
                             Background="#007A2F" Style="{StaticResource ActionBtn}"
                             Command="{Binding ChamberStartCommand}"
                             IsEnabled="{Binding IsConnected}"/>
 
-                    <Button Grid.Column="2" Content="STOP"
+                    <Button Grid.Column="2" Content="{DynamicResource FP_CTS_Stop}"
                             Background="#AA1515" Style="{StaticResource ActionBtn}"
                             Command="{Binding ChamberStopCommand}"
                             IsEnabled="{Binding IsConnected}"/>
 
-                    <Button Grid.Column="4" Content="PAUZA"
+                    <Button Grid.Column="4" Content="{DynamicResource FP_CTS_Pause}"
                             Background="#996600" Style="{StaticResource ActionBtn}"
                             Command="{Binding ChamberPauseCommand}"
                             IsEnabled="{Binding IsConnected}"/>
 
-                    <Button Grid.Column="6" Content="WZNÓW"
+                    <Button Grid.Column="6" Content="{DynamicResource FP_CTS_Resume}"
                             Background="#006688" Style="{StaticResource ActionBtn}"
                             Command="{Binding ChamberResumeCommand}"
                             IsEnabled="{Binding IsConnected}"/>
@@ -254,7 +259,7 @@
                 </Grid.RowDefinitions>
 
                 <!-- Temperature setpoint -->
-                <TextBlock Grid.Row="0" Text="USTAWIANIE TEMPERATURY"
+                <TextBlock Grid.Row="0" Text="{DynamicResource FP_CTS_TempSetting}"
                            Style="{StaticResource SectionHeader}"/>
                 <Grid Grid.Row="1">
                     <Grid.ColumnDefinitions>
@@ -264,20 +269,20 @@
                         <ColumnDefinition Width="*"/>
                         <ColumnDefinition Width="100"/>
                     </Grid.ColumnDefinitions>
-                    <TextBlock Grid.Column="0" Text="Temperatura zadana:" Margin="0,0,8,0"
+                    <TextBlock Grid.Column="0" Text="{DynamicResource FP_CTS_SetpointLabel}" Margin="0,0,8,0"
                                Style="{StaticResource FieldLabel}"/>
                     <TextBox Grid.Column="1" Text="{Binding TemperatureSetpoint, UpdateSourceTrigger=PropertyChanged}"
                              Style="{StaticResource ValueBox}"/>
                     <TextBlock Grid.Column="2" Text=" °C" Margin="4,0,0,0"
                                Style="{StaticResource FieldLabel}"/>
-                    <Button Grid.Column="4" Content="Ustaw temp."
+                    <Button Grid.Column="4" Content="{DynamicResource FP_CTS_SetTempBtn}"
                             Background="{StaticResource CTSOrange}" Style="{StaticResource ActionBtn}"
                             Command="{Binding ApplyTemperatureCommand}"
                             IsEnabled="{Binding IsConnected}"/>
                 </Grid>
 
                 <!-- Ramp gradients -->
-                <TextBlock Grid.Row="3" Text="GRADIENTY TEMPERATURY" Margin="0,0,0,6"
+                <TextBlock Grid.Row="3" Text="{DynamicResource FP_CTS_TempGradients}" Margin="0,0,0,6"
                            Style="{StaticResource SectionHeader}"/>
                 <Grid Grid.Row="4">
                     <Grid.ColumnDefinitions>
@@ -291,19 +296,19 @@
                         <ColumnDefinition Width="*"/>
                         <ColumnDefinition Width="100"/>
                     </Grid.ColumnDefinitions>
-                    <TextBlock Grid.Column="0" Text="Wzrost:" Margin="0,0,6,0"
+                    <TextBlock Grid.Column="0" Text="{DynamicResource FP_CTS_RampUpLabel}" Margin="0,0,6,0"
                                Style="{StaticResource FieldLabel}"/>
                     <TextBox Grid.Column="1" Text="{Binding RampUpInput, UpdateSourceTrigger=PropertyChanged}"
                              Style="{StaticResource ValueBox}"/>
                     <TextBlock Grid.Column="2" Text=" K/min" Margin="4,0,0,0"
                                Style="{StaticResource FieldLabel}"/>
-                    <TextBlock Grid.Column="4" Text="Spadek:" Margin="0,0,6,0"
+                    <TextBlock Grid.Column="4" Text="{DynamicResource FP_CTS_RampDownLabel}" Margin="0,0,6,0"
                                Style="{StaticResource FieldLabel}"/>
                     <TextBox Grid.Column="5" Text="{Binding RampDownInput, UpdateSourceTrigger=PropertyChanged}"
                              Style="{StaticResource ValueBox}"/>
                     <TextBlock Grid.Column="6" Text=" K/min" Margin="4,0,0,0"
                                Style="{StaticResource FieldLabel}"/>
-                    <Button Grid.Column="8" Content="Ustaw gradienty"
+                    <Button Grid.Column="8" Content="{DynamicResource FP_CTS_SetGradientsBtn}"
                             Background="#005588" Style="{StaticResource ActionBtn}"
                             Command="{Binding ApplyRampCommand}"
                             IsEnabled="{Binding IsConnected}"/>
@@ -321,7 +326,7 @@
                     <RowDefinition Height="Auto"/>
                 </Grid.RowDefinitions>
 
-                <TextBlock Grid.Row="0" Text="ODCZYT" Style="{StaticResource SectionHeader}"/>
+                <TextBlock Grid.Row="0" Text="{DynamicResource FP_CTS_Read}" Style="{StaticResource SectionHeader}"/>
 
                 <Grid Grid.Row="1">
                     <Grid.ColumnDefinitions>
@@ -333,7 +338,7 @@
                         <ColumnDefinition Width="120"/>
                     </Grid.ColumnDefinitions>
 
-                    <Button Grid.Column="0" Content="Odczytaj raz"
+                    <Button Grid.Column="0" Content="{DynamicResource FP_CTS_ReadOnce}"
                             Background="#444E6A" Style="{StaticResource ActionBtn}"
                             Command="{Binding ReadTemperatureCommand}"
                             IsEnabled="{Binding IsConnected}"/>
@@ -344,7 +349,7 @@
                     <ComboBox Grid.Column="3" Height="26"
                               ItemsSource="{Binding Intervals}"
                               SelectedItem="{Binding SelectedInterval}"
-                              Background="#1C2038" Foreground="#90C8FF"
+                              Background="#FFFFFF" Foreground="{StaticResource ValueFg}"
                               BorderBrush="{StaticResource BorderColor}"
                               FontFamily="Consolas" FontSize="12"/>
 
@@ -356,11 +361,11 @@
                             IsEnabled="{Binding IsConnected}">
                         <Button.Style>
                             <Style TargetType="Button" BasedOn="{StaticResource ActionBtn}">
-                                <Setter Property="Content" Value="Auto-odczyt: WŁ"/>
+                                <Setter Property="Content" Value="{DynamicResource FP_CTS_AutoReadOn}"/>
                                 <Setter Property="Background" Value="#006030"/>
                                 <Style.Triggers>
                                     <DataTrigger Binding="{Binding IsContinuous}" Value="True">
-                                        <Setter Property="Content" Value="Auto-odczyt: STOP"/>
+                                        <Setter Property="Content" Value="{DynamicResource FP_CTS_AutoReadStop}"/>
                                         <Setter Property="Background" Value="#802020"/>
                                     </DataTrigger>
                                 </Style.Triggers>
@@ -384,7 +389,7 @@
                     <ColumnDefinition Width="Auto"/>
                 </Grid.ColumnDefinitions>
                 <TextBlock Grid.Column="0" Text="{Binding StatusText}"
-                           Foreground="#8090B0" FontFamily="Consolas" FontSize="11"
+                           Foreground="{StaticResource LabelFg}" FontFamily="Consolas" FontSize="11"
                            TextTrimming="CharacterEllipsis" VerticalAlignment="Center"/>
                 <ProgressBar Grid.Column="1" Width="60" Height="4" Margin="8,0,0,0"
                              IsIndeterminate="True"

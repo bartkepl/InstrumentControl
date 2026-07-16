@@ -19,6 +19,7 @@ public partial class HP34401AFrontPanelView : UserControl
 
         // Set initial checked state after DataContext is set
         Loaded += OnLoaded;
+        Unloaded += (_, _) => ViewModel.Detach();
     }
 
     private void OnLoaded(object sender, RoutedEventArgs e)

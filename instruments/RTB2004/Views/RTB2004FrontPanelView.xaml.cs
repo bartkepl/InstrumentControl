@@ -10,6 +10,8 @@ public partial class RTB2004FrontPanelView : UserControl
     {
         Driver = driver;
         InitializeComponent();
-        DataContext = new RTB2004FrontPanelViewModel(driver);
+        var vm = new RTB2004FrontPanelViewModel(driver);
+        DataContext = vm;
+        Unloaded += (_, _) => vm.Detach();
     }
 }

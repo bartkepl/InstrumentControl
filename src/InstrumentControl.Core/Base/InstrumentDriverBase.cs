@@ -1,6 +1,7 @@
 using System.Windows;
 using InstrumentControl.Core.Interfaces;
 using InstrumentControl.Core.Models;
+using InstrumentControl.Core.Services;
 
 namespace InstrumentControl.Core.Base;
 
@@ -8,6 +9,13 @@ public abstract class InstrumentDriverBase : IInstrumentDriver
 {
     protected IConnectionProvider? Connection;
     private bool _disposed;
+
+    // Keeps every measurement raised by this driver (single-shot or continuous)
+    // so UI such as the Live window can show the full history since connection,
+    // not just what arrived while that window happened to be open.
+    private const int MaxHistoryEntries = 5000;
+    private readonly object _historyLock = new();
+    private readonly List<MeasurementResult> _measurementHistory = new();
 
     public abstract string DriverName { get; }
     public abstract string Manufacturer { get; }
@@ -94,8 +102,31 @@ public abstract class InstrumentDriverBase : IInstrumentDriver
             System.Globalization.CultureInfo.InvariantCulture, out double v) ? v : double.NaN;
     }
 
-    protected void RaiseMeasurement(MeasurementResult result) =>
+    /// <summary>All measurements recorded so far (single-shot and continuous), oldest first.</summary>
+    public IReadOnlyList<MeasurementResult> MeasurementHistory
+    {
+        get { lock (_historyLock) return _measurementHistory.ToArray(); }
+    }
+
+    public void ClearMeasurementHistory()
+    {
+        lock (_historyLock) _measurementHistory.Clear();
+    }
+
+    protected void RaiseMeasurement(MeasurementResult result)
+    {
+        lock (_historyLock)
+        {
+            _measurementHistory.Add(result);
+            if (_measurementHistory.Count > MaxHistoryEntries)
+                _measurementHistory.RemoveAt(0);
+        }
+        // Fire-and-forget: the CSV write (disk flush) must never block the caller —
+        // MeasureXAsync() call chains resume on the UI thread, and a slow/AV-scanned
+        // disk shouldn't be able to stall a fast continuous-measurement loop.
+        _ = Task.Run(() => MeasurementLogService.Log(result));
         MeasurementReceived?.Invoke(this, result);
+    }
 
     protected void RaiseStatus(string msg) =>
         StatusChanged?.Invoke(this, msg);

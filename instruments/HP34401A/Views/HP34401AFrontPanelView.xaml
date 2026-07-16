@@ -318,7 +318,7 @@
 
             <!-- ── Function buttons (2 × 5) ──────────────────────────────────── -->
             <StackPanel Grid.Row="3" Margin="14,2,14,0">
-                <TextBlock Text="FUNCTION" Style="{StaticResource SectionLabel}" Foreground="#0071BB"/>
+                <TextBlock Text="{DynamicResource FP_DMM_Function}" Style="{StaticResource SectionLabel}" Foreground="#0071BB"/>
                 <UniformGrid x:Name="FunctionButtonsPanel" Rows="2" Columns="5">
                     <ToggleButton Tag="DCV"    Style="{StaticResource FnButton}" Content="DCV"    Margin="2,1" Click="FunctionButton_Click"/>
                     <ToggleButton Tag="ACV"    Style="{StaticResource FnButton}" Content="ACV"    Margin="2,1" Click="FunctionButton_Click"/>
@@ -346,7 +346,7 @@
                         <ColumnDefinition Width="Auto"/>
                     </Grid.ColumnDefinitions>
 
-                    <TextBlock Grid.Column="0" Text="MATH"
+                    <TextBlock Grid.Column="0" Text="{DynamicResource FP_DMM_Math}"
                                Foreground="#8B4400" FontSize="9" FontWeight="Bold"
                                FontFamily="Segoe UI" VerticalAlignment="Center"/>
 
@@ -357,7 +357,7 @@
                         <ToggleButton Tag="MINMAX" Style="{StaticResource MathButton}" Content="MIN/MAX" Margin="2,1" Click="MathButton_Click"/>
                     </UniformGrid>
 
-                    <Button Grid.Column="3" Content="MATH OFF" Width="68" Height="24"
+                    <Button Grid.Column="3" Content="{DynamicResource FP_DMM_MathOff}" Width="68" Height="24"
                             Background="#808878" Foreground="White"
                             FontSize="9" FontFamily="Consolas" Margin="6,0,0,0"
                             Command="{Binding MathOffCommand}">
@@ -388,7 +388,7 @@
 
                 <!-- Range -->
                 <StackPanel Grid.Column="0">
-                    <TextBlock Text="RANGE" Style="{StaticResource SectionLabel}"/>
+                    <TextBlock Text="{DynamicResource FP_DMM_Range}" Style="{StaticResource SectionLabel}"/>
                     <UniformGrid x:Name="RangeButtonsPanel" Rows="1" Columns="6">
                         <ToggleButton Tag="AUTO" Style="{StaticResource RangeButton}" Content="AUTO" Margin="1" Click="RangeButton_Click"/>
                         <ToggleButton Tag="100m" Style="{StaticResource RangeButton}" Content="100m" Margin="1" Click="RangeButton_Click"/>
@@ -401,7 +401,7 @@
 
                 <!-- NPLC -->
                 <StackPanel Grid.Column="2">
-                    <TextBlock Text="NPLC" Style="{StaticResource SectionLabel}"/>
+                    <TextBlock Text="{DynamicResource FP_DMM_Nplc}" Style="{StaticResource SectionLabel}"/>
                     <UniformGrid x:Name="NplcButtonsPanel" Rows="1" Columns="5">
                         <ToggleButton Tag="0.02" Style="{StaticResource NplcButton}" Content="0.02" Margin="1" Click="NplcButton_Click"/>
                         <ToggleButton Tag="0.2"  Style="{StaticResource NplcButton}" Content="0.2"  Margin="1" Click="NplcButton_Click"/>
@@ -430,7 +430,7 @@
                         <ColumnDefinition Width="Auto"/>
                     </Grid.ColumnDefinitions>
 
-                    <TextBlock Grid.Column="0" Text="DISP"
+                    <TextBlock Grid.Column="0" Text="{DynamicResource FP_DMM_Disp}"
                                Foreground="#404040" FontSize="9" FontWeight="Bold"
                                FontFamily="Segoe UI" VerticalAlignment="Center"/>
 
@@ -440,12 +440,12 @@
                                   FontFamily="Consolas" FontSize="9" Cursor="Hand">
                         <ToggleButton.Style>
                             <Style TargetType="ToggleButton">
-                                <Setter Property="Content" Value="DISP OFF"/>
+                                <Setter Property="Content" Value="{DynamicResource FP_DMM_DispOff}"/>
                                 <Setter Property="Background" Value="#606060"/>
                                 <Setter Property="Foreground" Value="White"/>
                                 <Style.Triggers>
                                     <Trigger Property="IsChecked" Value="True">
-                                        <Setter Property="Content" Value="DISP ON"/>
+                                        <Setter Property="Content" Value="{DynamicResource FP_DMM_DispOn}"/>
                                         <Setter Property="Background" Value="#005590"/>
                                     </Trigger>
                                 </Style.Triggers>
@@ -492,7 +492,7 @@
                         </Button.Template>
                     </Button>
 
-                    <Button Grid.Column="8" Content="CLR" Width="38" Height="24"
+                    <Button Grid.Column="8" Content="{DynamicResource FP_DMM_Clr}" Width="38" Height="24"
                             Background="#808878" Foreground="White" FontSize="10"
                             Command="{Binding ClearDisplayCommand}">
                         <Button.Template>
@@ -535,7 +535,7 @@
                     </Grid.ColumnDefinitions>
 
                     <!-- Auto-zero -->
-                    <TextBlock Grid.Column="0" Text="ZERO:AUTO"
+                    <TextBlock Grid.Column="0" Text="{DynamicResource FP_DMM_ZeroAuto}"
                                Foreground="#404040" FontSize="9" FontWeight="Bold"
                                FontFamily="Consolas" VerticalAlignment="Center"/>
                     <CheckBox Grid.Column="2"
@@ -561,7 +561,7 @@
                     <Rectangle Grid.Column="3" Width="1" Fill="#A8A49C" VerticalAlignment="Stretch" Margin="0,2"/>
 
                     <!-- Burst -->
-                    <TextBlock Grid.Column="4" Text="BURST"
+                    <TextBlock Grid.Column="4" Text="{DynamicResource FP_DMM_Burst}"
                                Foreground="#404040" FontSize="9" FontWeight="Bold"
                                FontFamily="Consolas" VerticalAlignment="Center"/>
                     <TextBox Grid.Column="6"
@@ -573,7 +573,7 @@
                     <TextBlock Grid.Column="8" Text="{DynamicResource FP_Samples}"
                                Foreground="#606060" FontSize="9"
                                FontFamily="Consolas" VerticalAlignment="Center"/>
-                    <Button Grid.Column="10" Content="▶ BURST" Height="24" Width="70"
+                    <Button Grid.Column="10" Content="{DynamicResource FP_DMM_BurstGo}" Height="24" Width="70"
                             Background="#005590" Foreground="White" FontSize="10"
                             Command="{Binding BurstMeasureCommand}">
                         <Button.Template>
@@ -621,10 +621,10 @@
                         <ColumnDefinition Width="Auto"/>
                     </Grid.ColumnDefinitions>
 
-                    <TextBlock Grid.Column="0" Text="LIMIT"
+                    <TextBlock Grid.Column="0" Text="{DynamicResource FP_DMM_Limit}"
                                Foreground="#8B2000" FontSize="9" FontWeight="Bold"
                                FontFamily="Consolas" VerticalAlignment="Center"/>
-                    <TextBlock Grid.Column="2" Text="LOW:"
+                    <TextBlock Grid.Column="2" Text="{DynamicResource FP_DMM_Low}"
                                Foreground="#606060" FontSize="9" FontFamily="Consolas"
                                VerticalAlignment="Center"/>
                     <TextBox Grid.Column="3"
@@ -632,7 +632,7 @@
                              Height="24" FontFamily="Consolas" FontSize="10"
                              Background="#E8E4D8" Foreground="#101010"
                              BorderBrush="#A8A49C" BorderThickness="1" Padding="3,2"/>
-                    <TextBlock Grid.Column="5" Text="HIGH:"
+                    <TextBlock Grid.Column="5" Text="{DynamicResource FP_DMM_High}"
                                Foreground="#606060" FontSize="9" FontFamily="Consolas"
                                VerticalAlignment="Center"/>
                     <TextBox Grid.Column="6"
@@ -645,12 +645,12 @@
                             Command="{Binding ToggleLimitTestCommand}">
                         <Button.Style>
                             <Style TargetType="Button">
-                                <Setter Property="Content" Value="LIMIT ON"/>
+                                <Setter Property="Content" Value="{DynamicResource FP_DMM_LimitOn}"/>
                                 <Setter Property="Background" Value="#8B2000"/>
                                 <Setter Property="Foreground" Value="White"/>
                                 <Style.Triggers>
                                     <DataTrigger Binding="{Binding IsLimitEnabled}" Value="True">
-                                        <Setter Property="Content" Value="LIMIT OFF"/>
+                                        <Setter Property="Content" Value="{DynamicResource FP_DMM_LimitOff}"/>
                                         <Setter Property="Background" Value="#606850"/>
                                     </DataTrigger>
                                 </Style.Triggers>
@@ -712,11 +712,11 @@
                     <Button Grid.Column="0" Width="110" Command="{Binding ToggleContinuousCommand}">
                         <Button.Style>
                             <Style TargetType="Button" BasedOn="{StaticResource SmallButton}">
-                                <Setter Property="Content" Value="▶  CIĄGŁY"/>
+                                <Setter Property="Content" Value="{DynamicResource FP_DMM_Continuous}"/>
                                 <Setter Property="Background" Value="#0071BB"/>
                                 <Style.Triggers>
                                     <DataTrigger Binding="{Binding IsContinuous}" Value="True">
-                                        <Setter Property="Content" Value="■  STOP"/>
+                                        <Setter Property="Content" Value="{DynamicResource FP_DMM_Stop}"/>
                                         <Setter Property="Background" Value="#C02010"/>
                                     </DataTrigger>
                                 </Style.Triggers>
@@ -741,7 +741,7 @@
                                Foreground="{StaticResource LabelFg}" FontSize="11"
                                VerticalAlignment="Center" Margin="4,0,0,0"/>
 
-                    <Button Grid.Column="7" Content="▶ LIVE" Width="70" Height="28"
+                    <Button Grid.Column="7" Content="{DynamicResource FP_DMM_Live}" Width="70" Height="28"
                             Style="{StaticResource SmallButton}"
                             Background="#006060"
                             Command="{Binding OpenLiveWindowCommand}"/>
@@ -765,19 +765,19 @@
                         <ColumnDefinition Width="Auto"/>
                     </Grid.ColumnDefinitions>
 
-                    <TextBlock Grid.Column="0" Text="MIN:" Foreground="{StaticResource LabelFg}"
+                    <TextBlock Grid.Column="0" Text="{DynamicResource FP_DMM_Min}" Foreground="{StaticResource LabelFg}"
                                FontSize="10" FontFamily="Consolas" VerticalAlignment="Center"/>
                     <TextBlock Grid.Column="1" Text="{Binding MinValue}"
                                Foreground="#006020" FontSize="11" FontFamily="Consolas"
                                VerticalAlignment="Center" Margin="4,0,12,0"/>
 
-                    <TextBlock Grid.Column="2" Text="MAX:" Foreground="{StaticResource LabelFg}"
+                    <TextBlock Grid.Column="2" Text="{DynamicResource FP_DMM_Max}" Foreground="{StaticResource LabelFg}"
                                FontSize="10" FontFamily="Consolas" VerticalAlignment="Center"/>
                     <TextBlock Grid.Column="3" Text="{Binding MaxValue}"
                                Foreground="#006020" FontSize="11" FontFamily="Consolas"
                                VerticalAlignment="Center" Margin="4,0,12,0"/>
 
-                    <TextBlock Grid.Column="4" Text="AVG:" Foreground="{StaticResource LabelFg}"
+                    <TextBlock Grid.Column="4" Text="{DynamicResource FP_DMM_Avg}" Foreground="{StaticResource LabelFg}"
                                FontSize="10" FontFamily="Consolas" VerticalAlignment="Center"/>
                     <TextBlock Grid.Column="5" Text="{Binding AvgValue}"
                                Foreground="#006020" FontSize="11" FontFamily="Consolas"
@@ -789,7 +789,7 @@
                                FontSize="10" FontFamily="Consolas"
                                VerticalAlignment="Center" Margin="0,0,8,0"/>
 
-                    <Button Grid.Column="7" Content="CLR" Width="36" Height="24"
+                    <Button Grid.Column="7" Content="{DynamicResource FP_DMM_Clr}" Width="36" Height="24"
                             Background="#A0A090" Foreground="#202020"
                             Command="{Binding ClearStatsCommand}"
                             FontSize="10" FontFamily="Consolas">
@@ -819,13 +819,13 @@
                 </Grid.ColumnDefinitions>
 
                 <Button Grid.Column="0"
-                        Content="▶  SINGLE"
+                        Content="{DynamicResource FP_DMM_Single}"
                         Style="{StaticResource ActionButton}"
                         Background="{StaticResource MeasureBlue}"
                         Command="{Binding MeasureCommand}"/>
 
                 <Button Grid.Column="2"
-                        Content="⟳  RESET"
+                        Content="{DynamicResource FP_DMM_Reset}"
                         Style="{StaticResource ActionButton}"
                         Background="{StaticResource ResetRed}"
                         Command="{Binding ResetCommand}"/>

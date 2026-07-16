@@ -20,7 +20,7 @@ public partial class ItechIT6922BFrontPanelViewModel : ObservableObject
 
     // ── State ────────────────────────────────────────────────────────────────
     [ObservableProperty] private bool   _isConnected;
-    [ObservableProperty] private string _statusText = "Brak połączenia";
+    [ObservableProperty] private string _statusText = "Not connected";
     [ObservableProperty] private bool   _isMeasuring;
     [ObservableProperty] private bool   _isContinuous;
     [ObservableProperty] private bool   _outputEnabled;
@@ -43,6 +43,7 @@ public partial class ItechIT6922BFrontPanelViewModel : ObservableObject
 
     private CancellationTokenSource? _continuousCts;
     private LiveDataWindow?           _liveWindow;
+    private readonly EventHandler     _languageChangedHandler;
 
     public ItechIT6922BFrontPanelViewModel(ItechIT6922BDriver driver)
     {
@@ -54,9 +55,28 @@ public partial class ItechIT6922BFrontPanelViewModel : ObservableObject
         driver.StatusChanged       += OnStatusChanged;
         driver.ErrorOccurred       += OnErrorOccurred;
 
-        AppLocalization.LanguageChanged += (_, _) =>
+        _languageChangedHandler = (_, _) =>
             System.Windows.Application.Current?.Dispatcher.InvokeAsync(() =>
                 StatusText = FpConnected(IsConnected));
+        AppLocalization.LanguageChanged += _languageChangedHandler;
+
+        // Instrument is typically already connected by the time the front panel
+        // is created (connection happens in the connection dialog beforehand),
+        // so pull its current setpoints/protection/output state right away.
+        if (driver.IsConnected)
+            _ = RefreshFullStateAsync();
+    }
+
+    // Called when the front panel is torn down (e.g. the user switches to a
+    // different connected instrument) so this ViewModel stops reacting to driver
+    // events and can be garbage collected instead of leaking as a "zombie"
+    // listener that keeps handling every future measurement/status update.
+    public void Detach()
+    {
+        _driver.MeasurementReceived     -= OnMeasurementReceived;
+        _driver.StatusChanged           -= OnStatusChanged;
+        _driver.ErrorOccurred           -= OnErrorOccurred;
+        AppLocalization.LanguageChanged -= _languageChangedHandler;
     }
 
     // ── Event handlers ────────────────────────────────────────────────────────
@@ -78,8 +98,14 @@ public partial class ItechIT6922BFrontPanelViewModel : ObservableObject
     {
         System.Windows.Application.Current.Dispatcher.InvokeAsync(() =>
         {
-            StatusText   = status;
-            IsConnected  = _driver.IsConnected;
+            bool wasConnected = IsConnected;
+            StatusText  = status;
+            IsConnected = _driver.IsConnected;
+
+            // Freshly (re)connected — pull the instrument's current setpoints
+            // and protection state instead of showing stale/default values.
+            if (IsConnected && !wasConnected)
+                _ = RefreshFullStateAsync();
         });
     }
 
@@ -87,7 +113,7 @@ public partial class ItechIT6922BFrontPanelViewModel : ObservableObject
     {
         System.Windows.Application.Current.Dispatcher.InvokeAsync(() =>
         {
-            StatusText     = $"BŁĄD: {ex.Message}";
+            StatusText     = T("FP_IT6922B_ErrPrefix", "ERROR: {0}", ex.Message);
             DisplayVoltage = "ERR";
         });
     }
@@ -107,7 +133,7 @@ public partial class ItechIT6922BFrontPanelViewModel : ObservableObject
             OutputEnabled  = await _driver.GetOutputEnabledAsync();
             StatusText     = $"OK  {DateTime.Now:HH:mm:ss.fff}";
         }
-        catch (Exception ex) { StatusText = $"Błąd pomiaru: {ex.Message}"; }
+        catch (Exception ex) { StatusText = T("FP_IT6922B_ErrMeasure", "Measurement error: {0}", ex.Message); }
         finally { IsMeasuring = false; }
     }
 
@@ -115,121 +141,138 @@ public partial class ItechIT6922BFrontPanelViewModel : ObservableObject
     [RelayCommand]
     private async Task MeasureOnceAsync()
     {
-        if (!_driver.IsConnected) { StatusText = "Nie połączono"; return; }
+        if (!_driver.IsConnected) { StatusText = T("FP_NotConnected", "Not connected"); return; }
         await UpdateReadingsAsync();
     }
 
     [RelayCommand]
-    private async Task ReadSetpointsAsync()
+    private async Task ReadSetpointsAsync() => await RefreshFullStateAsync();
+
+    // Reads everything the instrument currently has configured — voltage/current
+    // setpoints, output state, OVP/OCP levels and enable flags, operating mode
+    // and a fresh measurement — so the panel reflects reality instead of the
+    // ViewModel's compiled-in defaults. Called on startup (if already connected),
+    // on every (re)connect, and from the "ODCZYT NASTAW" button.
+    private async Task RefreshFullStateAsync()
     {
-        if (!_driver.IsConnected) { StatusText = "Nie połączono"; return; }
+        if (!_driver.IsConnected) { StatusText = T("FP_NotConnected", "Not connected"); return; }
         try
         {
             var (v, i, on) = await _driver.ReadSetpointsAsync();
             VoltageSetpoint = v.ToString("F3", CultureInfo.InvariantCulture);
             CurrentLimit    = i.ToString("F3", CultureInfo.InvariantCulture);
             OutputEnabled   = on;
-            StatusText = $"Odczytano nastawy  {DateTime.Now:HH:mm:ss}";
+
+            OvpLevel   = (await _driver.GetOvpLevelAsync()).ToString("F2", CultureInfo.InvariantCulture);
+            OvpEnabled = await _driver.GetOvpEnabledAsync();
+            OcpLevel   = (await _driver.GetOcpLevelAsync()).ToString("F2", CultureInfo.InvariantCulture);
+            OcpEnabled = await _driver.GetOcpEnabledAsync();
+
+            await UpdateReadingsAsync();
+
+            StatusText = T("FP_IT6922B_StateRead", "Instrument state read {0}", DateTime.Now.ToString("HH:mm:ss"));
         }
-        catch (Exception ex) { StatusText = $"Błąd odczytu nastaw: {ex.Message}"; }
+        catch (Exception ex) { StatusText = T("FP_IT6922B_ErrReadState", "State read error: {0}", ex.Message); }
     }
 
     [RelayCommand]
     private async Task ApplyVoltageAsync()
     {
-        if (!_driver.IsConnected) { StatusText = "Nie połączono"; return; }
+        if (!_driver.IsConnected) { StatusText = T("FP_NotConnected", "Not connected"); return; }
         if (!double.TryParse(VoltageSetpoint, NumberStyles.Float,
                 CultureInfo.InvariantCulture, out double v) || v < 0 || v > 60)
         {
-            StatusText = "Nieprawidłowe napięcie (0–60 V)";
+            StatusText = T("FP_IT6922B_InvalidVoltage", "Invalid voltage (0–60 V)");
             return;
         }
         try
         {
             await _driver.SetVoltageAsync(v);
-            StatusText = $"Napięcie ustawione: {v:F3} V";
+            StatusText = T("FP_IT6922B_VoltageSet", "Voltage set: {0} V", v.ToString("F3", CultureInfo.InvariantCulture));
         }
-        catch (Exception ex) { StatusText = $"Błąd SetVoltage: {ex.Message}"; }
+        catch (Exception ex) { StatusText = T("FP_IT6922B_ErrSetVoltage", "SetVoltage error: {0}", ex.Message); }
     }
 
     [RelayCommand]
     private async Task ApplyCurrentAsync()
     {
-        if (!_driver.IsConnected) { StatusText = "Nie połączono"; return; }
+        if (!_driver.IsConnected) { StatusText = T("FP_NotConnected", "Not connected"); return; }
         if (!double.TryParse(CurrentLimit, NumberStyles.Float,
                 CultureInfo.InvariantCulture, out double i) || i < 0 || i > 5)
         {
-            StatusText = "Nieprawidłowy prąd (0–5 A)";
+            StatusText = T("FP_IT6922B_InvalidCurrent", "Invalid current (0–5 A)");
             return;
         }
         try
         {
             await _driver.SetCurrentLimitAsync(i);
-            StatusText = $"Limit prądu: {i:F3} A";
+            StatusText = T("FP_IT6922B_CurrentSet", "Current limit: {0} A", i.ToString("F3", CultureInfo.InvariantCulture));
         }
-        catch (Exception ex) { StatusText = $"Błąd SetCurrent: {ex.Message}"; }
+        catch (Exception ex) { StatusText = T("FP_IT6922B_ErrSetCurrent", "SetCurrent error: {0}", ex.Message); }
     }
 
     [RelayCommand]
     private async Task OutputOnAsync()
     {
-        if (!_driver.IsConnected) { StatusText = "Nie połączono"; return; }
+        if (!_driver.IsConnected) { StatusText = T("FP_NotConnected", "Not connected"); return; }
         try { await _driver.SetOutputEnabledAsync(true); OutputEnabled = true; }
-        catch (Exception ex) { StatusText = $"Błąd Output ON: {ex.Message}"; }
+        catch (Exception ex) { StatusText = T("FP_IT6922B_ErrOutputOn", "Output ON error: {0}", ex.Message); }
     }
 
     [RelayCommand]
     private async Task OutputOffAsync()
     {
-        if (!_driver.IsConnected) { StatusText = "Nie połączono"; return; }
+        if (!_driver.IsConnected) { StatusText = T("FP_NotConnected", "Not connected"); return; }
         try { await _driver.SetOutputEnabledAsync(false); OutputEnabled = false; }
-        catch (Exception ex) { StatusText = $"Błąd Output OFF: {ex.Message}"; }
+        catch (Exception ex) { StatusText = T("FP_IT6922B_ErrOutputOff", "Output OFF error: {0}", ex.Message); }
     }
 
     [RelayCommand]
     private async Task ApplyOvpAsync()
     {
-        if (!_driver.IsConnected) { StatusText = "Nie połączono"; return; }
+        if (!_driver.IsConnected) { StatusText = T("FP_NotConnected", "Not connected"); return; }
         if (!double.TryParse(OvpLevel, NumberStyles.Float,
                 CultureInfo.InvariantCulture, out double lv))
         {
-            StatusText = "Nieprawidłowy próg OVP";
+            StatusText = T("FP_IT6922B_InvalidOvpThreshold", "Invalid OVP threshold");
             return;
         }
         try
         {
             await _driver.SetOvpLevelAsync(lv);
             await _driver.SetOvpEnabledAsync(OvpEnabled);
-            StatusText = $"OVP: {lv:F2} V  {(OvpEnabled ? "ON" : "OFF")}";
+            StatusText = T("FP_IT6922B_OvpStatus", "OVP: {0} V  {1}",
+                lv.ToString("F2", CultureInfo.InvariantCulture), OvpEnabled ? "ON" : "OFF");
         }
-        catch (Exception ex) { StatusText = $"Błąd OVP: {ex.Message}"; }
+        catch (Exception ex) { StatusText = T("FP_IT6922B_ErrOvp", "OVP error: {0}", ex.Message); }
     }
 
     [RelayCommand]
     private async Task ApplyOcpAsync()
     {
-        if (!_driver.IsConnected) { StatusText = "Nie połączono"; return; }
+        if (!_driver.IsConnected) { StatusText = T("FP_NotConnected", "Not connected"); return; }
         if (!double.TryParse(OcpLevel, NumberStyles.Float,
                 CultureInfo.InvariantCulture, out double lv))
         {
-            StatusText = "Nieprawidłowy próg OCP";
+            StatusText = T("FP_IT6922B_InvalidOcpThreshold", "Invalid OCP threshold");
             return;
         }
         try
         {
             await _driver.SetOcpLevelAsync(lv);
             await _driver.SetOcpEnabledAsync(OcpEnabled);
-            StatusText = $"OCP: {lv:F2} A  {(OcpEnabled ? "ON" : "OFF")}";
+            StatusText = T("FP_IT6922B_OcpStatus", "OCP: {0} A  {1}",
+                lv.ToString("F2", CultureInfo.InvariantCulture), OcpEnabled ? "ON" : "OFF");
         }
-        catch (Exception ex) { StatusText = $"Błąd OCP: {ex.Message}"; }
+        catch (Exception ex) { StatusText = T("FP_IT6922B_ErrOcp", "OCP error: {0}", ex.Message); }
     }
 
     [RelayCommand]
     private async Task ClearProtectionAsync()
     {
-        if (!_driver.IsConnected) { StatusText = "Nie połączono"; return; }
+        if (!_driver.IsConnected) { StatusText = T("FP_NotConnected", "Not connected"); return; }
         try { await _driver.ClearProtectionAsync(); }
-        catch (Exception ex) { StatusText = $"Błąd CLR PROT: {ex.Message}"; }
+        catch (Exception ex) { StatusText = T("FP_IT6922B_ErrClrProt", "CLR PROT error: {0}", ex.Message); }
     }
 
     [RelayCommand(AllowConcurrentExecutions = true)]
@@ -241,7 +284,7 @@ public partial class ItechIT6922BFrontPanelViewModel : ObservableObject
             return;
         }
 
-        if (!_driver.IsConnected) { StatusText = "Nie połączono"; return; }
+        if (!_driver.IsConnected) { StatusText = T("FP_NotConnected", "Not connected"); return; }
 
         IsContinuous      = true;
         _continuousCts    = new CancellationTokenSource();
@@ -260,7 +303,7 @@ public partial class ItechIT6922BFrontPanelViewModel : ObservableObject
         finally
         {
             IsContinuous = false;
-            StatusText   = $"Pomiar zatrzymany  {DateTime.Now:HH:mm:ss}";
+            StatusText   = T("FP_IT6922B_MeasureStopped", "Measurement stopped {0}", DateTime.Now.ToString("HH:mm:ss"));
         }
     }
 
@@ -279,21 +322,30 @@ public partial class ItechIT6922BFrontPanelViewModel : ObservableObject
     [RelayCommand]
     private async Task ResetAsync()
     {
-        if (!_driver.IsConnected) { StatusText = "Nie połączono"; return; }
+        if (!_driver.IsConnected) { StatusText = T("FP_NotConnected", "Not connected"); return; }
         try
         {
-            StatusText = "Reset...";
+            StatusText = T("FP_IT6922B_Resetting", "Reset...");
             await _driver.ResetAsync();
             DisplayVoltage = "---";
             DisplayCurrent = "---";
             DisplayPower   = "---";
             OperatingMode  = "---";
-            StatusText = "Reset wykonany";
+            StatusText = T("FP_IT6922B_ResetDone", "Reset done");
         }
-        catch (Exception ex) { StatusText = $"Błąd resetu: {ex.Message}"; }
+        catch (Exception ex) { StatusText = T("FP_IT6922B_ErrReset", "Reset error: {0}", ex.Message); }
     }
 
     private static string FpConnected(bool connected) => connected
-        ? System.Windows.Application.Current?.TryFindResource("FP_Connected") as string ?? "Connected"
-        : System.Windows.Application.Current?.TryFindResource("FP_NotConnected") as string ?? "Not connected";
+        ? T("FP_Connected", "Connected")
+        : T("FP_NotConnected", "Not connected");
+
+    // Looks up a localized string from the app's merged resource dictionaries.
+    // Uses TryFindResource (not a direct project reference to LocalizationService)
+    // so this instrument plugin stays decoupled from InstrumentControl.App.
+    private static string T(string key, string fallback) =>
+        System.Windows.Application.Current?.TryFindResource(key) as string ?? fallback;
+
+    private static string T(string key, string fallback, params object[] args) =>
+        string.Format(T(key, fallback), args);
 }

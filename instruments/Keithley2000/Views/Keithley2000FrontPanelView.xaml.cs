@@ -17,6 +17,7 @@ public partial class Keithley2000FrontPanelView : UserControl
         InitializeComponent();
         DataContext = new Keithley2000FrontPanelViewModel(driver);
         Loaded += OnLoaded;
+        Unloaded += (_, _) => ViewModel.Detach();
     }
 
     private void OnLoaded(object sender, RoutedEventArgs e)

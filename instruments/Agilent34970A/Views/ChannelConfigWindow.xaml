@@ -1,7 +1,7 @@
 <Window x:Class="Agilent34970A.Views.ChannelConfigWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="Konfiguracja kanału" Width="380"
+        Title="{DynamicResource FP_A34970A_ChConfigTitle}" Width="380"
         SizeToContent="Height" MinHeight="200"
         WindowStartupLocation="CenterOwner"
         ResizeMode="NoResize" Background="#D4D0CC">
@@ -24,16 +24,16 @@
     </Window.Resources>
 
     <StackPanel Margin="16">
-        <TextBlock Text="{Binding Channel, StringFormat='Kanał: {0}'}"
+        <TextBlock Text="{Binding Channel, StringFormat={DynamicResource FP_A34970A_ChannelFmt}}"
                    FontWeight="Bold" FontSize="13" Margin="0,0,0,2"/>
-        <TextBlock Text="{Binding Function, StringFormat='Funkcja: {0}'}" Margin="0,0,0,6"/>
+        <TextBlock Text="{Binding Function, StringFormat={DynamicResource FP_A34970A_FunctionFmt}}" Margin="0,0,0,6"/>
 
         <TextBlock Text="{Binding ParamLabel}"/>
         <ComboBox IsEditable="True" ItemsSource="{Binding ParamOptions}"
                   IsEnabled="{Binding HasParam}"
                   Text="{Binding Param, UpdateSourceTrigger=PropertyChanged}"/>
 
-        <TextBlock Text="Zakres (AUTO lub wartość, np. 10):"/>
+        <TextBlock Text="{DynamicResource FP_A34970A_RangeHint}"/>
         <ComboBox IsEditable="True"
                   Text="{Binding Range, UpdateSourceTrigger=PropertyChanged}">
             <ComboBoxItem Content="AUTO"/>
@@ -41,7 +41,7 @@
             <ComboBoxItem Content="MAX"/>
         </ComboBox>
 
-        <TextBlock Text="Rozdzielczość (DEF / MIN / MAX / wartość):"/>
+        <TextBlock Text="{DynamicResource FP_A34970A_ResolutionHint}"/>
         <ComboBox IsEditable="True"
                   Text="{Binding Resolution, UpdateSourceTrigger=PropertyChanged}">
             <ComboBoxItem Content="DEF"/>
@@ -49,7 +49,7 @@
             <ComboBoxItem Content="MAX"/>
         </ComboBox>
 
-        <TextBlock Text="NPLC (puste = bez zmian):"/>
+        <TextBlock Text="{DynamicResource FP_A34970A_NplcHint}"/>
         <ComboBox IsEditable="True"
                   Text="{Binding Nplc, UpdateSourceTrigger=PropertyChanged}">
             <ComboBoxItem Content=""/>
@@ -65,7 +65,7 @@
         <Border Background="#C0BCB8" BorderBrush="#9A9694" BorderThickness="1"
                 CornerRadius="4" Padding="10" Margin="0,12,0,0">
             <StackPanel>
-                <CheckBox Content="Skalowanie Mx+B" IsChecked="{Binding ScaleEnabled}"
+                <CheckBox Content="{DynamicResource FP_A34970A_ScaleMxB}" IsChecked="{Binding ScaleEnabled}"
                           Foreground="#202020" FontWeight="SemiBold"/>
                 <Grid Margin="0,6,0,0">
                     <Grid.ColumnDefinitions>
@@ -74,7 +74,7 @@
                         <ColumnDefinition Width="*"/>
                     </Grid.ColumnDefinitions>
                     <StackPanel Grid.Column="0">
-                        <TextBlock Text="Wzmocnienie M:"/>
+                        <TextBlock Text="{DynamicResource FP_A34970A_GainM}"/>
                         <TextBox Text="{Binding ScaleGain, UpdateSourceTrigger=PropertyChanged}"/>
                     </StackPanel>
                     <StackPanel Grid.Column="2">
@@ -82,7 +82,7 @@
                         <TextBox Text="{Binding ScaleOffset, UpdateSourceTrigger=PropertyChanged}"/>
                     </StackPanel>
                 </Grid>
-                <TextBlock Text="Jednostka (do 3 znaków, np. PSI):"/>
+                <TextBlock Text="{DynamicResource FP_A34970A_UnitHint}"/>
                 <TextBox Text="{Binding ScaleUnit, UpdateSourceTrigger=PropertyChanged}" MaxLength="3"/>
             </StackPanel>
         </Border>

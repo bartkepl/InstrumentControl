@@ -1,7 +1,7 @@
 <Window x:Class="Agilent34970A.Views.ScanConfigWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="Konfiguracja skanu" Width="380"
+        Title="{DynamicResource FP_A34970A_ScanConfigTitle}" Width="380"
         SizeToContent="Height" MinHeight="200"
         WindowStartupLocation="CenterOwner"
         ResizeMode="NoResize" Background="#D4D0CC">
@@ -24,30 +24,30 @@
     </Window.Resources>
 
     <StackPanel Margin="16">
-        <TextBlock Text="WYZWALANIE I PRZEBIEGI" FontWeight="Bold" FontSize="12" Margin="0,0,0,4"/>
+        <TextBlock Text="{DynamicResource FP_A34970A_TriggerRuns}" FontWeight="Bold" FontSize="12" Margin="0,0,0,4"/>
 
-        <TextBlock Text="Źródło wyzwalania:"/>
+        <TextBlock Text="{DynamicResource FP_A34970A_TriggerSourceHint}"/>
         <ComboBox ItemsSource="{Binding TriggerSources}"
                   SelectedItem="{Binding SelectedTriggerSource}"/>
 
-        <TextBlock Text="Odstęp timera [s] (gdy TIMER):"/>
+        <TextBlock Text="{DynamicResource FP_A34970A_TimerIntervalHint}"/>
         <TextBox Text="{Binding TimerIntervalText, UpdateSourceTrigger=PropertyChanged}"/>
 
-        <TextBlock Text="Liczba przebiegów skanu:"/>
+        <TextBlock Text="{DynamicResource FP_A34970A_ScanCountHint}"/>
         <TextBox Text="{Binding ScanCount, UpdateSourceTrigger=PropertyChanged}"/>
 
         <Border Background="#C0BCB8" BorderBrush="#9A9694" BorderThickness="1"
                 CornerRadius="4" Padding="10" Margin="0,12,0,0">
             <StackPanel>
-                <CheckBox Content="Ustaw opóźnienie kanału" IsChecked="{Binding UseChannelDelay}"
+                <CheckBox Content="{DynamicResource FP_A34970A_UseChannelDelay}" IsChecked="{Binding UseChannelDelay}"
                           Foreground="#202020" FontWeight="SemiBold"/>
-                <TextBlock Text="Opóźnienie kanału [s]:"/>
+                <TextBlock Text="{DynamicResource FP_A34970A_ChannelDelayHint}"/>
                 <TextBox Text="{Binding ChannelDelayText, UpdateSourceTrigger=PropertyChanged}"
                          IsEnabled="{Binding UseChannelDelay}"/>
             </StackPanel>
         </Border>
 
-        <TextBlock Text="Uwaga: dla BUS/EXT skan czeka na wyzwolenie — odczyt może długo trwać."
+        <TextBlock Text="{DynamicResource FP_A34970A_ScanConfigNote}"
                    TextWrapping="Wrap" Foreground="#7A5500" Margin="0,12,0,0"/>
 
         <Button Content="OK" Width="100" Height="32"

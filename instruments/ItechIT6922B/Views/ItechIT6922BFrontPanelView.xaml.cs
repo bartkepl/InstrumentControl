@@ -10,6 +10,8 @@ public partial class ItechIT6922BFrontPanelView : UserControl
     {
         Driver = driver;
         InitializeComponent();
-        DataContext = new ItechIT6922BFrontPanelViewModel(driver);
+        var vm = new ItechIT6922BFrontPanelViewModel(driver);
+        DataContext = vm;
+        Unloaded += (_, _) => vm.Detach();
     }
 }

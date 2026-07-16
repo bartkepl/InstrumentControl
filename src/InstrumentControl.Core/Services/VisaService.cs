@@ -10,6 +10,7 @@ public class VisaConnectionProvider : IConnectionProvider
     private IntPtr _session;
     private readonly IntPtr _rm;
     private readonly uint _timeoutMs;
+    private readonly SemaphoreSlim _lock = new(1, 1);
     private bool _disposed;
 
     public string ResourceName { get; }
@@ -50,7 +51,42 @@ public class VisaConnectionProvider : IConnectionProvider
         return Task.CompletedTask;
     }
 
+    // Every native VISA call below blocks the calling thread for the full I/O
+    // duration (up to the configured timeout). Each public method offloads that
+    // blocking work onto the thread pool via Task.Run so a caller that awaits it
+    // (e.g. a continuous-measurement loop ticking every 100ms) never freezes the
+    // WPF UI thread. The semaphore serializes access to the single VISA session
+    // so a write from one call can't interleave with another call's read.
+
     public async Task WriteAsync(string command)
+    {
+        await _lock.WaitAsync();
+        try { await Task.Run(() => WriteCore(command)); }
+        finally { _lock.Release(); }
+    }
+
+    public async Task<string> QueryAsync(string command, int timeoutMs = 5000)
+    {
+        await _lock.WaitAsync();
+        try
+        {
+            return await Task.Run(() =>
+            {
+                WriteCore(command);
+                return ReadCore(timeoutMs);
+            });
+        }
+        finally { _lock.Release(); }
+    }
+
+    public async Task<string> ReadAsync(int timeoutMs = 5000)
+    {
+        await _lock.WaitAsync();
+        try { return await Task.Run(() => ReadCore(timeoutMs)); }
+        finally { _lock.Release(); }
+    }
+
+    private void WriteCore(string command)
     {
         Log?.Invoke($"→ [{ResourceName}] {command.TrimEnd()}");
         var bytes = System.Text.Encoding.ASCII.GetBytes(command + "\n");
@@ -59,16 +95,9 @@ public class VisaConnectionProvider : IConnectionProvider
         if (status < 0)
             throw new InvalidOperationException(
                 $"VISA write error: 0x{status:X8} na zasobie '{ResourceName}' (komenda: {command.TrimEnd()}).");
-        await Task.CompletedTask;
     }
 
-    public async Task<string> QueryAsync(string command, int timeoutMs = 5000)
-    {
-        await WriteAsync(command);
-        return await ReadAsync(timeoutMs);
-    }
-
-    public Task<string> ReadAsync(int timeoutMs = 5000)
+    private string ReadCore(int timeoutMs)
     {
         NiVisa.viSetAttribute(_session, NiVisa.VI_ATTR_TMO_VALUE, (uint)timeoutMs);
         var buf = new byte[4096];
@@ -86,27 +115,42 @@ public class VisaConnectionProvider : IConnectionProvider
         }
         var response = System.Text.Encoding.ASCII.GetString(buf, 0, (int)retCount).TrimEnd('\n', '\r');
         Log?.Invoke($"← [{ResourceName}] {response}");
-        return Task.FromResult(response);
+        return response;
     }
 
-    public Task WriteRawAsync(byte[] data)
+    public async Task WriteRawAsync(byte[] data)
     {
-        uint ret = 0;
-        NiVisa.viWrite(_session, data, (uint)data.Length, ref ret);
-        return Task.CompletedTask;
+        await _lock.WaitAsync();
+        try
+        {
+            await Task.Run(() =>
+            {
+                uint ret = 0;
+                NiVisa.viWrite(_session, data, (uint)data.Length, ref ret);
+            });
+        }
+        finally { _lock.Release(); }
     }
 
-    public Task<byte[]> ReadRawAsync(int count)
+    public async Task<byte[]> ReadRawAsync(int count)
     {
-        var buf = new byte[count];
-        uint ret = 0;
-        NiVisa.viRead(_session, buf, (uint)count, ref ret);
-        return Task.FromResult(buf[..(int)ret]);
+        await _lock.WaitAsync();
+        try
+        {
+            return await Task.Run(() =>
+            {
+                var buf = new byte[count];
+                uint ret = 0;
+                NiVisa.viRead(_session, buf, (uint)count, ref ret);
+                return buf[..(int)ret];
+            });
+        }
+        finally { _lock.Release(); }
     }
 
     public void Dispose()
     {
-        if (!_disposed) { CloseAsync().Wait(); _disposed = true; }
+        if (!_disposed) { CloseAsync().Wait(); _lock.Dispose(); _disposed = true; }
     }
 }
 
@@ -444,6 +488,7 @@ public class SimulatedConnectionProvider : IConnectionProvider
 public class SerialConnectionProvider : IConnectionProvider
 {
     private readonly SerialPort _port;
+    private readonly SemaphoreSlim _lock = new(1, 1);
 
     public string ResourceName { get; }
     public string ConnectionType => "COM";
@@ -464,37 +509,85 @@ public class SerialConnectionProvider : IConnectionProvider
     public Task OpenAsync() { _port.Open(); return Task.CompletedTask; }
     public Task CloseAsync() { if (_port.IsOpen) _port.Close(); return Task.CompletedTask; }
 
-    public Task WriteAsync(string command)
+    // SerialPort.ReadLine()/WriteLine() block the calling thread until data
+    // arrives or the timeout elapses. Offloading via Task.Run keeps a caller
+    // that awaits this (e.g. a continuous-measurement loop ticking every
+    // 100ms) from freezing the WPF UI thread. The semaphore serializes access
+    // to the single port so a write from one call can't interleave with
+    // another call's read.
+
+    public async Task WriteAsync(string command)
     {
-        Log?.Invoke($"→ [{ResourceName}] {command.TrimEnd()}");
-        _port.WriteLine(command);
-        return Task.CompletedTask;
+        await _lock.WaitAsync();
+        try { await Task.Run(() => WriteCore(command)); }
+        finally { _lock.Release(); }
     }
 
     public async Task<string> QueryAsync(string command, int timeoutMs = 5000)
     {
-        _port.ReadTimeout = timeoutMs;
-        await WriteAsync(command);
-        return await ReadAsync(timeoutMs);
+        await _lock.WaitAsync();
+        try
+        {
+            return await Task.Run(() =>
+            {
+                _port.ReadTimeout = timeoutMs;
+                WriteCore(command);
+                return ReadCore();
+            });
+        }
+        finally { _lock.Release(); }
     }
 
-    public Task<string> ReadAsync(int timeoutMs = 5000)
+    public async Task<string> ReadAsync(int timeoutMs = 5000)
     {
-        _port.ReadTimeout = timeoutMs;
+        await _lock.WaitAsync();
+        try
+        {
+            return await Task.Run(() =>
+            {
+                _port.ReadTimeout = timeoutMs;
+                return ReadCore();
+            });
+        }
+        finally { _lock.Release(); }
+    }
+
+    private void WriteCore(string command)
+    {
+        Log?.Invoke($"→ [{ResourceName}] {command.TrimEnd()}");
+        _port.WriteLine(command);
+    }
+
+    private string ReadCore()
+    {
         var response = _port.ReadLine().TrimEnd('\r', '\n');
         Log?.Invoke($"← [{ResourceName}] {response}");
-        return Task.FromResult(response);
+        return response;
     }
 
-    public Task WriteRawAsync(byte[] data) { _port.Write(data, 0, data.Length); return Task.CompletedTask; }
-    public Task<byte[]> ReadRawAsync(int count)
+    public async Task WriteRawAsync(byte[] data)
     {
-        var buf = new byte[count];
-        _port.Read(buf, 0, count);
-        return Task.FromResult(buf);
+        await _lock.WaitAsync();
+        try { await Task.Run(() => _port.Write(data, 0, data.Length)); }
+        finally { _lock.Release(); }
     }
 
-    public void Dispose() { if (_port.IsOpen) _port.Close(); _port.Dispose(); }
+    public async Task<byte[]> ReadRawAsync(int count)
+    {
+        await _lock.WaitAsync();
+        try
+        {
+            return await Task.Run(() =>
+            {
+                var buf = new byte[count];
+                _port.Read(buf, 0, count);
+                return buf;
+            });
+        }
+        finally { _lock.Release(); }
+    }
+
+    public void Dispose() { if (_port.IsOpen) _port.Close(); _port.Dispose(); _lock.Dispose(); }
 }
 
 public class VisaService

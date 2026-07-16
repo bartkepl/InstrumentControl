@@ -46,7 +46,7 @@ public partial class RigolDS1000ZFrontPanelViewModel : ObservableObject
 
     // ── State ───────────────────────────────────────────────────────────────
     [ObservableProperty] private bool   _isConnected;
-    [ObservableProperty] private string _statusText       = "Brak połączenia";
+    [ObservableProperty] private string _statusText       = "Not connected";
     [ObservableProperty] private string _acquisitionState = "STOP";
     [ObservableProperty] private bool   _isCapturing;
 
@@ -168,23 +168,40 @@ public partial class RigolDS1000ZFrontPanelViewModel : ObservableObject
           "OVERshoot","PREShoot","RISetime","FALLtime","PWIDth","NWIDth","PDUTycycle","NDUTycycle" };
 
     private LiveDataWindow? _liveWindow;
+    private readonly EventHandler<string> _statusChangedHandler;
+    private readonly EventHandler<Exception> _errorOccurredHandler;
+    private readonly EventHandler _languageChangedHandler;
 
     public RigolDS1000ZFrontPanelViewModel(RigolDS1000ZDriver driver)
     {
         _driver      = driver;
         _isConnected = driver.IsConnected;
-        _statusText  = driver.IsConnected ? "Połączono" : "Brak połączenia";
+        _statusText  = FpConnected(driver.IsConnected);
 
-        driver.StatusChanged += (_, s) =>
+        _statusChangedHandler = (_, s) =>
             System.Windows.Application.Current.Dispatcher.InvokeAsync(() => { StatusText = s; IsConnected = _driver.IsConnected; });
-        driver.ErrorOccurred += (_, ex) =>
-            System.Windows.Application.Current.Dispatcher.InvokeAsync(() => StatusText = $"BŁĄD: {ex.Message}");
+        _errorOccurredHandler = (_, ex) =>
+            System.Windows.Application.Current.Dispatcher.InvokeAsync(() => StatusText = T("FP_ErrGeneric", "Error: {0}", ex.Message));
+        driver.StatusChanged += _statusChangedHandler;
+        driver.ErrorOccurred += _errorOccurredHandler;
 
-        AppLocalization.LanguageChanged += (_, _) =>
+        _languageChangedHandler = (_, _) =>
             System.Windows.Application.Current?.Dispatcher.InvokeAsync(() =>
-                StatusText = _driver.IsConnected ? "Połączono" : "Brak połączenia");
+                StatusText = FpConnected(_driver.IsConnected));
+        AppLocalization.LanguageChanged += _languageChangedHandler;
 
         InitializeScopeModel();
+    }
+
+    // Called when the front panel is torn down (e.g. the user switches to a
+    // different connected instrument) so this ViewModel stops reacting to driver
+    // events and can be garbage collected instead of leaking as a "zombie"
+    // listener that keeps handling every future status/error update.
+    public void Detach()
+    {
+        _driver.StatusChanged           -= _statusChangedHandler;
+        _driver.ErrorOccurred           -= _errorOccurredHandler;
+        AppLocalization.LanguageChanged -= _languageChangedHandler;
     }
 
     // ── OxyPlot scope display ─────────────────────────────────────────────────
@@ -273,7 +290,7 @@ public partial class RigolDS1000ZFrontPanelViewModel : ObservableObject
     {
         if (!CheckConn()) return;
         try { await _driver.RunAsync(); AcquisitionState = "RUN"; }
-        catch (Exception ex) { StatusText = $"Błąd RUN: {ex.Message}"; }
+        catch (Exception ex) { StatusText = T("FP_RIGOL_ErrRun", "RUN error: {0}", ex.Message); }
     }
 
     [RelayCommand]
@@ -281,15 +298,15 @@ public partial class RigolDS1000ZFrontPanelViewModel : ObservableObject
     {
         if (!CheckConn()) return;
         try { await _driver.StopAsync(); AcquisitionState = "STOP"; }
-        catch (Exception ex) { StatusText = $"Błąd STOP: {ex.Message}"; }
+        catch (Exception ex) { StatusText = T("FP_RIGOL_ErrStop", "STOP error: {0}", ex.Message); }
     }
 
     [RelayCommand]
     private async Task SingleAsync()
     {
         if (!CheckConn()) return;
-        try { AcquisitionState = "SINGLE"; await _driver.SingleAsync(); StatusText = "SINGLE — oczekiwanie na wyzwalanie"; }
-        catch (Exception ex) { StatusText = $"Błąd SINGLE: {ex.Message}"; }
+        try { AcquisitionState = "SINGLE"; await _driver.SingleAsync(); StatusText = T("FP_RIGOL_SingleWaiting", "SINGLE — waiting for trigger"); }
+        catch (Exception ex) { StatusText = T("FP_RIGOL_ErrSingle", "SINGLE error: {0}", ex.Message); }
     }
 
     [RelayCommand]
@@ -297,7 +314,7 @@ public partial class RigolDS1000ZFrontPanelViewModel : ObservableObject
     {
         if (!CheckConn()) return;
         try { StatusText = "Auto Scale..."; await _driver.AutoScaleAsync(); StatusText = $"Auto Scale OK  {Now()}"; }
-        catch (Exception ex) { StatusText = $"Błąd AutoScale: {ex.Message}"; }
+        catch (Exception ex) { StatusText = T("FP_RIGOL_ErrAutoScale", "AutoScale error: {0}", ex.Message); }
     }
 
     [RelayCommand]
@@ -310,9 +327,9 @@ public partial class RigolDS1000ZFrontPanelViewModel : ObservableObject
             await ApplyCh(2, Ch2Enabled, Ch2Scale, Ch2Offset, Ch2Coupling, Ch2Probe, Ch2BwLimit, Ch2Invert);
             await ApplyCh(3, Ch3Enabled, Ch3Scale, Ch3Offset, Ch3Coupling, Ch3Probe, Ch3BwLimit, Ch3Invert);
             await ApplyCh(4, Ch4Enabled, Ch4Scale, Ch4Offset, Ch4Coupling, Ch4Probe, Ch4BwLimit, Ch4Invert);
-            StatusText = $"Kanały zastosowane  {Now()}";
+            StatusText = T("FP_RIGOL_ChannelsApplied", "Channels applied  {0}", Now());
         }
-        catch (Exception ex) { StatusText = $"Błąd ApplyChannels: {ex.Message}"; }
+        catch (Exception ex) { StatusText = T("FP_RIGOL_ErrApplyChannels", "ApplyChannels error: {0}", ex.Message); }
     }
 
     private async Task ApplyCh(int ch, bool en, string scale, string offset,
@@ -342,9 +359,9 @@ public partial class RigolDS1000ZFrontPanelViewModel : ObservableObject
             await _driver.SetTimebaseScaleAsync(secs);
             await _driver.SetTimebaseOffsetAsync(off);
             TimescaleDisplay = FormatTime(secs) + "/dz";
-            StatusText = $"Timebase: {FormatTime(secs)}/dz  {Now()}";
+            StatusText = T("FP_RIGOL_TimebaseSet", "Timebase: {0}/div  {1}", FormatTime(secs), Now());
         }
-        catch (Exception ex) { StatusText = $"Błąd Timebase: {ex.Message}"; }
+        catch (Exception ex) { StatusText = T("FP_RIGOL_ErrTimebase", "Timebase error: {0}", ex.Message); }
     }
 
     [RelayCommand]
@@ -361,7 +378,7 @@ public partial class RigolDS1000ZFrontPanelViewModel : ObservableObject
             await _driver.SetTriggerEdgeLevelAsync(level);
             StatusText = $"Trigger: {TriggerSource} {TriggerSlope} {level:F3}V  {Now()}";
         }
-        catch (Exception ex) { StatusText = $"Błąd Trigger: {ex.Message}"; }
+        catch (Exception ex) { StatusText = T("FP_RIGOL_ErrTrigger", "Trigger error: {0}", ex.Message); }
     }
 
     [RelayCommand]
@@ -377,7 +394,7 @@ public partial class RigolDS1000ZFrontPanelViewModel : ObservableObject
             await _driver.SetAcquireMemDepthAsync(AcquireMem);
             StatusText = $"Acquire: {AcquireType}  {Now()}";
         }
-        catch (Exception ex) { StatusText = $"Błąd Acquire: {ex.Message}"; }
+        catch (Exception ex) { StatusText = T("FP_RIGOL_ErrAcquire", "Acquire error: {0}", ex.Message); }
     }
 
     [RelayCommand]
@@ -390,9 +407,9 @@ public partial class RigolDS1000ZFrontPanelViewModel : ObservableObject
             (M2Result, M2Unit) = await ReadMeas(M2Source, M2Type);
             (M3Result, M3Unit) = await ReadMeas(M3Source, M3Type);
             (M4Result, M4Unit) = await ReadMeas(M4Source, M4Type);
-            StatusText = $"Pomiary odświeżone  {Now()}";
+            StatusText = T("FP_RIGOL_MeasurementsRefreshed", "Measurements refreshed  {0}", Now());
         }
-        catch (Exception ex) { StatusText = $"Błąd pomiarów: {ex.Message}"; }
+        catch (Exception ex) { StatusText = T("FP_RIGOL_ErrMeasurements", "Measurement error: {0}", ex.Message); }
     }
 
     private async Task<(string Result, string Unit)> ReadMeas(string source, string param)
@@ -411,7 +428,7 @@ public partial class RigolDS1000ZFrontPanelViewModel : ObservableObject
     {
         if (!CheckConn()) return;
         try { TrigStatusText = await _driver.GetTriggerStatusAsync(); }
-        catch (Exception ex) { StatusText = $"Błąd TrigStatus: {ex.Message}"; }
+        catch (Exception ex) { StatusText = T("FP_RIGOL_ErrTrigStatus", "TrigStatus error: {0}", ex.Message); }
     }
 
     [RelayCommand]
@@ -426,7 +443,7 @@ public partial class RigolDS1000ZFrontPanelViewModel : ObservableObject
                            : sr >= 1e3 ? $"{sr / 1e3:G4} kSa/s"
                                        : $"{sr:G4} Sa/s";
         }
-        catch (Exception ex) { StatusText = $"Błąd SampleRate: {ex.Message}"; }
+        catch (Exception ex) { StatusText = T("FP_RIGOL_ErrSampleRate", "SampleRate error: {0}", ex.Message); }
     }
 
     [RelayCommand]
@@ -436,7 +453,7 @@ public partial class RigolDS1000ZFrontPanelViewModel : ObservableObject
         IsCapturing = true;
         try
         {
-            StatusText = "Odczyt przebiegów...";
+            StatusText = T("FP_RIGOL_ReadingWaveforms", "Reading waveforms...");
             bool[] enabled = { Ch1Enabled, Ch2Enabled, Ch3Enabled, Ch4Enabled };
 
             for (int i = 0; i < 4; i++)
@@ -454,9 +471,9 @@ public partial class RigolDS1000ZFrontPanelViewModel : ObservableObject
 
             _scopeModel.ResetAllAxes();
             _scopeModel.InvalidatePlot(true);
-            StatusText = $"Przebiegi wczytane  {Now()}";
+            StatusText = T("FP_RIGOL_WaveformsLoaded", "Waveforms loaded  {0}", Now());
         }
-        catch (Exception ex) { StatusText = $"Błąd odczytu: {ex.Message}"; }
+        catch (Exception ex) { StatusText = T("FP_RIGOL_ErrWaveformRead", "Read error: {0}", ex.Message); }
         finally { IsCapturing = false; }
     }
 
@@ -466,21 +483,21 @@ public partial class RigolDS1000ZFrontPanelViewModel : ObservableObject
         if (!CheckConn()) return;
         var dlg = new SaveFileDialog
         {
-            Title      = "Zapisz screenshot oscyloskopu",
-            Filter     = "BMP (*.bmp)|*.bmp|Wszystkie pliki (*.*)|*.*",
+            Title      = T("FP_RIGOL_SaveScreenshotTitle", "Save oscilloscope screenshot"),
+            Filter     = T("FP_RIGOL_ScreenshotFilter", "BMP (*.bmp)|*.bmp|All files (*.*)|*.*"),
             DefaultExt = ".bmp",
             FileName   = $"DS1000Z_{DateTime.Now:yyyyMMdd_HHmmss}",
         };
         if (dlg.ShowDialog() != true) return;
         try
         {
-            StatusText = "Pobieranie screenshota...";
+            StatusText = T("FP_RIGOL_DownloadingScreenshot", "Downloading screenshot...");
             byte[] data = await _driver.TakeScreenshotAsync();
-            if (data.Length == 0) { StatusText = "Screenshot: brak danych"; return; }
+            if (data.Length == 0) { StatusText = T("FP_RIGOL_ScreenshotNoData", "Screenshot: no data"); return; }
             await File.WriteAllBytesAsync(dlg.FileName, data);
             StatusText = $"Screenshot: {Path.GetFileName(dlg.FileName)}";
         }
-        catch (Exception ex) { StatusText = $"Błąd screenshot: {ex.Message}"; }
+        catch (Exception ex) { StatusText = T("FP_RIGOL_ErrScreenshot", "Screenshot error: {0}", ex.Message); }
     }
 
     [RelayCommand]
@@ -502,7 +519,7 @@ public partial class RigolDS1000ZFrontPanelViewModel : ObservableObject
             CursorBY = $"{by:G5} V";
             CursorDY = $"{dy:G5} V";
         }
-        catch (Exception ex) { StatusText = $"Błąd kursorów: {ex.Message}"; }
+        catch (Exception ex) { StatusText = T("FP_RIGOL_ErrCursors", "Cursor error: {0}", ex.Message); }
     }
 
     [RelayCommand]
@@ -510,7 +527,7 @@ public partial class RigolDS1000ZFrontPanelViewModel : ObservableObject
     {
         if (!CheckConn()) return;
         try { await _driver.ForceTriggerAsync(); StatusText = "Force Trigger"; }
-        catch (Exception ex) { StatusText = $"Błąd ForceTrig: {ex.Message}"; }
+        catch (Exception ex) { StatusText = T("FP_RIGOL_ErrForceTrig", "ForceTrig error: {0}", ex.Message); }
     }
 
     [RelayCommand]
@@ -521,9 +538,9 @@ public partial class RigolDS1000ZFrontPanelViewModel : ObservableObject
         {
             await _driver.ClearMeasurementsAsync();
             M1Result = M2Result = M3Result = M4Result = "---";
-            StatusText = "Pomiary wyczyszczone";
+            StatusText = T("FP_RIGOL_MeasurementsCleared", "Measurements cleared");
         }
-        catch (Exception ex) { StatusText = $"Błąd ClearMeas: {ex.Message}"; }
+        catch (Exception ex) { StatusText = T("FP_RIGOL_ErrClearMeas", "ClearMeas error: {0}", ex.Message); }
     }
 
     [RelayCommand]
@@ -531,7 +548,7 @@ public partial class RigolDS1000ZFrontPanelViewModel : ObservableObject
     {
         var dlg = new SaveFileDialog
         {
-            Title      = "Zapisz preset oscyloskopu",
+            Title      = T("FP_RIGOL_SavePresetTitle", "Save oscilloscope preset"),
             Filter     = "Preset JSON (*.json)|*.json",
             DefaultExt = ".json",
             FileName   = $"DS1000Z_preset_{DateTime.Now:yyyyMMdd_HHmmss}",
@@ -540,7 +557,7 @@ public partial class RigolDS1000ZFrontPanelViewModel : ObservableObject
         var preset = BuildPreset();
         string json = JsonSerializer.Serialize(preset, new JsonSerializerOptions { WriteIndented = true });
         await File.WriteAllTextAsync(dlg.FileName, json);
-        StatusText = $"Preset zapisany: {Path.GetFileName(dlg.FileName)}";
+        StatusText = T("FP_RIGOL_PresetSaved", "Preset saved: {0}", Path.GetFileName(dlg.FileName));
     }
 
     [RelayCommand]
@@ -548,17 +565,17 @@ public partial class RigolDS1000ZFrontPanelViewModel : ObservableObject
     {
         var dlg = new OpenFileDialog
         {
-            Title  = "Wczytaj preset oscyloskopu",
-            Filter = "Preset JSON (*.json)|*.json|Wszystkie pliki (*.*)|*.*",
+            Title  = T("FP_RIGOL_LoadPresetTitle", "Load oscilloscope preset"),
+            Filter = T("FP_RIGOL_PresetFilter", "Preset JSON (*.json)|*.json|All files (*.*)|*.*"),
         };
         if (dlg.ShowDialog() != true) return;
         try
         {
             string json = await File.ReadAllTextAsync(dlg.FileName);
             var preset  = JsonSerializer.Deserialize<RigolPreset>(json);
-            if (preset == null) { StatusText = "Błąd: nieprawidłowy plik presetu"; return; }
+            if (preset == null) { StatusText = T("FP_RIGOL_ErrInvalidPreset", "Error: invalid preset file"); return; }
             ApplyPreset(preset);
-            StatusText = $"Preset wczytany: {Path.GetFileName(dlg.FileName)}";
+            StatusText = T("FP_RIGOL_PresetLoaded", "Preset loaded: {0}", Path.GetFileName(dlg.FileName));
             if (_driver.IsConnected)
             {
                 await ApplyChannelsAsync();
@@ -566,7 +583,7 @@ public partial class RigolDS1000ZFrontPanelViewModel : ObservableObject
                 await ApplyTriggerAsync();
             }
         }
-        catch (Exception ex) { StatusText = $"Błąd wczytywania: {ex.Message}"; }
+        catch (Exception ex) { StatusText = T("FP_RIGOL_ErrLoadingPreset", "Load error: {0}", ex.Message); }
     }
 
     [RelayCommand]
@@ -575,13 +592,13 @@ public partial class RigolDS1000ZFrontPanelViewModel : ObservableObject
         if (!CheckConn()) return;
         try
         {
-            StatusText = "Reset...";
+            StatusText = T("FP_Resetting", "Reset...");
             await _driver.ResetAsync();
             AcquisitionState = "STOP";
             M1Result = M2Result = M3Result = M4Result = "---";
-            StatusText = "Reset wykonany";
+            StatusText = T("FP_ResetDone", "Reset done");
         }
-        catch (Exception ex) { StatusText = $"Błąd resetu: {ex.Message}"; }
+        catch (Exception ex) { StatusText = T("FP_ErrReset", "Reset error: {0}", ex.Message); }
     }
 
     [RelayCommand]
@@ -635,9 +652,19 @@ public partial class RigolDS1000ZFrontPanelViewModel : ObservableObject
     private bool CheckConn()
     {
         if (_driver.IsConnected) return true;
-        StatusText = "Nie połączono";
+        StatusText = T("FP_NotConnected", "Not connected");
         return false;
     }
+
+    private static string FpConnected(bool connected) => connected
+        ? T("FP_Connected", "Connected")
+        : T("FP_NotConnected", "Not connected");
+
+    private static string T(string key, string fallback) =>
+        System.Windows.Application.Current?.TryFindResource(key) as string ?? fallback;
+
+    private static string T(string key, string fallback, params object[] args) =>
+        string.Format(T(key, fallback), args);
 
     private static double D(string s, double fallback) =>
         double.TryParse(s, NumberStyles.Float, CultureInfo.InvariantCulture, out double d) ? d : fallback;

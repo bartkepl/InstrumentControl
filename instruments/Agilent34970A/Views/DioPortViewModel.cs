@@ -23,7 +23,7 @@ public partial class DioPortViewModel : ObservableObject
         _setStatus = setStatus;
     }
 
-    public string Title => $"PORT {_port}  (kanał {_slot + _port})";
+    public string Title => $"PORT {_port}  (CH {_slot + _port})";
 
     // ── Wyjście ─────────────────────────────────────────────────────────────────
     [ObservableProperty] private byte _outputValue;
@@ -89,24 +89,30 @@ public partial class DioPortViewModel : ObservableObject
     [RelayCommand]
     private async Task ReadAsync()
     {
-        if (!_driver.IsConnected) { _setStatus("Instrument nie jest połączony."); return; }
+        if (!_driver.IsConnected) { _setStatus(T("FP_A34970A_NotConnected", "Instrument is not connected.")); return; }
         try
         {
             InputValue = await _driver.ReadDigitalInputAsync(_slot, _port);
             _setStatus($"Digital IN slot {_slot} port {_port}: 0x{InputValue:X2}");
         }
-        catch (Exception ex) { _setStatus($"Błąd odczytu cyfrowego: {ex.Message}"); }
+        catch (Exception ex) { _setStatus(T("FP_A34970A_ErrDigitalRead", "Digital read error: {0}", ex.Message)); }
     }
 
     [RelayCommand]
     private async Task WriteAsync()
     {
-        if (!_driver.IsConnected) { _setStatus("Instrument nie jest połączony."); return; }
+        if (!_driver.IsConnected) { _setStatus(T("FP_A34970A_NotConnected", "Instrument is not connected.")); return; }
         try
         {
             await _driver.SetDigitalOutputAsync(_slot, _port, OutputValue);
             _setStatus($"Digital OUT slot {_slot} port {_port}: 0x{OutputValue:X2}");
         }
-        catch (Exception ex) { _setStatus($"Błąd wyjścia cyfrowego: {ex.Message}"); }
+        catch (Exception ex) { _setStatus(T("FP_A34970A_ErrDigitalWrite", "Digital write error: {0}", ex.Message)); }
     }
+
+    private static string T(string key, string fallback) =>
+        System.Windows.Application.Current?.TryFindResource(key) as string ?? fallback;
+
+    private static string T(string key, string fallback, params object[] args) =>
+        string.Format(T(key, fallback), args);
 }

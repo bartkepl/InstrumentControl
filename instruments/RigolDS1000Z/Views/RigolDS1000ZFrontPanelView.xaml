@@ -254,7 +254,7 @@
                     </Border>
 
                     <!-- Przycisk odczytu przebiegów -->
-                    <Button Content="▶ Odczytaj przebiegi" Width="140" Height="26"
+                    <Button Content="{DynamicResource FP_RIGOL_ReadWaveformsBtn}" Width="140" Height="26"
                             Background="#005ABB" Foreground="White"
                             FontFamily="Segoe UI" FontSize="10" FontWeight="SemiBold"
                             VerticalAlignment="Bottom" HorizontalAlignment="Right" Margin="6"
@@ -266,7 +266,7 @@
                                 <Style.Triggers>
                                     <DataTrigger Binding="{Binding IsCapturing}" Value="True">
                                         <Setter Property="Background" Value="#808878"/>
-                                        <Setter Property="Content" Value="⏳ Odczytuję..."/>
+                                        <Setter Property="Content" Value="{DynamicResource FP_RIGOL_ReadingWaveformsBtn}"/>
                                     </DataTrigger>
                                 </Style.Triggers>
                             </Style>
@@ -309,7 +309,7 @@
                                            FontFamily="Consolas" FontSize="11" FontWeight="Bold"
                                            HorizontalAlignment="Center" VerticalAlignment="Center"/>
                                 <CheckBox Grid.Column="2" IsChecked="{Binding Ch1Invert}"
-                                          VerticalAlignment="Center" ToolTip="Odwróć">
+                                          VerticalAlignment="Center" ToolTip="{DynamicResource FP_RIGOL_InvertTooltip}">
                                     <TextBlock Text="INV" Foreground="#A0780A" FontSize="8"/>
                                 </CheckBox>
                             </Grid>
@@ -326,13 +326,13 @@
                                 <RowDefinition Height="Auto"/>
                                 <RowDefinition Height="Auto"/>
                             </Grid.RowDefinitions>
-                            <TextBlock Grid.Row="0" Grid.Column="0" Text="V/dz" Style="{StaticResource FieldLabel}" Margin="0,1,4,1"/>
+                            <TextBlock Grid.Row="0" Grid.Column="0" Text="{DynamicResource FP_RIGOL_VDiv}" Style="{StaticResource FieldLabel}" Margin="0,1,4,1"/>
                             <ComboBox Grid.Row="0" Grid.Column="1" Style="{StaticResource CbBox}"
                                       ItemsSource="{Binding VScaleOptions}" SelectedItem="{Binding Ch1Scale}"/>
                             <TextBlock Grid.Row="1" Grid.Column="0" Text="Offs" Style="{StaticResource FieldLabel}" Margin="0,1,4,1"/>
                             <TextBox Grid.Row="1" Grid.Column="1" Style="{StaticResource ValBox}"
                                      Text="{Binding Ch1Offset, UpdateSourceTrigger=PropertyChanged}"/>
-                            <TextBlock Grid.Row="2" Grid.Column="0" Text="Spr." Style="{StaticResource FieldLabel}" Margin="0,1,4,1"/>
+                            <TextBlock Grid.Row="2" Grid.Column="0" Text="{DynamicResource FP_RIGOL_Coup}" Style="{StaticResource FieldLabel}" Margin="0,1,4,1"/>
                             <ComboBox Grid.Row="2" Grid.Column="1" Style="{StaticResource CbBox}"
                                       ItemsSource="{Binding CouplingOptions}" SelectedItem="{Binding Ch1Coupling}"/>
                             <TextBlock Grid.Row="3" Grid.Column="0" Text="×" Style="{StaticResource FieldLabel}" Margin="0,1,4,1"/>
@@ -365,7 +365,7 @@
                                            FontFamily="Consolas" FontSize="11" FontWeight="Bold"
                                            HorizontalAlignment="Center" VerticalAlignment="Center"/>
                                 <CheckBox Grid.Column="2" IsChecked="{Binding Ch2Invert}"
-                                          VerticalAlignment="Center" ToolTip="Odwróć">
+                                          VerticalAlignment="Center" ToolTip="{DynamicResource FP_RIGOL_InvertTooltip}">
                                     <TextBlock Text="INV" Foreground="#009090" FontSize="8"/>
                                 </CheckBox>
                             </Grid>
@@ -382,13 +382,13 @@
                                 <RowDefinition Height="Auto"/>
                                 <RowDefinition Height="Auto"/>
                             </Grid.RowDefinitions>
-                            <TextBlock Grid.Row="0" Grid.Column="0" Text="V/dz" Style="{StaticResource FieldLabel}" Margin="0,1,4,1"/>
+                            <TextBlock Grid.Row="0" Grid.Column="0" Text="{DynamicResource FP_RIGOL_VDiv}" Style="{StaticResource FieldLabel}" Margin="0,1,4,1"/>
                             <ComboBox Grid.Row="0" Grid.Column="1" Style="{StaticResource CbBox}"
                                       ItemsSource="{Binding VScaleOptions}" SelectedItem="{Binding Ch2Scale}"/>
                             <TextBlock Grid.Row="1" Grid.Column="0" Text="Offs" Style="{StaticResource FieldLabel}" Margin="0,1,4,1"/>
                             <TextBox Grid.Row="1" Grid.Column="1" Style="{StaticResource ValBox}"
                                      Text="{Binding Ch2Offset, UpdateSourceTrigger=PropertyChanged}"/>
-                            <TextBlock Grid.Row="2" Grid.Column="0" Text="Spr." Style="{StaticResource FieldLabel}" Margin="0,1,4,1"/>
+                            <TextBlock Grid.Row="2" Grid.Column="0" Text="{DynamicResource FP_RIGOL_Coup}" Style="{StaticResource FieldLabel}" Margin="0,1,4,1"/>
                             <ComboBox Grid.Row="2" Grid.Column="1" Style="{StaticResource CbBox}"
                                       ItemsSource="{Binding CouplingOptions}" SelectedItem="{Binding Ch2Coupling}"/>
                             <TextBlock Grid.Row="3" Grid.Column="0" Text="×" Style="{StaticResource FieldLabel}" Margin="0,1,4,1"/>
@@ -421,7 +421,7 @@
                                            FontFamily="Consolas" FontSize="11" FontWeight="Bold"
                                            HorizontalAlignment="Center" VerticalAlignment="Center"/>
                                 <CheckBox Grid.Column="2" IsChecked="{Binding Ch3Invert}"
-                                          VerticalAlignment="Center" ToolTip="Odwróć">
+                                          VerticalAlignment="Center" ToolTip="{DynamicResource FP_RIGOL_InvertTooltip}">
                                     <TextBlock Text="INV" Foreground="#900070" FontSize="8"/>
                                 </CheckBox>
                             </Grid>
@@ -438,13 +438,13 @@
                                 <RowDefinition Height="Auto"/>
                                 <RowDefinition Height="Auto"/>
                             </Grid.RowDefinitions>
-                            <TextBlock Grid.Row="0" Grid.Column="0" Text="V/dz" Style="{StaticResource FieldLabel}" Margin="0,1,4,1"/>
+                            <TextBlock Grid.Row="0" Grid.Column="0" Text="{DynamicResource FP_RIGOL_VDiv}" Style="{StaticResource FieldLabel}" Margin="0,1,4,1"/>
                             <ComboBox Grid.Row="0" Grid.Column="1" Style="{StaticResource CbBox}"
                                       ItemsSource="{Binding VScaleOptions}" SelectedItem="{Binding Ch3Scale}"/>
                             <TextBlock Grid.Row="1" Grid.Column="0" Text="Offs" Style="{StaticResource FieldLabel}" Margin="0,1,4,1"/>
                             <TextBox Grid.Row="1" Grid.Column="1" Style="{StaticResource ValBox}"
                                      Text="{Binding Ch3Offset, UpdateSourceTrigger=PropertyChanged}"/>
-                            <TextBlock Grid.Row="2" Grid.Column="0" Text="Spr." Style="{StaticResource FieldLabel}" Margin="0,1,4,1"/>
+                            <TextBlock Grid.Row="2" Grid.Column="0" Text="{DynamicResource FP_RIGOL_Coup}" Style="{StaticResource FieldLabel}" Margin="0,1,4,1"/>
                             <ComboBox Grid.Row="2" Grid.Column="1" Style="{StaticResource CbBox}"
                                       ItemsSource="{Binding CouplingOptions}" SelectedItem="{Binding Ch3Coupling}"/>
                             <TextBlock Grid.Row="3" Grid.Column="0" Text="×" Style="{StaticResource FieldLabel}" Margin="0,1,4,1"/>
@@ -477,7 +477,7 @@
                                            FontFamily="Consolas" FontSize="11" FontWeight="Bold"
                                            HorizontalAlignment="Center" VerticalAlignment="Center"/>
                                 <CheckBox Grid.Column="2" IsChecked="{Binding Ch4Invert}"
-                                          VerticalAlignment="Center" ToolTip="Odwróć">
+                                          VerticalAlignment="Center" ToolTip="{DynamicResource FP_RIGOL_InvertTooltip}">
                                     <TextBlock Text="INV" Foreground="#287A00" FontSize="8"/>
                                 </CheckBox>
                             </Grid>
@@ -494,13 +494,13 @@
                                 <RowDefinition Height="Auto"/>
                                 <RowDefinition Height="Auto"/>
                             </Grid.RowDefinitions>
-                            <TextBlock Grid.Row="0" Grid.Column="0" Text="V/dz" Style="{StaticResource FieldLabel}" Margin="0,1,4,1"/>
+                            <TextBlock Grid.Row="0" Grid.Column="0" Text="{DynamicResource FP_RIGOL_VDiv}" Style="{StaticResource FieldLabel}" Margin="0,1,4,1"/>
                             <ComboBox Grid.Row="0" Grid.Column="1" Style="{StaticResource CbBox}"
                                       ItemsSource="{Binding VScaleOptions}" SelectedItem="{Binding Ch4Scale}"/>
                             <TextBlock Grid.Row="1" Grid.Column="0" Text="Offs" Style="{StaticResource FieldLabel}" Margin="0,1,4,1"/>
                             <TextBox Grid.Row="1" Grid.Column="1" Style="{StaticResource ValBox}"
                                      Text="{Binding Ch4Offset, UpdateSourceTrigger=PropertyChanged}"/>
-                            <TextBlock Grid.Row="2" Grid.Column="0" Text="Spr." Style="{StaticResource FieldLabel}" Margin="0,1,4,1"/>
+                            <TextBlock Grid.Row="2" Grid.Column="0" Text="{DynamicResource FP_RIGOL_Coup}" Style="{StaticResource FieldLabel}" Margin="0,1,4,1"/>
                             <ComboBox Grid.Row="2" Grid.Column="1" Style="{StaticResource CbBox}"
                                       ItemsSource="{Binding CouplingOptions}" SelectedItem="{Binding Ch4Coupling}"/>
                             <TextBlock Grid.Row="3" Grid.Column="0" Text="×" Style="{StaticResource FieldLabel}" Margin="0,1,4,1"/>
@@ -515,7 +515,7 @@
             </Border>
 
             <!-- Zastosuj kanały -->
-            <Button Content="⟳ Zastosuj wszystkie kanały" Height="26" Margin="8,2,8,2"
+            <Button Content="{DynamicResource FP_RIGOL_ApplyAllChannels}" Height="26" Margin="8,2,8,2"
                     Style="{StaticResource MdBtn}" Background="{StaticResource BtnYellow}"
                     Command="{Binding ApplyChannelsCommand}" IsEnabled="{Binding IsConnected}"/>
 
@@ -543,17 +543,17 @@
                                 <RowDefinition Height="Auto"/>
                                 <RowDefinition Height="Auto"/>
                             </Grid.RowDefinitions>
-                            <TextBlock Grid.Row="0" Grid.Column="0" Text="s/dz" Style="{StaticResource FieldLabel}" Margin="0,1"/>
+                            <TextBlock Grid.Row="0" Grid.Column="0" Text="{DynamicResource FP_RIGOL_SDiv}" Style="{StaticResource FieldLabel}" Margin="0,1"/>
                             <ComboBox Grid.Row="0" Grid.Column="1" Style="{StaticResource CbBox}" Margin="0,1"
                                       ItemsSource="{Binding TScaleOptions}" SelectedItem="{Binding SelectedTimescale}"/>
                             <TextBlock Grid.Row="1" Grid.Column="0" Text="Offs" Style="{StaticResource FieldLabel}" Margin="0,1"/>
                             <TextBox Grid.Row="1" Grid.Column="1" Style="{StaticResource ValBox}" Margin="0,1"
                                      Text="{Binding TimebaseOffset, UpdateSourceTrigger=PropertyChanged}"/>
-                            <TextBlock Grid.Row="2" Grid.Column="0" Text="Tryb" Style="{StaticResource FieldLabel}" Margin="0,1"/>
+                            <TextBlock Grid.Row="2" Grid.Column="0" Text="{DynamicResource FP_RIGOL_Mode}" Style="{StaticResource FieldLabel}" Margin="0,1"/>
                             <ComboBox Grid.Row="2" Grid.Column="1" Style="{StaticResource CbBox}" Margin="0,1"
                                       ItemsSource="{Binding TbModeOptions}" SelectedItem="{Binding TimebaseMode}"/>
                         </Grid>
-                        <Button Content="⟳ Zastosuj" Margin="0,4,0,0" Style="{StaticResource MdBtn}"
+                        <Button Content="{DynamicResource FP_RIGOL_Apply}" Margin="0,4,0,0" Style="{StaticResource MdBtn}"
                                 Background="{StaticResource BtnYellow}"
                                 Command="{Binding ApplyTimebaseCommand}" IsEnabled="{Binding IsConnected}"/>
                     </StackPanel>
@@ -577,19 +577,19 @@
                                 <RowDefinition Height="Auto"/>
                                 <RowDefinition Height="Auto"/>
                             </Grid.RowDefinitions>
-                            <TextBlock Grid.Row="0" Grid.Column="0" Text="Tryb" Style="{StaticResource FieldLabel}" Margin="0,1"/>
+                            <TextBlock Grid.Row="0" Grid.Column="0" Text="{DynamicResource FP_RIGOL_Mode}" Style="{StaticResource FieldLabel}" Margin="0,1"/>
                             <ComboBox Grid.Row="0" Grid.Column="1" Style="{StaticResource CbBox}" Margin="0,1"
                                       ItemsSource="{Binding TrigModeOptions}" SelectedItem="{Binding TriggerMode}"/>
-                            <TextBlock Grid.Row="1" Grid.Column="0" Text="Akw." Style="{StaticResource FieldLabel}" Margin="0,1"/>
+                            <TextBlock Grid.Row="1" Grid.Column="0" Text="{DynamicResource FP_RIGOL_Sweep}" Style="{StaticResource FieldLabel}" Margin="0,1"/>
                             <ComboBox Grid.Row="1" Grid.Column="1" Style="{StaticResource CbBox}" Margin="0,1"
                                       ItemsSource="{Binding TrigSweepOptions}" SelectedItem="{Binding TriggerSweep}"/>
-                            <TextBlock Grid.Row="2" Grid.Column="0" Text="Źródło" Style="{StaticResource FieldLabel}" Margin="0,1"/>
+                            <TextBlock Grid.Row="2" Grid.Column="0" Text="{DynamicResource FP_RIGOL_Source}" Style="{StaticResource FieldLabel}" Margin="0,1"/>
                             <ComboBox Grid.Row="2" Grid.Column="1" Style="{StaticResource CbBox}" Margin="0,1"
                                       ItemsSource="{Binding TrigSrcOptions}" SelectedItem="{Binding TriggerSource}"/>
-                            <TextBlock Grid.Row="3" Grid.Column="0" Text="Zbocze" Style="{StaticResource FieldLabel}" Margin="0,1"/>
+                            <TextBlock Grid.Row="3" Grid.Column="0" Text="{DynamicResource FP_RIGOL_Slope}" Style="{StaticResource FieldLabel}" Margin="0,1"/>
                             <ComboBox Grid.Row="3" Grid.Column="1" Style="{StaticResource CbBox}" Margin="0,1"
                                       ItemsSource="{Binding TrigSlopeOptions}" SelectedItem="{Binding TriggerSlope}"/>
-                            <TextBlock Grid.Row="4" Grid.Column="0" Text="Poz. [V]" Style="{StaticResource FieldLabel}" Margin="0,1"/>
+                            <TextBlock Grid.Row="4" Grid.Column="0" Text="{DynamicResource FP_RIGOL_LevelV}" Style="{StaticResource FieldLabel}" Margin="0,1"/>
                             <TextBox Grid.Row="4" Grid.Column="1" Style="{StaticResource ValBox}" Margin="0,1"
                                      Text="{Binding TriggerLevel, UpdateSourceTrigger=PropertyChanged}"/>
                         </Grid>
@@ -599,7 +599,7 @@
                                 <ColumnDefinition Width="4"/>
                                 <ColumnDefinition Width="Auto"/>
                             </Grid.ColumnDefinitions>
-                            <Button Grid.Column="0" Content="⟳ Zastosuj" Style="{StaticResource MdBtn}"
+                            <Button Grid.Column="0" Content="{DynamicResource FP_RIGOL_Apply}" Style="{StaticResource MdBtn}"
                                     Background="{StaticResource BtnYellow}"
                                     Command="{Binding ApplyTriggerCommand}" IsEnabled="{Binding IsConnected}"/>
                             <Button Grid.Column="2" Content="Force" Width="52" Style="{StaticResource MdBtn}"
@@ -633,16 +633,16 @@
 
                     <TextBlock Grid.Column="0" Text="ACQUIRE:" Style="{StaticResource SecTitle}"
                                VerticalAlignment="Center" Margin="0"/>
-                    <TextBlock Grid.Column="2" Text="Typ" Style="{StaticResource FieldLabel}"/>
+                    <TextBlock Grid.Column="2" Text="{DynamicResource FP_RIGOL_Type}" Style="{StaticResource FieldLabel}"/>
                     <ComboBox Grid.Column="4" Style="{StaticResource CbBox}" Width="110"
                               ItemsSource="{Binding AcqTypeOptions}" SelectedItem="{Binding AcquireType}"/>
-                    <TextBlock Grid.Column="6" Text="Śred." Style="{StaticResource FieldLabel}"/>
+                    <TextBlock Grid.Column="6" Text="{DynamicResource FP_RIGOL_Avg}" Style="{StaticResource FieldLabel}"/>
                     <ComboBox Grid.Column="8" Style="{StaticResource CbBox}" Width="60"
                               ItemsSource="{Binding AcqAvgOptions}" SelectedItem="{Binding AcquireAvg}"/>
-                    <TextBlock Grid.Column="10" Text="Pam." Style="{StaticResource FieldLabel}"/>
+                    <TextBlock Grid.Column="10" Text="{DynamicResource FP_RIGOL_Mem}" Style="{StaticResource FieldLabel}"/>
                     <ComboBox Grid.Column="11" Style="{StaticResource CbBox}" Margin="2,0,6,0"
                               ItemsSource="{Binding MemDepthOptions}" SelectedItem="{Binding AcquireMem}"/>
-                    <Button Grid.Column="12" Content="⟳ Zastosuj" Style="{StaticResource MdBtn}"
+                    <Button Grid.Column="12" Content="{DynamicResource FP_RIGOL_Apply}" Style="{StaticResource MdBtn}"
                             Background="{StaticResource BtnYellow}" Width="90"
                             Command="{Binding ApplyAcquireCommand}" IsEnabled="{Binding IsConnected}"/>
                 </Grid>
@@ -661,8 +661,8 @@
                             <ColumnDefinition Width="4"/>
                             <ColumnDefinition Width="Auto"/>
                         </Grid.ColumnDefinitions>
-                        <TextBlock Grid.Column="0" Text="POMIARY" Style="{StaticResource SecTitle}" VerticalAlignment="Center"/>
-                        <Button Grid.Column="2" Content="⟳ Odśwież" Style="{StaticResource MdBtn}"
+                        <TextBlock Grid.Column="0" Text="{DynamicResource FP_RIGOL_Measurements}" Style="{StaticResource SecTitle}" VerticalAlignment="Center"/>
+                        <Button Grid.Column="2" Content="{DynamicResource FP_RIGOL_Refresh}" Style="{StaticResource MdBtn}"
                                 Background="#0060A0" Width="90"
                                 Command="{Binding UpdateMeasurementsCommand}" IsEnabled="{Binding IsConnected}"/>
                         <Button Grid.Column="4" Content="CLR" Style="{StaticResource MdBtn}"
@@ -761,7 +761,7 @@
                         <ColumnDefinition Width="*"/>
                         <ColumnDefinition Width="Auto"/>
                     </Grid.ColumnDefinitions>
-                    <TextBlock Grid.Column="0" Text="KURSORY:" Style="{StaticResource SecTitle}" VerticalAlignment="Center" Margin="0,0,10,0"/>
+                    <TextBlock Grid.Column="0" Text="{DynamicResource FP_RIGOL_Cursors}" Style="{StaticResource SecTitle}" VerticalAlignment="Center" Margin="0,0,10,0"/>
                     <WrapPanel Grid.Column="1" Orientation="Horizontal">
                         <TextBlock Text="AX=" Style="{StaticResource FieldLabel}" Margin="0,0,2,0"/>
                         <TextBlock Text="{Binding CursorAX}" Style="{StaticResource ResultText}" FontSize="11" Margin="0,0,8,0"/>
@@ -776,7 +776,7 @@
                         <TextBlock Text="ΔY=" Style="{StaticResource FieldLabel}" Foreground="#FFD800" Margin="0,0,2,0"/>
                         <TextBlock Text="{Binding CursorDY}" Style="{StaticResource ResultText}" FontSize="11" Foreground="#FFD800"/>
                     </WrapPanel>
-                    <Button Grid.Column="2" Content="⟳ Odczytaj" Style="{StaticResource MdBtn}"
+                    <Button Grid.Column="2" Content="{DynamicResource FP_RIGOL_ReadCursorsBtn}" Style="{StaticResource MdBtn}"
                             Background="{StaticResource BtnGray}" Width="80"
                             Command="{Binding ReadCursorsCommand}" IsEnabled="{Binding IsConnected}"/>
                 </Grid>
@@ -847,7 +847,7 @@
                     <Rectangle Grid.Column="7" Width="1" Fill="{StaticResource BorderClr}" Margin="4,4"/>
 
                     <!-- Screenshot -->
-                    <Button Grid.Column="8" Content="📷 Zdjęcie" Style="{StaticResource AcqBtn}"
+                    <Button Grid.Column="8" Content="{DynamicResource FP_RIGOL_Screenshot}" Style="{StaticResource AcqBtn}"
                             Background="{StaticResource BtnGray}"
                             Command="{Binding TakeScreenshotCommand}" IsEnabled="{Binding IsConnected}"/>
 
@@ -878,14 +878,14 @@
                         <ColumnDefinition Width="Auto"/>
                     </Grid.ColumnDefinitions>
                     <TextBlock Grid.Column="0" Text="PRESET:" Style="{StaticResource SecTitle}" VerticalAlignment="Center" Margin="0,0,10,0"/>
-                    <Button Grid.Column="2" Content="💾 Zapisz" Style="{StaticResource MdBtn}"
+                    <Button Grid.Column="2" Content="{DynamicResource FP_RIGOL_Save}" Style="{StaticResource MdBtn}"
                             Background="#005080" Width="84" Command="{Binding SavePresetCommand}"/>
-                    <Button Grid.Column="4" Content="📂 Wczytaj" Style="{StaticResource MdBtn}"
+                    <Button Grid.Column="4" Content="{DynamicResource FP_RIGOL_Load}" Style="{StaticResource MdBtn}"
                             Background="#004060" Width="84" Command="{Binding LoadPresetCommand}"/>
                     <Button Grid.Column="6" Content="Sa/s" Style="{StaticResource MdBtn}"
                             Background="{StaticResource BtnGray}" Width="60"
                             Command="{Binding ReadSampleRateCommand}" IsEnabled="{Binding IsConnected}"
-                            ToolTip="Odczytaj próbkowanie"/>
+                            ToolTip="{DynamicResource FP_RIGOL_ReadSamplingTooltip}"/>
                 </Grid>
             </Border>
 

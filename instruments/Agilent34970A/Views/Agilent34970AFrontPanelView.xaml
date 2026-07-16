@@ -178,7 +178,7 @@
                     <TextBlock Text="{Binding Title}" FontSize="11" FontWeight="Bold"
                                Foreground="{StaticResource TextMuted}" Margin="0,0,0,8"/>
 
-                    <TextBlock Text="Wejście (odczyt)" FontSize="10"
+                    <TextBlock Text="{DynamicResource FP_A34970A_InputRead}" FontSize="10"
                                Foreground="{StaticResource TextMuted}" Margin="0,0,0,4"/>
                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
                         <StackPanel Margin="3,0"><Ellipse Style="{StaticResource BitIndicator}" Fill="{Binding InputBit7Brush}"/><TextBlock Text="7" FontSize="9" HorizontalAlignment="Center" Foreground="{StaticResource TextMuted}"/></StackPanel>
@@ -193,11 +193,11 @@
                     </StackPanel>
                     <TextBlock Text="{Binding InputValue, StringFormat='0x{0:X2} ({0})'}"
                                Foreground="{StaticResource TextPrimary}" HorizontalAlignment="Center" Margin="0,6,0,0"/>
-                    <Button Content="ODCZYTAJ" Style="{StaticResource TealButton}"
+                    <Button Content="{DynamicResource FP_A34970A_ReadBtn}" Style="{StaticResource TealButton}"
                             Command="{Binding ReadCommand}" Margin="0,8,0,12"
                             HorizontalAlignment="Center" Width="120"/>
 
-                    <TextBlock Text="Wyjście" FontSize="10"
+                    <TextBlock Text="{DynamicResource FP_A34970A_Output}" FontSize="10"
                                Foreground="{StaticResource TextMuted}" Margin="0,0,0,4"/>
                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
                         <ToggleButton Style="{StaticResource BitToggle}" IsChecked="{Binding OutputBit7}" Margin="2" Content="7"/>
@@ -212,7 +212,7 @@
                     </StackPanel>
                     <TextBlock Text="{Binding OutputValue, StringFormat='0x{0:X2} ({0})'}"
                                Foreground="{StaticResource TextPrimary}" HorizontalAlignment="Center" Margin="0,6,0,0"/>
-                    <Button Content="ZAPISZ" Style="{StaticResource RedButton}"
+                    <Button Content="{DynamicResource FP_A34970A_WriteBtn}" Style="{StaticResource RedButton}"
                             Command="{Binding WriteCommand}" Margin="0,8,0,0"
                             HorizontalAlignment="Center" Width="120"/>
                 </StackPanel>
@@ -223,7 +223,7 @@
         <DataTemplate DataType="{x:Type vm:Mux34901AViewModel}">
             <ScrollViewer VerticalScrollBarVisibility="Auto">
                 <StackPanel Margin="16">
-                    <TextBlock Text="POMIAR MULTIPLEKSERA — każdy kanał z własną funkcją"
+                    <TextBlock Text="{DynamicResource FP_A34970A_MuxTitle}"
                                FontSize="12" FontWeight="Bold"
                                Foreground="{StaticResource TextMuted}" Margin="0,0,0,4"/>
                     <TextBlock Text="{Binding ChannelHint}" FontSize="10"
@@ -234,7 +234,7 @@
                               Style="{StaticResource ResultsGrid}"
                               IsReadOnly="True" Height="190">
                         <DataGrid.Columns>
-                            <DataGridTemplateColumn Header="Kanał" Width="Auto">
+                            <DataGridTemplateColumn Header="{DynamicResource FP_A34970A_Channel}" Width="Auto">
                                 <DataGridTemplateColumn.CellTemplate>
                                     <DataTemplate>
                                         <ComboBox MinWidth="70" Margin="2" BorderThickness="0"
@@ -243,7 +243,7 @@
                                     </DataTemplate>
                                 </DataGridTemplateColumn.CellTemplate>
                             </DataGridTemplateColumn>
-                            <DataGridTemplateColumn Header="Funkcja" Width="Auto">
+                            <DataGridTemplateColumn Header="{DynamicResource FP_A34970A_Function}" Width="Auto">
                                 <DataGridTemplateColumn.CellTemplate>
                                     <DataTemplate>
                                         <ComboBox MinWidth="110" Margin="2" BorderThickness="0"
@@ -252,7 +252,7 @@
                                     </DataTemplate>
                                 </DataGridTemplateColumn.CellTemplate>
                             </DataGridTemplateColumn>
-                            <DataGridTemplateColumn Header="Zakres" Width="Auto">
+                            <DataGridTemplateColumn Header="{DynamicResource FP_A34970A_Range}" Width="Auto">
                                 <DataGridTemplateColumn.CellTemplate>
                                     <DataTemplate>
                                         <ComboBox MinWidth="80" Margin="2" IsEditable="True"
@@ -269,32 +269,32 @@
                                                 Binding="{Binding Param}"/>
                             <DataGridTextColumn Header="NPLC" Width="Auto" MinWidth="50"
                                                 Binding="{Binding Nplc}"/>
-                            <DataGridTextColumn Header="Rozdz." Width="Auto" MinWidth="50"
+                            <DataGridTextColumn Header="{DynamicResource FP_A34970A_Resolution}" Width="Auto" MinWidth="50"
                                                 Binding="{Binding Resolution}"/>
-                            <DataGridTextColumn Header="Skalowanie Mx+B" Width="*" MinWidth="120"
+                            <DataGridTextColumn Header="{DynamicResource FP_A34970A_ScaleMxB}" Width="*" MinWidth="120"
                                                 Binding="{Binding ScaleSummary}"/>
                         </DataGrid.Columns>
                     </DataGrid>
 
                     <!-- Buttons -->
                     <WrapPanel Margin="0,10,0,0">
-                        <Button Content="+ Wiersz" Style="{StaticResource ActionButton}"
+                        <Button Content="{DynamicResource FP_A34970A_AddRow}" Style="{StaticResource ActionButton}"
                                 Command="{Binding AddRowCommand}" Height="32" Margin="0,0,8,8"/>
-                        <Button Content="− Usuń" Style="{StaticResource RedButton}"
+                        <Button Content="{DynamicResource FP_A34970A_RemoveRow}" Style="{StaticResource RedButton}"
                                 Command="{Binding RemoveRowCommand}" Height="32" Margin="0,0,8,8"/>
-                        <Button Content="Konfig. kanału…" Style="{StaticResource ActionButton}"
+                        <Button Content="{DynamicResource FP_A34970A_ChannelConfigBtn}" Style="{StaticResource ActionButton}"
                                 Command="{Binding OpenChannelConfigCommand}" Height="32" Margin="0,0,8,8"/>
-                        <Button Content="Konfig. skanu…" Style="{StaticResource ActionButton}"
+                        <Button Content="{DynamicResource FP_A34970A_ScanConfigBtn}" Style="{StaticResource ActionButton}"
                                 Command="{Binding OpenScanConfigCommand}" Height="32" Margin="0,0,8,8"/>
-                        <Button Content="▶  SKANUJ" Style="{StaticResource GreenButton}"
+                        <Button Content="{DynamicResource FP_A34970A_Scan}" Style="{StaticResource GreenButton}"
                                 Command="{Binding ScanCommand}" Height="32" Width="120" Margin="0,0,8,8"/>
                         <Button Width="110" Height="32" Margin="0,0,8,8">
                             <Button.Style>
                                 <Style TargetType="Button" BasedOn="{StaticResource ActionButton}">
-                                    <Setter Property="Content" Value="▶  CIĄGŁY"/>
+                                    <Setter Property="Content" Value="{DynamicResource FP_DMM_Continuous}"/>
                                     <Style.Triggers>
                                         <DataTrigger Binding="{Binding IsContinuousScan}" Value="True">
-                                            <Setter Property="Content" Value="■  STOP"/>
+                                            <Setter Property="Content" Value="{DynamicResource FP_DMM_Stop}"/>
                                             <Setter Property="Background" Value="{StaticResource AccentRed}"/>
                                         </DataTrigger>
                                     </Style.Triggers>
@@ -307,15 +307,15 @@
                                   Height="32" Width="80" Margin="0,0,0,8"/>
                     </WrapPanel>
 
-                    <TextBlock Text="WYNIKI" FontSize="10" FontWeight="Bold"
+                    <TextBlock Text="{DynamicResource FP_A34970A_Results}" FontSize="10" FontWeight="Bold"
                                Foreground="{StaticResource TextMuted}" Margin="0,12,0,6"/>
                     <DataGrid ItemsSource="{Binding ScanResults}" Style="{StaticResource ResultsGrid}" Height="220">
                         <DataGrid.Columns>
-                            <DataGridTextColumn Header="Kanał"     Width="Auto" MinWidth="60"  Binding="{Binding ChannelId}"/>
-                            <DataGridTextColumn Header="Wartość"   Width="Auto" MinWidth="110" Binding="{Binding Value, StringFormat=G8}"/>
-                            <DataGridTextColumn Header="Jednostka" Width="Auto" MinWidth="80"  Binding="{Binding Unit}"/>
-                            <DataGridTextColumn Header="Funkcja"   Width="Auto" MinWidth="100" Binding="{Binding Function}"/>
-                            <DataGridTextColumn Header="Czas"      Width="Auto" MinWidth="100" Binding="{Binding Timestamp, StringFormat=HH:mm:ss.fff}"/>
+                            <DataGridTextColumn Header="{DynamicResource FP_A34970A_Channel}"  Width="Auto" MinWidth="60"  Binding="{Binding ChannelId}"/>
+                            <DataGridTextColumn Header="{DynamicResource FP_A34970A_Value}"    Width="Auto" MinWidth="110" Binding="{Binding Value, StringFormat=G8}"/>
+                            <DataGridTextColumn Header="{DynamicResource FP_A34970A_Unit}"     Width="Auto" MinWidth="80"  Binding="{Binding Unit}"/>
+                            <DataGridTextColumn Header="{DynamicResource FP_A34970A_Function}" Width="Auto" MinWidth="100" Binding="{Binding Function}"/>
+                            <DataGridTextColumn Header="{DynamicResource FP_A34970A_Time}"     Width="Auto" MinWidth="100" Binding="{Binding Timestamp, StringFormat=HH:mm:ss.fff}"/>
                         </DataGrid.Columns>
                     </DataGrid>
                 </StackPanel>
@@ -326,7 +326,7 @@
         <DataTemplate DataType="{x:Type vm:Multi34907AViewModel}">
             <ScrollViewer VerticalScrollBarVisibility="Auto">
                 <StackPanel Margin="16">
-                    <TextBlock Text="MODUŁ WIELOFUNKCYJNY 34907A"
+                    <TextBlock Text="{DynamicResource FP_A34970A_MultiTitle}"
                                FontSize="12" FontWeight="Bold"
                                Foreground="{StaticResource TextMuted}" Margin="0,0,0,8"/>
 
@@ -363,7 +363,7 @@
                                                 Style="{StaticResource ActionButton}" Command="{Binding Dac1DownCommand}"/>
                                     </StackPanel>
                                 </Grid>
-                                <Button Content="Ustaw DAC 1" Style="{StaticResource GreenButton}"
+                                <Button Content="{DynamicResource FP_A34970A_SetDac1}" Style="{StaticResource GreenButton}"
                                         Command="{Binding SetDac1Command}" Margin="0,8,0,0"/>
                             </StackPanel>
                         </Border>
@@ -390,21 +390,21 @@
                                                 Style="{StaticResource ActionButton}" Command="{Binding Dac2DownCommand}"/>
                                     </StackPanel>
                                 </Grid>
-                                <Button Content="Ustaw DAC 2" Style="{StaticResource GreenButton}"
+                                <Button Content="{DynamicResource FP_A34970A_SetDac2}" Style="{StaticResource GreenButton}"
                                         Command="{Binding SetDac2Command}" Margin="0,8,0,0"/>
                             </StackPanel>
                         </Border>
                     </Grid>
 
                     <StackPanel Orientation="Horizontal" Margin="0,0,0,14">
-                        <TextBlock Text="Krok DAC [V]:" Style="{StaticResource FieldLabel}"
+                        <TextBlock Text="{DynamicResource FP_A34970A_DacStep}" Style="{StaticResource FieldLabel}"
                                    VerticalAlignment="Center" Margin="0,0,8,0"/>
                         <TextBox Text="{Binding DacStep, StringFormat=F3, UpdateSourceTrigger=PropertyChanged}"
                                  Width="80" FontFamily="Consolas"/>
                     </StackPanel>
 
                     <!-- Digital I/O: dwa porty obok siebie -->
-                    <TextBlock Text="CYFROWE I/O" FontSize="11" FontWeight="Bold"
+                    <TextBlock Text="{DynamicResource FP_A34970A_DigitalIO}" FontSize="11" FontWeight="Bold"
                                Foreground="{StaticResource TextMuted}" Margin="0,0,0,6"/>
                     <Grid Margin="0,0,0,14">
                         <Grid.ColumnDefinitions>
@@ -420,7 +420,7 @@
                     <Border Background="{StaticResource ControlBg}" BorderBrush="{StaticResource AccentTeal}"
                             BorderThickness="1" CornerRadius="6" Padding="14">
                         <StackPanel>
-                            <TextBlock Text="TOTALIZATOR IMPULSÓW (kanał s03)"
+                            <TextBlock Text="{DynamicResource FP_A34970A_TotalizerTitle}"
                                        FontSize="11" FontWeight="Bold"
                                        Foreground="{StaticResource AccentTeal}" Margin="0,0,0,10"/>
                             <Grid>
@@ -435,7 +435,7 @@
                                     <TextBlock Text="{Binding TotalizerValueText}" Foreground="{StaticResource AccentTeal}"
                                                FontFamily="Consolas" FontSize="16" MinWidth="80" TextAlignment="Right"/>
                                 </Border>
-                                <Button Grid.Column="1" Content="ODCZYTAJ" Style="{StaticResource TealButton}"
+                                <Button Grid.Column="1" Content="{DynamicResource FP_A34970A_ReadBtn}" Style="{StaticResource TealButton}"
                                         Command="{Binding ReadTotalizerCommand}" Width="90" Height="30"/>
                                 <Button Grid.Column="3" Content="RESET" Style="{StaticResource RedButton}"
                                         Command="{Binding ResetTotalizerCommand}" Width="70" Height="30"/>
@@ -467,31 +467,31 @@
                         <StackPanel>
                             <TextBlock Text="AGILENT" FontSize="11" FontWeight="Bold" Foreground="{StaticResource AccentBlue}"/>
                             <TextBlock Text="34970A" FontSize="24" FontWeight="Bold" Foreground="{StaticResource TextPrimary}"/>
-                            <TextBlock Text="Data Acquisition / Switch Unit" FontSize="10"
+                            <TextBlock Text="{DynamicResource DriverDesc_Agilent34970A}" FontSize="10"
                                        Foreground="{StaticResource TextMuted}" TextWrapping="Wrap"/>
                         </StackPanel>
                     </Border>
 
-                    <TextBlock Text="KONFIGURACJA KART" FontSize="10" FontWeight="Bold"
+                    <TextBlock Text="{DynamicResource FP_A34970A_CardConfig}" FontSize="10" FontWeight="Bold"
                                Foreground="{StaticResource TextMuted}" Margin="12,12,12,4"/>
-                    <Button Content="WYKRYJ KARTY" Style="{StaticResource ActionButton}"
+                    <Button Content="{DynamicResource FP_A34970A_DetectCards}" Style="{StaticResource ActionButton}"
                             Command="{Binding DetectCardsCommand}" Margin="12,2,12,6" Height="30"/>
 
                     <Expander Header="Slot 100" Margin="8,4,8,0" IsExpanded="True">
                         <StackPanel Margin="8,4,8,8">
-                            <TextBlock Text="Typ karty:" Style="{StaticResource FieldLabel}"/>
+                            <TextBlock Text="{DynamicResource FP_A34970A_CardType}" Style="{StaticResource FieldLabel}"/>
                             <ComboBox ItemsSource="{Binding CardTypes}" SelectedItem="{Binding Slot100CardType}"/>
                         </StackPanel>
                     </Expander>
                     <Expander Header="Slot 200" Margin="8,4,8,0">
                         <StackPanel Margin="8,4,8,8">
-                            <TextBlock Text="Typ karty:" Style="{StaticResource FieldLabel}"/>
+                            <TextBlock Text="{DynamicResource FP_A34970A_CardType}" Style="{StaticResource FieldLabel}"/>
                             <ComboBox ItemsSource="{Binding CardTypes}" SelectedItem="{Binding Slot200CardType}"/>
                         </StackPanel>
                     </Expander>
                     <Expander Header="Slot 300" Margin="8,4,8,0">
                         <StackPanel Margin="8,4,8,8">
-                            <TextBlock Text="Typ karty:" Style="{StaticResource FieldLabel}"/>
+                            <TextBlock Text="{DynamicResource FP_A34970A_CardType}" Style="{StaticResource FieldLabel}"/>
                             <ComboBox ItemsSource="{Binding CardTypes}" SelectedItem="{Binding Slot300CardType}"/>
                         </StackPanel>
                     </Expander>
@@ -516,7 +516,7 @@
                         <DataTemplate><TextBlock Text="{Binding Header}"/></DataTemplate>
                     </TabControl.ItemTemplate>
                 </TabControl>
-                <TextBlock Text="Brak skonfigurowanych kart. Kliknij WYKRYJ KARTY lub wybierz typ karty dla slotu."
+                <TextBlock Text="{DynamicResource FP_A34970A_NoCards}"
                            Visibility="{Binding EmptyVisibility}"
                            HorizontalAlignment="Center" VerticalAlignment="Center"
                            Foreground="{StaticResource TextMuted}" TextWrapping="Wrap"

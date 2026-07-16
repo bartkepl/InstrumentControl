@@ -10,6 +10,8 @@ public partial class CTSChamberFrontPanelView : UserControl
     {
         Driver = driver;
         InitializeComponent();
-        DataContext = new CTSChamberFrontPanelViewModel(driver);
+        var vm = new CTSChamberFrontPanelViewModel(driver);
+        DataContext = vm;
+        Unloaded += (_, _) => vm.Detach();
     }
 }

@@ -90,10 +90,10 @@ public partial class ChannelConfigRow : ObservableObject
 
     public string ParamLabel => Function?.ToUpperInvariant() switch
     {
-        "TEMP_TC" => "Typ termoelementu:",
-        "TEMP_RTD" or "TEMP_RTD4W" => "Współczynnik α RTD:",
-        "TEMP_THERM" => "Typ termistora [Ω]:",
-        _ => "Parametr (nie dotyczy tej funkcji):"
+        "TEMP_TC" => T("FP_A34970A_TcTypeLabel", "Thermocouple type:"),
+        "TEMP_RTD" or "TEMP_RTD4W" => T("FP_A34970A_RtdAlphaLabel", "RTD α coefficient:"),
+        "TEMP_THERM" => T("FP_A34970A_ThermTypeLabel", "Thermistor type [Ω]:"),
+        _ => T("FP_A34970A_ParamNA", "Parameter (not applicable to this function):")
     };
 
     /// <summary>Podsumowanie skalowania Mx+B do osobnej kolumny.</summary>
@@ -131,6 +131,9 @@ public partial class ChannelConfigRow : ObservableObject
         m.ScaleUnit = ScaleUnit?.Trim() ?? "";
         return m;
     }
+
+    private static string T(string key, string fallback) =>
+        System.Windows.Application.Current?.TryFindResource(key) as string ?? fallback;
 }
 
 public partial class Mux34901AViewModel : CardTabViewModel
@@ -198,8 +201,9 @@ public partial class Mux34901AViewModel : CardTabViewModel
     }
 
     public string ChannelHint =>
-        $"Kanały {Slot + 1}–{Slot + 20}. Prąd tylko na {Slot + 21}/{Slot + 22}. " +
-        $"Pomiar 4W (FRES / RTD 4W): kanał źródłowy {Slot + 1}–{Slot + 10}, parowany z n+10 ({Slot + 11}–{Slot + 20}).";
+        T("FP_A34970A_ChannelHint",
+            "Channels {0}–{1}. Current only on {2}/{3}. 4W measurement (FRES / RTD 4W): source channel {4}–{5}, paired with n+10 ({6}–{7}).",
+            Slot + 1, Slot + 20, Slot + 21, Slot + 22, Slot + 1, Slot + 10, Slot + 11, Slot + 20);
 
     public List<string> FunctionNames { get; } = new()
     {
@@ -223,7 +227,7 @@ public partial class Mux34901AViewModel : CardTabViewModel
     {
         var occupied = OccupiedChannels(null);
         int next = _allChannels.FirstOrDefault(ch => !occupied.Contains(ch));
-        if (next == 0) { SetStatus("Brak wolnych kanałów."); return; }
+        if (next == 0) { SetStatus(T("FP_A34970A_NoFreeChannels", "No free channels.")); return; }
         AddConfiguredRow(next, IsCurrentChannel(next) ? "CURR_DC" : "VDC");
         OnRowConfigChanged();
     }
@@ -239,7 +243,7 @@ public partial class Mux34901AViewModel : CardTabViewModel
     [RelayCommand]
     private void OpenChannelConfig()
     {
-        if (SelectedConfigRow == null) { SetStatus("Zaznacz kanał w tabeli."); return; }
+        if (SelectedConfigRow == null) { SetStatus(T("FP_A34970A_SelectChannelInTable", "Select a channel in the table.")); return; }
         var win = new ChannelConfigWindow { DataContext = SelectedConfigRow };
         win.Owner = System.Windows.Application.Current?.MainWindow;
         win.ShowDialog();
@@ -278,23 +282,23 @@ public partial class Mux34901AViewModel : CardTabViewModel
         if (!EnsureConnected()) return;
 
         var configs = ChannelConfigs.Select(r => r.ToMeasurement()).ToList();
-        if (configs.Count == 0) { SetStatus("Dodaj przynajmniej jeden kanał."); return; }
+        if (configs.Count == 0) { SetStatus(T("FP_A34970A_AddAtLeastOneChannel", "Add at least one channel.")); return; }
 
-        SetStatus($"Skanowanie {configs.Count} kanałów…");
+        SetStatus(T("FP_A34970A_Scanning", "Scanning {0} channels…", configs.Count));
         var results = await Driver.ScanAsync(configs, BuildScanSettings());
         await System.Windows.Application.Current.Dispatcher.InvokeAsync(() =>
         {
             ScanResults.Clear();
             foreach (var r in results) ScanResults.Add(r);
         });
-        SetStatus($"OK — {results.Count} pomiarów  {DateTime.Now:HH:mm:ss}");
+        SetStatus(T("FP_A34970A_ScanOk", "OK — {0} measurements  {1}", results.Count, DateTime.Now.ToString("HH:mm:ss")));
     }
 
     [RelayCommand]
     private async Task ScanAsync()
     {
         try { await ExecuteScanAsync(); }
-        catch (Exception ex) { SetStatus($"Błąd skanowania: {ex.Message}"); }
+        catch (Exception ex) { SetStatus(T("FP_A34970A_ErrScanning", "Scan error: {0}", ex.Message)); }
     }
 
     [RelayCommand(AllowConcurrentExecutions = true)]
@@ -310,7 +314,7 @@ public partial class Mux34901AViewModel : CardTabViewModel
             while (!ct.IsCancellationRequested)
             {
                 try { await ExecuteScanAsync(); }
-                catch (Exception ex) { SetStatus($"Błąd: {ex.Message}"); }
+                catch (Exception ex) { SetStatus(T("FP_ErrGeneric", "Error: {0}", ex.Message)); }
 
                 int intervalMs = int.TryParse(SelectedScanInterval, out int iv) ? iv : 2000;
                 try { await Task.Delay(intervalMs, ct); }
@@ -320,7 +324,7 @@ public partial class Mux34901AViewModel : CardTabViewModel
         finally
         {
             IsContinuousScan = false;
-            SetStatus("Ciągłe skanowanie zatrzymane.");
+            SetStatus(T("FP_A34970A_ContinuousScanStopped", "Continuous scan stopped."));
         }
     }
 }

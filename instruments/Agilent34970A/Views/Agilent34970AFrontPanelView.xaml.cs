@@ -10,6 +10,8 @@ public partial class Agilent34970AFrontPanelView : UserControl
     {
         _driver = driver;
         InitializeComponent();
-        DataContext = new Agilent34970AFrontPanelViewModel(driver);
+        var vm = new Agilent34970AFrontPanelViewModel(driver);
+        DataContext = vm;
+        Unloaded += (_, _) => vm.Detach();
     }
 }

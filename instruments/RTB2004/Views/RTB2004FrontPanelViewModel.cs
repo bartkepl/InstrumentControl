@@ -50,7 +50,7 @@ public partial class RTB2004FrontPanelViewModel : ObservableObject
 
     // ── State ──────────────────────────────────────────────────────────────
     [ObservableProperty] private bool   _isConnected;
-    [ObservableProperty] private string _statusText       = "Brak połączenia";
+    [ObservableProperty] private string _statusText       = "Not connected";
     [ObservableProperty] private string _acquisitionState = "STOP";
     [ObservableProperty] private bool   _isCapturing;
 
@@ -147,6 +147,7 @@ public partial class RTB2004FrontPanelViewModel : ObservableObject
     };
 
     private LiveDataWindow? _liveWindow;
+    private readonly EventHandler _languageChangedHandler;
 
     public RTB2004FrontPanelViewModel(RTB2004Driver driver)
     {
@@ -157,11 +158,23 @@ public partial class RTB2004FrontPanelViewModel : ObservableObject
         driver.StatusChanged += OnStatusChanged;
         driver.ErrorOccurred += OnErrorOccurred;
 
-        AppLocalization.LanguageChanged += (_, _) =>
+        _languageChangedHandler = (_, _) =>
             System.Windows.Application.Current?.Dispatcher.InvokeAsync(() =>
                 StatusText = FpConnected(IsConnected));
+        AppLocalization.LanguageChanged += _languageChangedHandler;
 
         InitializeScopeModel();
+    }
+
+    // Called when the front panel is torn down (e.g. the user switches to a
+    // different connected instrument) so this ViewModel stops reacting to driver
+    // events and can be garbage collected instead of leaking as a "zombie"
+    // listener that keeps handling every future status/error update.
+    public void Detach()
+    {
+        _driver.StatusChanged           -= OnStatusChanged;
+        _driver.ErrorOccurred           -= OnErrorOccurred;
+        AppLocalization.LanguageChanged -= _languageChangedHandler;
     }
 
     // ── Oscilloscope display model ─────────────────────────────────────────
@@ -249,7 +262,7 @@ public partial class RTB2004FrontPanelViewModel : ObservableObject
     {
         System.Windows.Application.Current.Dispatcher.InvokeAsync(() =>
         {
-            StatusText = $"BŁĄD: {ex.Message}";
+            StatusText = T("FP_ErrGeneric", "Error: {0}", ex.Message);
         });
     }
 
@@ -274,58 +287,58 @@ public partial class RTB2004FrontPanelViewModel : ObservableObject
     [RelayCommand]
     private async Task RunAsync()
     {
-        if (!_driver.IsConnected) { StatusText = "Nie połączono"; return; }
+        if (!_driver.IsConnected) { StatusText = T("FP_NotConnected", "Not connected"); return; }
         try { await _driver.RunAsync(); AcquisitionState = "RUN"; }
-        catch (Exception ex) { StatusText = $"Błąd RUN: {ex.Message}"; }
+        catch (Exception ex) { StatusText = T("FP_RTB_ErrRun", "RUN error: {0}", ex.Message); }
     }
 
     [RelayCommand]
     private async Task StopAsync()
     {
-        if (!_driver.IsConnected) { StatusText = "Nie połączono"; return; }
+        if (!_driver.IsConnected) { StatusText = T("FP_NotConnected", "Not connected"); return; }
         try { await _driver.StopAsync(); AcquisitionState = "STOP"; }
-        catch (Exception ex) { StatusText = $"Błąd STOP: {ex.Message}"; }
+        catch (Exception ex) { StatusText = T("FP_RTB_ErrStop", "STOP error: {0}", ex.Message); }
     }
 
     [RelayCommand]
     private async Task SingleAsync()
     {
-        if (!_driver.IsConnected) { StatusText = "Nie połączono"; return; }
+        if (!_driver.IsConnected) { StatusText = T("FP_NotConnected", "Not connected"); return; }
         try
         {
             AcquisitionState = "SINGLE";
             await _driver.SingleAsync();
-            StatusText = "Single akwizycja — oczekiwanie na wyzwalanie";
+            StatusText = T("FP_RTB_SingleWaiting", "Single acquisition — waiting for trigger");
         }
-        catch (Exception ex) { StatusText = $"Błąd SINGLE: {ex.Message}"; }
+        catch (Exception ex) { StatusText = T("FP_RTB_ErrSingle", "SINGLE error: {0}", ex.Message); }
     }
 
     [RelayCommand]
     private async Task AutoscaleAsync()
     {
-        if (!_driver.IsConnected) { StatusText = "Nie połączono"; return; }
+        if (!_driver.IsConnected) { StatusText = T("FP_NotConnected", "Not connected"); return; }
         try
         {
-            StatusText = "Autoskalowanie...";
+            StatusText = T("FP_RTB_Autoscaling", "Autoscaling...");
             await _driver.AutoscaleAsync();
-            StatusText = $"Autoskalowanie OK  {DateTime.Now:HH:mm:ss}";
+            StatusText = T("FP_RTB_AutoscaleOk", "Autoscale OK  {0}", DateTime.Now.ToString("HH:mm:ss"));
         }
-        catch (Exception ex) { StatusText = $"Błąd AUTOSCALE: {ex.Message}"; }
+        catch (Exception ex) { StatusText = T("FP_RTB_ErrAutoscale", "AUTOSCALE error: {0}", ex.Message); }
     }
 
     [RelayCommand]
     private async Task ApplyChannelsAsync()
     {
-        if (!_driver.IsConnected) { StatusText = "Nie połączono"; return; }
+        if (!_driver.IsConnected) { StatusText = T("FP_NotConnected", "Not connected"); return; }
         try
         {
             await ApplyChannelAsync(1, Ch1Enabled, Ch1Scale, Ch1Offset, Ch1Coupling, Ch1Probe);
             await ApplyChannelAsync(2, Ch2Enabled, Ch2Scale, Ch2Offset, Ch2Coupling, Ch2Probe);
             await ApplyChannelAsync(3, Ch3Enabled, Ch3Scale, Ch3Offset, Ch3Coupling, Ch3Probe);
             await ApplyChannelAsync(4, Ch4Enabled, Ch4Scale, Ch4Offset, Ch4Coupling, Ch4Probe);
-            StatusText = $"Kanały zastosowane  {DateTime.Now:HH:mm:ss}";
+            StatusText = T("FP_RTB_ChannelsApplied", "Channels applied  {0}", DateTime.Now.ToString("HH:mm:ss"));
         }
-        catch (Exception ex) { StatusText = $"Błąd ApplyChannels: {ex.Message}"; }
+        catch (Exception ex) { StatusText = T("FP_RTB_ErrApplyChannels", "ApplyChannels error: {0}", ex.Message); }
     }
 
     private async Task ApplyChannelAsync(int ch, bool enabled, string scale, string offset,
@@ -345,30 +358,30 @@ public partial class RTB2004FrontPanelViewModel : ObservableObject
     [RelayCommand]
     private async Task ApplyTimescaleAsync()
     {
-        if (!_driver.IsConnected) { StatusText = "Nie połączono"; return; }
+        if (!_driver.IsConnected) { StatusText = T("FP_NotConnected", "Not connected"); return; }
         if (!double.TryParse(SelectedTimescale, NumberStyles.Float,
                 CultureInfo.InvariantCulture, out double secs))
         {
-            StatusText = "Nieprawidłowa podstawa czasu";
+            StatusText = T("FP_RTB_InvalidTimebase", "Invalid timebase");
             return;
         }
         try
         {
             await _driver.SetTimescaleAsync(secs);
             TimescaleDisplay = FormatTime(secs) + "/dz";
-            StatusText = $"Podstawa czasu: {FormatTime(secs)}/dz";
+            StatusText = T("FP_RTB_TimebaseSet", "Timebase: {0}/div", FormatTime(secs));
         }
-        catch (Exception ex) { StatusText = $"Błąd Timescale: {ex.Message}"; }
+        catch (Exception ex) { StatusText = T("FP_RTB_ErrTimescale", "Timescale error: {0}", ex.Message); }
     }
 
     [RelayCommand]
     private async Task ApplyTriggerAsync()
     {
-        if (!_driver.IsConnected) { StatusText = "Nie połączono"; return; }
+        if (!_driver.IsConnected) { StatusText = T("FP_NotConnected", "Not connected"); return; }
         if (!double.TryParse(TriggerLevel, NumberStyles.Float,
                 CultureInfo.InvariantCulture, out double level))
         {
-            StatusText = "Nieprawidłowy poziom wyzwalania";
+            StatusText = T("FP_RTB_InvalidTriggerLevel", "Invalid trigger level");
             return;
         }
         int chNum = TriggerSource.StartsWith("CH") && int.TryParse(TriggerSource[2..], out int n) ? n : 1;
@@ -378,24 +391,25 @@ public partial class RTB2004FrontPanelViewModel : ObservableObject
             await _driver.SetTriggerLevelAsync(chNum, level);
             await _driver.SetTriggerSlopeAsync(TriggerSlope);
             await _driver.SetTriggerModeAsync(TriggerMode);
-            StatusText = $"Wyzwalanie: {TriggerSource}  {level:F3}V  {TriggerSlope}  {TriggerMode}";
+            StatusText = T("FP_RTB_TriggerSet", "Trigger: {0}  {1}V  {2}  {3}",
+                TriggerSource, level.ToString("F3", CultureInfo.InvariantCulture), TriggerSlope, TriggerMode);
         }
-        catch (Exception ex) { StatusText = $"Błąd Trigger: {ex.Message}"; }
+        catch (Exception ex) { StatusText = T("FP_RTB_ErrTrigger", "Trigger error: {0}", ex.Message); }
     }
 
     [RelayCommand]
     private async Task UpdateMeasurementsAsync()
     {
-        if (!_driver.IsConnected) { StatusText = "Nie połączono"; return; }
+        if (!_driver.IsConnected) { StatusText = T("FP_NotConnected", "Not connected"); return; }
         try
         {
             (M1Result, M1Unit) = await ReadMeasAsync(1, M1Source, M1Type);
             (M2Result, M2Unit) = await ReadMeasAsync(2, M2Source, M2Type);
             (M3Result, M3Unit) = await ReadMeasAsync(3, M3Source, M3Type);
             (M4Result, M4Unit) = await ReadMeasAsync(4, M4Source, M4Type);
-            StatusText = $"Pomiary zaktualizowane  {DateTime.Now:HH:mm:ss.fff}";
+            StatusText = T("FP_RTB_MeasurementsUpdated", "Measurements updated  {0}", DateTime.Now.ToString("HH:mm:ss.fff"));
         }
-        catch (Exception ex) { StatusText = $"Błąd pomiarów: {ex.Message}"; }
+        catch (Exception ex) { StatusText = T("FP_RTB_ErrMeasurements", "Measurement error: {0}", ex.Message); }
     }
 
     private async Task<(string Result, string Unit)> ReadMeasAsync(int slot, string source, string type)
@@ -414,11 +428,11 @@ public partial class RTB2004FrontPanelViewModel : ObservableObject
     [RelayCommand]
     private async Task CaptureWaveformAsync()
     {
-        if (!_driver.IsConnected) { StatusText = "Nie połączono"; return; }
+        if (!_driver.IsConnected) { StatusText = T("FP_NotConnected", "Not connected"); return; }
         IsCapturing = true;
         try
         {
-            StatusText = "Odczyt przebiegów...";
+            StatusText = T("FP_RTB_ReadingWaveforms", "Reading waveforms...");
             bool[] enabled = { Ch1Enabled, Ch2Enabled, Ch3Enabled, Ch4Enabled };
             bool anyRead = false;
 
@@ -438,33 +452,33 @@ public partial class RTB2004FrontPanelViewModel : ObservableObject
 
             if (anyRead) _scopeModel.ResetAllAxes();
             _scopeModel.InvalidatePlot(true);
-            StatusText = $"Przebiegi wczytane  {DateTime.Now:HH:mm:ss.fff}";
+            StatusText = T("FP_RTB_WaveformsLoaded", "Waveforms loaded  {0}", DateTime.Now.ToString("HH:mm:ss.fff"));
         }
-        catch (Exception ex) { StatusText = $"Błąd odczytu przebiegu: {ex.Message}"; }
+        catch (Exception ex) { StatusText = T("FP_RTB_ErrWaveform", "Waveform read error: {0}", ex.Message); }
         finally { IsCapturing = false; }
     }
 
     [RelayCommand]
     private async Task TakeScreenshotAsync()
     {
-        if (!_driver.IsConnected) { StatusText = "Nie połączono"; return; }
+        if (!_driver.IsConnected) { StatusText = T("FP_NotConnected", "Not connected"); return; }
         var dlg = new SaveFileDialog
         {
-            Title      = "Zapisz screenshot oscyloskopu",
-            Filter     = "PNG (*.png)|*.png|BMP (*.bmp)|*.bmp|Wszystkie pliki (*.*)|*.*",
+            Title      = T("FP_RTB_SaveScreenshotTitle", "Save oscilloscope screenshot"),
+            Filter     = T("FP_RTB_ScreenshotFilter", "PNG (*.png)|*.png|BMP (*.bmp)|*.bmp|All files (*.*)|*.*"),
             DefaultExt = ".png",
             FileName   = $"RTB2004_{DateTime.Now:yyyyMMdd_HHmmss}",
         };
         if (dlg.ShowDialog() != true) return;
         try
         {
-            StatusText = "Pobieranie screenshota...";
+            StatusText = T("FP_RTB_DownloadingScreenshot", "Downloading screenshot...");
             byte[] data = await _driver.TakeScreenshotAsync();
-            if (data.Length == 0) { StatusText = "Screenshot: brak danych (tryb symulacji?)"; return; }
+            if (data.Length == 0) { StatusText = T("FP_RTB_ScreenshotNoData", "Screenshot: no data (simulation mode?)"); return; }
             await File.WriteAllBytesAsync(dlg.FileName, data);
-            StatusText = $"Screenshot zapisany: {Path.GetFileName(dlg.FileName)}";
+            StatusText = T("FP_RTB_ScreenshotSaved", "Screenshot saved: {0}", Path.GetFileName(dlg.FileName));
         }
-        catch (Exception ex) { StatusText = $"Błąd screenshot: {ex.Message}"; }
+        catch (Exception ex) { StatusText = T("FP_RTB_ErrScreenshot", "Screenshot error: {0}", ex.Message); }
     }
 
     [RelayCommand]
@@ -472,7 +486,7 @@ public partial class RTB2004FrontPanelViewModel : ObservableObject
     {
         var dlg = new SaveFileDialog
         {
-            Title      = "Zapisz preset oscyloskopu",
+            Title      = T("FP_RTB_SavePresetTitle", "Save oscilloscope preset"),
             Filter     = "Preset JSON (*.json)|*.json",
             DefaultExt = ".json",
             FileName   = $"RTB2004_preset_{DateTime.Now:yyyyMMdd_HHmmss}",
@@ -481,7 +495,7 @@ public partial class RTB2004FrontPanelViewModel : ObservableObject
         var preset = BuildPreset();
         string json = JsonSerializer.Serialize(preset, new JsonSerializerOptions { WriteIndented = true });
         await File.WriteAllTextAsync(dlg.FileName, json);
-        StatusText = $"Preset zapisany: {Path.GetFileName(dlg.FileName)}";
+        StatusText = T("FP_RTB_PresetSaved", "Preset saved: {0}", Path.GetFileName(dlg.FileName));
     }
 
     [RelayCommand]
@@ -489,17 +503,17 @@ public partial class RTB2004FrontPanelViewModel : ObservableObject
     {
         var dlg = new OpenFileDialog
         {
-            Title  = "Wczytaj preset oscyloskopu",
-            Filter = "Preset JSON (*.json)|*.json|Wszystkie pliki (*.*)|*.*",
+            Title  = T("FP_RTB_LoadPresetTitle", "Load oscilloscope preset"),
+            Filter = T("FP_RTB_PresetFilter", "Preset JSON (*.json)|*.json|All files (*.*)|*.*"),
         };
         if (dlg.ShowDialog() != true) return;
         try
         {
             string json = await File.ReadAllTextAsync(dlg.FileName);
             var preset  = JsonSerializer.Deserialize<RTB2004Preset>(json);
-            if (preset == null) { StatusText = "Błąd: nieprawidłowy plik presetu"; return; }
+            if (preset == null) { StatusText = T("FP_RTB_ErrInvalidPreset", "Error: invalid preset file"); return; }
             ApplyPreset(preset);
-            StatusText = $"Preset wczytany: {Path.GetFileName(dlg.FileName)}";
+            StatusText = T("FP_RTB_PresetLoaded", "Preset loaded: {0}", Path.GetFileName(dlg.FileName));
             if (_driver.IsConnected)
             {
                 await ApplyChannelsAsync();
@@ -507,7 +521,7 @@ public partial class RTB2004FrontPanelViewModel : ObservableObject
                 await ApplyTriggerAsync();
             }
         }
-        catch (Exception ex) { StatusText = $"Błąd wczytywania presetu: {ex.Message}"; }
+        catch (Exception ex) { StatusText = T("FP_RTB_ErrLoadingPreset", "Preset load error: {0}", ex.Message); }
     }
 
     private RTB2004Preset BuildPreset() => new()
@@ -565,16 +579,16 @@ public partial class RTB2004FrontPanelViewModel : ObservableObject
     [RelayCommand]
     private async Task ResetAsync()
     {
-        if (!_driver.IsConnected) { StatusText = "Nie połączono"; return; }
+        if (!_driver.IsConnected) { StatusText = T("FP_NotConnected", "Not connected"); return; }
         try
         {
-            StatusText = "Reset...";
+            StatusText = T("FP_Resetting", "Reset...");
             await _driver.ResetAsync();
             AcquisitionState = "STOP";
             M1Result = M2Result = M3Result = M4Result = "---";
-            StatusText = "Reset wykonany";
+            StatusText = T("FP_ResetDone", "Reset done");
         }
-        catch (Exception ex) { StatusText = $"Błąd resetu: {ex.Message}"; }
+        catch (Exception ex) { StatusText = T("FP_ErrReset", "Reset error: {0}", ex.Message); }
     }
 
     // ── Helpers ────────────────────────────────────────────────────────────
@@ -620,6 +634,12 @@ public partial class RTB2004FrontPanelViewModel : ObservableObject
                      : $"{secs*1e9:G3} ns";
 
     private static string FpConnected(bool connected) => connected
-        ? System.Windows.Application.Current?.TryFindResource("FP_Connected") as string ?? "Connected"
-        : System.Windows.Application.Current?.TryFindResource("FP_NotConnected") as string ?? "Not connected";
+        ? T("FP_Connected", "Connected")
+        : T("FP_NotConnected", "Not connected");
+
+    private static string T(string key, string fallback) =>
+        System.Windows.Application.Current?.TryFindResource(key) as string ?? fallback;
+
+    private static string T(string key, string fallback, params object[] args) =>
+        string.Format(T(key, fallback), args);
 }

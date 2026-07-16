@@ -18,7 +18,7 @@ public partial class HP34401AFrontPanelViewModel : ObservableObject
 
     // ── State ────────────────────────────────────────────────────────────────
     [ObservableProperty] private bool _isConnected;
-    [ObservableProperty] private string _statusText = "Brak połączenia";
+    [ObservableProperty] private string _statusText = "Not connected";
     [ObservableProperty] private bool _isMeasuring;
     [ObservableProperty] private bool _isContinuous;
 
@@ -59,6 +59,7 @@ public partial class HP34401AFrontPanelViewModel : ObservableObject
     private readonly List<double> _statsBuffer = new();
     private CancellationTokenSource? _continuousCts;
     private LiveDataWindow? _liveWindow;
+    private readonly EventHandler _languageChangedHandler;
 
     // ── List sources ─────────────────────────────────────────────────────────
     public ObservableCollection<string> Functions { get; } = new()
@@ -92,9 +93,22 @@ public partial class HP34401AFrontPanelViewModel : ObservableObject
         driver.StatusChanged += OnStatusChanged;
         driver.ErrorOccurred += OnErrorOccurred;
 
-        AppLocalization.LanguageChanged += (_, _) =>
+        _languageChangedHandler = (_, _) =>
             System.Windows.Application.Current?.Dispatcher.InvokeAsync(() =>
                 StatusText = FpConnected(IsConnected));
+        AppLocalization.LanguageChanged += _languageChangedHandler;
+    }
+
+    // Called when the front panel is torn down (e.g. the user switches to a
+    // different connected instrument) so this ViewModel stops reacting to driver
+    // events and can be garbage collected instead of leaking as a "zombie"
+    // listener that keeps handling every future measurement/status update.
+    public void Detach()
+    {
+        _driver.MeasurementReceived     -= OnMeasurementReceived;
+        _driver.StatusChanged           -= OnStatusChanged;
+        _driver.ErrorOccurred           -= OnErrorOccurred;
+        AppLocalization.LanguageChanged -= _languageChangedHandler;
     }
 
     // ── Event handlers ───────────────────────────────────────────────────────
@@ -122,7 +136,7 @@ public partial class HP34401AFrontPanelViewModel : ObservableObject
     {
         System.Windows.Application.Current.Dispatcher.InvokeAsync(() =>
         {
-            StatusText = $"BŁĄD: {ex.Message}";
+            StatusText = T("FP_ErrGeneric", "Error: {0}", ex.Message);
             DisplayValue = "ERR";
         });
     }
@@ -132,12 +146,12 @@ public partial class HP34401AFrontPanelViewModel : ObservableObject
     {
         if (!_driver.IsConnected)
         {
-            StatusText = "Nie połączono z instrumentem";
+            StatusText = T("FP_NotConnected", "Not connected");
             return null;
         }
 
         IsMeasuring = true;
-        StatusText = "Pomiar...";
+        StatusText = T("FP_DMM_Measuring", "Measuring...");
 
         try
         {
@@ -190,7 +204,7 @@ public partial class HP34401AFrontPanelViewModel : ObservableObject
         catch (Exception ex)
         {
             DisplayValue = "ERR";
-            StatusText = $"Błąd: {ex.Message}";
+            StatusText = T("FP_ErrGeneric", "Error: {0}", ex.Message);
             return null;
         }
         finally
@@ -232,7 +246,7 @@ public partial class HP34401AFrontPanelViewModel : ObservableObject
         finally
         {
             IsContinuous = false;
-            StatusText = $"Pomiar zatrzymany  [{MeasureCount} próbek]";
+            StatusText = T("FP_DMM_MeasureStopped", "Measurement stopped  [{0} samples]", MeasureCount);
         }
     }
 
@@ -244,7 +258,7 @@ public partial class HP34401AFrontPanelViewModel : ObservableObject
         if (_driver.IsConnected)
         {
             try { await _driver.SetMathMode(mode); }
-            catch (Exception ex) { StatusText = $"MATH błąd: {ex.Message}"; }
+            catch (Exception ex) { StatusText = T("FP_DMM_ErrMath", "MATH error: {0}", ex.Message); }
         }
     }
 
@@ -256,28 +270,28 @@ public partial class HP34401AFrontPanelViewModel : ObservableObject
         if (_driver.IsConnected)
         {
             try { await _driver.SetMathMode("OFF"); }
-            catch (Exception ex) { StatusText = $"MATH błąd: {ex.Message}"; }
+            catch (Exception ex) { StatusText = T("FP_DMM_ErrMath", "MATH error: {0}", ex.Message); }
         }
     }
 
     [RelayCommand]
     private async Task SendDisplayTextAsync()
     {
-        if (!_driver.IsConnected) { StatusText = "Nie połączono z instrumentem"; return; }
+        if (!_driver.IsConnected) { StatusText = T("FP_NotConnected", "Not connected"); return; }
         try { await _driver.DisplayText(DisplayMessage); }
-        catch (Exception ex) { StatusText = $"DISP błąd: {ex.Message}"; }
+        catch (Exception ex) { StatusText = T("FP_DMM_ErrDisp", "DISP error: {0}", ex.Message); }
     }
 
     [RelayCommand]
     private async Task ClearDisplayAsync()
     {
-        if (!_driver.IsConnected) { StatusText = "Nie połączono z instrumentem"; return; }
+        if (!_driver.IsConnected) { StatusText = T("FP_NotConnected", "Not connected"); return; }
         try
         {
             await _driver.ClearDisplay();
             DisplayMessage = "";
         }
-        catch (Exception ex) { StatusText = $"DISP błąd: {ex.Message}"; }
+        catch (Exception ex) { StatusText = T("FP_DMM_ErrDisp", "DISP error: {0}", ex.Message); }
     }
 
     // ── LCD on/off ────────────────────────────────────────────────────────────
@@ -290,7 +304,7 @@ public partial class HP34401AFrontPanelViewModel : ObservableObject
     private async Task ApplyDisplayEnabledAsync(bool on)
     {
         try { await _driver.SetDisplayEnabled(on); }
-        catch (Exception ex) { StatusText = $"DISP błąd: {ex.Message}"; }
+        catch (Exception ex) { StatusText = T("FP_DMM_ErrDisp", "DISP error: {0}", ex.Message); }
     }
 
     // ── Auto-zero ─────────────────────────────────────────────────────────────
@@ -303,16 +317,16 @@ public partial class HP34401AFrontPanelViewModel : ObservableObject
     private async Task ApplyAutoZeroAsync(bool on)
     {
         try { await _driver.SetAutoZero(on); }
-        catch (Exception ex) { StatusText = $"ZERO:AUTO błąd: {ex.Message}"; }
+        catch (Exception ex) { StatusText = T("FP_DMM_ErrZeroAuto", "ZERO:AUTO error: {0}", ex.Message); }
     }
 
     // ── Burst measurement ─────────────────────────────────────────────────────
     [RelayCommand]
     private async Task BurstMeasureAsync()
     {
-        if (!_driver.IsConnected) { StatusText = "Nie połączono z instrumentem"; return; }
+        if (!_driver.IsConnected) { StatusText = T("FP_NotConnected", "Not connected"); return; }
         IsMeasuring = true;
-        StatusText = $"Burst {BurstCount} próbek...";
+        StatusText = T("FP_DMM_BurstRunning", "Burst {0} samples...", BurstCount);
         try
         {
             double[] values = await _driver.BurstMeasureAsync(BurstCount);
@@ -323,9 +337,9 @@ public partial class HP34401AFrontPanelViewModel : ObservableObject
             MinValue = FormatValue(_statsBuffer.Min());
             MaxValue = FormatValue(_statsBuffer.Max());
             AvgValue = FormatValue(_statsBuffer.Average());
-            StatusText = $"Burst OK — {values.Length} próbek  {DateTime.Now:HH:mm:ss}";
+            StatusText = T("FP_DMM_BurstOk", "Burst OK — {0} samples  {1}", values.Length, DateTime.Now.ToString("HH:mm:ss"));
         }
-        catch (Exception ex) { StatusText = $"Burst błąd: {ex.Message}"; BurstResultsText = "ERR"; }
+        catch (Exception ex) { StatusText = T("FP_DMM_ErrBurst", "Burst error: {0}", ex.Message); BurstResultsText = "ERR"; }
         finally { IsMeasuring = false; }
     }
 
@@ -333,7 +347,7 @@ public partial class HP34401AFrontPanelViewModel : ObservableObject
     [RelayCommand]
     private async Task ToggleLimitTestAsync()
     {
-        if (!_driver.IsConnected) { StatusText = "Nie połączono z instrumentem"; return; }
+        if (!_driver.IsConnected) { StatusText = T("FP_NotConnected", "Not connected"); return; }
         try
         {
             if (!IsLimitEnabled)
@@ -346,19 +360,19 @@ public partial class HP34401AFrontPanelViewModel : ObservableObject
                     await _driver.SetLimitTestAsync(low, high);
                     IsLimitEnabled = true;
                     LimitStatus = "---";
-                    StatusText = $"LIMIT ON  [{low} … {high}]";
+                    StatusText = T("FP_DMM_LimitOnStatus", "LIMIT ON  [{0} … {1}]", low, high);
                 }
-                else StatusText = "Nieprawidłowe progi LIMIT";
+                else StatusText = T("FP_DMM_InvalidLimits", "Invalid LIMIT thresholds");
             }
             else
             {
                 await _driver.DisableLimitTestAsync();
                 IsLimitEnabled = false;
                 LimitStatus = "---";
-                StatusText = "LIMIT OFF";
+                StatusText = T("FP_DMM_LimitOffStatus", "LIMIT OFF");
             }
         }
-        catch (Exception ex) { StatusText = $"LIMIT błąd: {ex.Message}"; }
+        catch (Exception ex) { StatusText = T("FP_DMM_ErrLimit", "LIMIT error: {0}", ex.Message); }
     }
 
     // ── Live window ───────────────────────────────────────────────────────────
@@ -389,13 +403,13 @@ public partial class HP34401AFrontPanelViewModel : ObservableObject
     {
         if (!_driver.IsConnected)
         {
-            StatusText = "Nie połączono z instrumentem";
+            StatusText = T("FP_NotConnected", "Not connected");
             return;
         }
 
         try
         {
-            StatusText = "Reset...";
+            StatusText = T("FP_Resetting", "Reset...");
             await _driver.ResetAsync();
             DisplayValue = "---";
             DisplayUnit = "V";
@@ -403,11 +417,11 @@ public partial class HP34401AFrontPanelViewModel : ObservableObject
             SelectedFunction = "DCV";
             SelectedRange = "AUTO";
             SelectedNplc = "1";
-            StatusText = "Reset wykonany";
+            StatusText = T("FP_ResetDone", "Reset done");
         }
         catch (Exception ex)
         {
-            StatusText = $"Błąd resetu: {ex.Message}";
+            StatusText = T("FP_ErrReset", "Reset error: {0}", ex.Message);
         }
     }
 
@@ -456,6 +470,12 @@ public partial class HP34401AFrontPanelViewModel : ObservableObject
     };
 
     private static string FpConnected(bool connected) => connected
-        ? System.Windows.Application.Current?.TryFindResource("FP_Connected") as string ?? "Connected"
-        : System.Windows.Application.Current?.TryFindResource("FP_NotConnected") as string ?? "Not connected";
+        ? T("FP_Connected", "Connected")
+        : T("FP_NotConnected", "Not connected");
+
+    private static string T(string key, string fallback) =>
+        System.Windows.Application.Current?.TryFindResource(key) as string ?? fallback;
+
+    private static string T(string key, string fallback, params object[] args) =>
+        string.Format(T(key, fallback), args);
 }

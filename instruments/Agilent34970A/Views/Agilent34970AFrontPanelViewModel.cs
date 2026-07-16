@@ -36,14 +36,14 @@ public partial class Agilent34970AFrontPanelViewModel : ObservableObject
         if (!_suppressRebuild)
         {
             RebuildTabs();
-            StatusText = $"Slot {slot}: {cardType}";
+            StatusText = T("FP_A34970A_SlotStatus", "Slot {0}: {1}", slot, cardType);
         }
     }
 
     [RelayCommand]
     private async Task DetectCardsAsync()
     {
-        if (!_driver.IsConnected) { StatusText = "Instrument nie jest połączony."; return; }
+        if (!_driver.IsConnected) { StatusText = T("FP_A34970A_NotConnected", "Instrument is not connected."); return; }
         IsDetecting = true;
         _suppressRebuild = true;
         try
@@ -53,9 +53,9 @@ public partial class Agilent34970AFrontPanelViewModel : ObservableObject
             Slot200CardType = ModelToCombo(cards.TryGetValue(200, out var m2) ? m2 : "");
             Slot300CardType = ModelToCombo(cards.TryGetValue(300, out var m3) ? m3 : "");
             int found = cards.Values.Count(v => !string.IsNullOrEmpty(v));
-            StatusText = $"Wykrywanie zakończone — znaleziono {found} kart.";
+            StatusText = T("FP_A34970A_DetectDone", "Detection complete — found {0} cards.", found);
         }
-        catch (Exception ex) { StatusText = $"Błąd wykrywania kart: {ex.Message}"; }
+        catch (Exception ex) { StatusText = T("FP_A34970A_ErrDetect", "Card detection error: {0}", ex.Message); }
         finally
         {
             _suppressRebuild = false;
@@ -100,22 +100,22 @@ public partial class Agilent34970AFrontPanelViewModel : ObservableObject
     private void SetStatus(string msg) => StatusText = msg;
 
     // ── Ogólne ───────────────────────────────────────────────────────────────────
-    [ObservableProperty] private string _statusText = "Gotowy";
+    [ObservableProperty] private string _statusText = "Ready";
 
     [RelayCommand]
     private async Task ResetAsync()
     {
-        if (!_driver.IsConnected) { StatusText = "Instrument nie jest połączony."; return; }
-        try { await _driver.ResetAsync(); StatusText = "Reset wykonany."; }
-        catch (Exception ex) { StatusText = $"Błąd resetu: {ex.Message}"; }
+        if (!_driver.IsConnected) { StatusText = T("FP_A34970A_NotConnected", "Instrument is not connected."); return; }
+        try { await _driver.ResetAsync(); StatusText = T("FP_ResetDone", "Reset done"); }
+        catch (Exception ex) { StatusText = T("FP_ErrReset", "Reset error: {0}", ex.Message); }
     }
 
     [RelayCommand]
     private async Task QueryStatusAsync()
     {
-        if (!_driver.IsConnected) { StatusText = "Instrument nie jest połączony."; return; }
+        if (!_driver.IsConnected) { StatusText = T("FP_A34970A_NotConnected", "Instrument is not connected."); return; }
         try { StatusText = await _driver.GetIdentificationAsync(); }
-        catch (Exception ex) { StatusText = $"Błąd statusu: {ex.Message}"; }
+        catch (Exception ex) { StatusText = T("FP_A34970A_ErrStatus", "Status error: {0}", ex.Message); }
     }
 
     // ── Konstruktor ────────────────────────────────────────────────────────────────
@@ -131,10 +131,25 @@ public partial class Agilent34970AFrontPanelViewModel : ObservableObject
 
         RebuildTabs();
 
-        driver.StatusChanged += (_, msg) =>
+        _statusChangedHandler = (_, msg) =>
             System.Windows.Application.Current?.Dispatcher.InvokeAsync(() => StatusText = msg);
-        driver.ErrorOccurred += (_, ex) =>
-            System.Windows.Application.Current?.Dispatcher.InvokeAsync(() => StatusText = $"Błąd: {ex.Message}");
+        _errorOccurredHandler = (_, ex) =>
+            System.Windows.Application.Current?.Dispatcher.InvokeAsync(() => StatusText = T("FP_ErrGeneric", "Error: {0}", ex.Message));
+        driver.StatusChanged += _statusChangedHandler;
+        driver.ErrorOccurred += _errorOccurredHandler;
+    }
+
+    private readonly EventHandler<string> _statusChangedHandler;
+    private readonly EventHandler<Exception> _errorOccurredHandler;
+
+    // Called when the front panel is torn down (e.g. the user switches to a
+    // different connected instrument) so this ViewModel stops reacting to driver
+    // events and can be garbage collected instead of leaking as a "zombie"
+    // listener that keeps handling every future status/error update.
+    public void Detach()
+    {
+        _driver.StatusChanged -= _statusChangedHandler;
+        _driver.ErrorOccurred -= _errorOccurredHandler;
     }
 
     private static string CardToCombo(CardBase card) => card switch
@@ -143,4 +158,10 @@ public partial class Agilent34970AFrontPanelViewModel : ObservableObject
         Card34907A => "34907A (Multifunction)",
         _ => "Empty"
     };
+
+    private static string T(string key, string fallback) =>
+        System.Windows.Application.Current?.TryFindResource(key) as string ?? fallback;
+
+    private static string T(string key, string fallback, params object[] args) =>
+        string.Format(T(key, fallback), args);
 }

@@ -7,6 +7,8 @@ public partial class RigolDS1000ZFrontPanelView : UserControl
     public RigolDS1000ZFrontPanelView(RigolDS1000ZDriver driver)
     {
         InitializeComponent();
-        DataContext = new RigolDS1000ZFrontPanelViewModel(driver);
+        var vm = new RigolDS1000ZFrontPanelViewModel(driver);
+        DataContext = vm;
+        Unloaded += (_, _) => vm.Detach();
     }
 }

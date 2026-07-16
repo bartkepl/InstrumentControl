@@ -7,17 +7,21 @@
              mc:Ignorable="d"
              d:DesignHeight="940" d:DesignWidth="860"
              MinWidth="720" MinHeight="680"
-             Background="#1E2232">
+             Background="#F0F2F8">
 
     <UserControl.Resources>
         <BooleanToVisibilityConverter x:Key="BoolToVis"/>
 
-        <SolidColorBrush x:Key="PanelBg"    Color="#1E2232"/>
-        <SolidColorBrush x:Key="SectionBg"  Color="#283044"/>
-        <SolidColorBrush x:Key="BorderClr"  Color="#465070"/>
-        <SolidColorBrush x:Key="LabelFg"    Color="#A0B0D0"/>
+        <!-- ── Colours: light theme (dark text on light panels). The waveform
+             screen and its on-screen channel/status chips keep an authentic
+             black scope-display background — that's how a live trace reads. ── -->
+        <SolidColorBrush x:Key="PanelBg"    Color="#F0F2F8"/>
+        <SolidColorBrush x:Key="SectionBg"  Color="#FFFFFF"/>
+        <SolidColorBrush x:Key="BorderClr"  Color="#C7CCDC"/>
+        <SolidColorBrush x:Key="LabelFg"    Color="#4B5372"/>
+        <SolidColorBrush x:Key="ValueFg"    Color="#16223D"/>
         <SolidColorBrush x:Key="RsBrand"    Color="#0066B3"/>
-        <SolidColorBrush x:Key="StatusBg"   Color="#181C2A"/>
+        <SolidColorBrush x:Key="StatusBg"   Color="#E2E6F0"/>
 
         <SolidColorBrush x:Key="Ch1Color"   Color="#FFFF00"/>
         <SolidColorBrush x:Key="Ch2Color"   Color="#00FFFF"/>
@@ -35,20 +39,20 @@
             <Setter Property="Height" Value="24"/>
             <Setter Property="FontFamily" Value="Consolas"/>
             <Setter Property="FontSize" Value="11"/>
-            <Setter Property="Background" Value="#14182A"/>
-            <Setter Property="Foreground" Value="#88AAEE"/>
+            <Setter Property="Background" Value="#FFFFFF"/>
+            <Setter Property="Foreground" Value="{StaticResource ValueFg}"/>
             <Setter Property="BorderBrush" Value="{StaticResource BorderClr}"/>
             <Setter Property="BorderThickness" Value="1"/>
             <Setter Property="Padding" Value="3,1"/>
-            <Setter Property="CaretBrush" Value="#88AAEE"/>
+            <Setter Property="CaretBrush" Value="{StaticResource ValueFg}"/>
         </Style>
 
         <Style x:Key="CbBox" TargetType="ComboBox">
             <Setter Property="Height" Value="24"/>
             <Setter Property="FontFamily" Value="Consolas"/>
             <Setter Property="FontSize" Value="11"/>
-            <Setter Property="Background" Value="#14182A"/>
-            <Setter Property="Foreground" Value="#88AAEE"/>
+            <Setter Property="Background" Value="#FFFFFF"/>
+            <Setter Property="Foreground" Value="{StaticResource ValueFg}"/>
             <Setter Property="BorderBrush" Value="{StaticResource BorderClr}"/>
         </Style>
 
@@ -96,7 +100,7 @@
         </Style>
     </UserControl.Resources>
 
-    <Border Background="#181C2A"
+    <Border Background="#E2E6F0"
             BorderBrush="{StaticResource BorderClr}"
             BorderThickness="1" CornerRadius="6" Margin="4">
         <Grid>
@@ -113,7 +117,7 @@
             </Grid.RowDefinitions>
 
             <!-- ── Brand strip ─────────────────────────────────────────────── -->
-            <Border Grid.Row="0" Background="#10141E" CornerRadius="5,5,0,0" Padding="14,8">
+            <Border Grid.Row="0" Background="#DCE2F2" CornerRadius="5,5,0,0" Padding="14,8">
                 <Grid>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="Auto"/>
@@ -125,10 +129,10 @@
                                    FontFamily="Arial" FontSize="10" FontWeight="Bold"/>
                     </StackPanel>
                     <TextBlock Grid.Column="1" Text="RTB2004"
-                               Foreground="White" FontFamily="Arial" FontSize="26" FontWeight="Bold"
+                               Foreground="#16223D" FontFamily="Arial" FontSize="26" FontWeight="Bold"
                                HorizontalAlignment="Center" VerticalAlignment="Center"/>
                     <StackPanel Grid.Column="2" VerticalAlignment="Center">
-                        <TextBlock Text="DIGITAL OSCILLOSCOPE" Foreground="#6680AA"
+                        <TextBlock Text="DIGITAL OSCILLOSCOPE" Foreground="#5A6483"
                                    FontSize="8" HorizontalAlignment="Right"/>
                         <TextBlock Text="4 CH  |  300 MHz" Foreground="{StaticResource RsBrand}"
                                    FontSize="9" FontWeight="Bold" HorizontalAlignment="Right"/>
@@ -198,7 +202,7 @@
                     BorderBrush="{StaticResource BorderClr}" BorderThickness="1"
                     CornerRadius="4" Margin="14,6,14,0" Padding="10,8">
                 <StackPanel>
-                    <TextBlock Text="KANAŁY" Style="{StaticResource SecTitle}"/>
+                    <TextBlock Text="{DynamicResource FP_RTB_Channels}" Style="{StaticResource SecTitle}"/>
                     <Grid>
                         <Grid.RowDefinitions>
                             <RowDefinition Height="Auto"/>
@@ -229,10 +233,10 @@
                                 <ColumnDefinition Width="50"/>
                             </Grid.ColumnDefinitions>
                             <TextBlock Grid.Column="1" Text="ON" Style="{StaticResource FieldLabel}" HorizontalAlignment="Center"/>
-                            <TextBlock Grid.Column="3" Text="Skala [V/dz]" Style="{StaticResource FieldLabel}"/>
+                            <TextBlock Grid.Column="3" Text="{DynamicResource FP_RTB_ScaleVdz}" Style="{StaticResource FieldLabel}"/>
                             <TextBlock Grid.Column="6" Text="Offset [V]" Style="{StaticResource FieldLabel}"/>
-                            <TextBlock Grid.Column="9" Text="Sprzęż." Style="{StaticResource FieldLabel}"/>
-                            <TextBlock Grid.Column="12" Text="Sonda" Style="{StaticResource FieldLabel}"/>
+                            <TextBlock Grid.Column="9" Text="{DynamicResource FP_RTB_Coupling}" Style="{StaticResource FieldLabel}"/>
+                            <TextBlock Grid.Column="12" Text="{DynamicResource FP_RTB_Probe}" Style="{StaticResource FieldLabel}"/>
                         </Grid>
 
                         <!-- CH1 -->
@@ -253,17 +257,20 @@
                                 <ColumnDefinition Width="Auto"/>
                                 <ColumnDefinition Width="50"/>
                             </Grid.ColumnDefinitions>
-                            <TextBlock Grid.Column="0" Text="CH1" Foreground="{StaticResource Ch1Color}"
-                                       FontFamily="Consolas" FontSize="12" FontWeight="Bold" VerticalAlignment="Center"/>
+                            <Border Grid.Column="0" Background="#1A1400" CornerRadius="2" Padding="4,2"
+                                    HorizontalAlignment="Left" VerticalAlignment="Center">
+                                <TextBlock Text="CH1" Foreground="{StaticResource Ch1Color}"
+                                           FontFamily="Consolas" FontSize="12" FontWeight="Bold"/>
+                            </Border>
                             <CheckBox Grid.Column="1" IsChecked="{Binding Ch1Enabled}"
                                       HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                            <TextBlock Grid.Column="3" Text="V/dz:" Style="{StaticResource FieldLabel}"/>
+                            <TextBlock Grid.Column="3" Text="{DynamicResource FP_RTB_VDiv}" Style="{StaticResource FieldLabel}"/>
                             <ComboBox Grid.Column="4" Style="{StaticResource CbBox}"
                                       ItemsSource="{Binding ScaleOptions}" SelectedItem="{Binding Ch1Scale}"/>
                             <TextBlock Grid.Column="6" Text="Offs:" Style="{StaticResource FieldLabel}"/>
                             <TextBox Grid.Column="7" Style="{StaticResource ValBox}"
                                      Text="{Binding Ch1Offset, UpdateSourceTrigger=PropertyChanged}"/>
-                            <TextBlock Grid.Column="9" Text="Spr:" Style="{StaticResource FieldLabel}"/>
+                            <TextBlock Grid.Column="9" Text="{DynamicResource FP_RTB_Coup}" Style="{StaticResource FieldLabel}"/>
                             <ComboBox Grid.Column="10" Style="{StaticResource CbBox}"
                                       ItemsSource="{Binding CouplingOptions}" SelectedItem="{Binding Ch1Coupling}"/>
                             <TextBlock Grid.Column="12" Text="x:" Style="{StaticResource FieldLabel}"/>
@@ -289,17 +296,20 @@
                                 <ColumnDefinition Width="Auto"/>
                                 <ColumnDefinition Width="50"/>
                             </Grid.ColumnDefinitions>
-                            <TextBlock Grid.Column="0" Text="CH2" Foreground="{StaticResource Ch2Color}"
-                                       FontFamily="Consolas" FontSize="12" FontWeight="Bold" VerticalAlignment="Center"/>
+                            <Border Grid.Column="0" Background="#001414" CornerRadius="2" Padding="4,2"
+                                    HorizontalAlignment="Left" VerticalAlignment="Center">
+                                <TextBlock Text="CH2" Foreground="{StaticResource Ch2Color}"
+                                           FontFamily="Consolas" FontSize="12" FontWeight="Bold"/>
+                            </Border>
                             <CheckBox Grid.Column="1" IsChecked="{Binding Ch2Enabled}"
                                       HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                            <TextBlock Grid.Column="3" Text="V/dz:" Style="{StaticResource FieldLabel}"/>
+                            <TextBlock Grid.Column="3" Text="{DynamicResource FP_RTB_VDiv}" Style="{StaticResource FieldLabel}"/>
                             <ComboBox Grid.Column="4" Style="{StaticResource CbBox}"
                                       ItemsSource="{Binding ScaleOptions}" SelectedItem="{Binding Ch2Scale}"/>
                             <TextBlock Grid.Column="6" Text="Offs:" Style="{StaticResource FieldLabel}"/>
                             <TextBox Grid.Column="7" Style="{StaticResource ValBox}"
                                      Text="{Binding Ch2Offset, UpdateSourceTrigger=PropertyChanged}"/>
-                            <TextBlock Grid.Column="9" Text="Spr:" Style="{StaticResource FieldLabel}"/>
+                            <TextBlock Grid.Column="9" Text="{DynamicResource FP_RTB_Coup}" Style="{StaticResource FieldLabel}"/>
                             <ComboBox Grid.Column="10" Style="{StaticResource CbBox}"
                                       ItemsSource="{Binding CouplingOptions}" SelectedItem="{Binding Ch2Coupling}"/>
                             <TextBlock Grid.Column="12" Text="x:" Style="{StaticResource FieldLabel}"/>
@@ -325,17 +335,20 @@
                                 <ColumnDefinition Width="Auto"/>
                                 <ColumnDefinition Width="50"/>
                             </Grid.ColumnDefinitions>
-                            <TextBlock Grid.Column="0" Text="CH3" Foreground="{StaticResource Ch3Color}"
-                                       FontFamily="Consolas" FontSize="12" FontWeight="Bold" VerticalAlignment="Center"/>
+                            <Border Grid.Column="0" Background="#190019" CornerRadius="2" Padding="4,2"
+                                    HorizontalAlignment="Left" VerticalAlignment="Center">
+                                <TextBlock Text="CH3" Foreground="{StaticResource Ch3Color}"
+                                           FontFamily="Consolas" FontSize="12" FontWeight="Bold"/>
+                            </Border>
                             <CheckBox Grid.Column="1" IsChecked="{Binding Ch3Enabled}"
                                       HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                            <TextBlock Grid.Column="3" Text="V/dz:" Style="{StaticResource FieldLabel}"/>
+                            <TextBlock Grid.Column="3" Text="{DynamicResource FP_RTB_VDiv}" Style="{StaticResource FieldLabel}"/>
                             <ComboBox Grid.Column="4" Style="{StaticResource CbBox}"
                                       ItemsSource="{Binding ScaleOptions}" SelectedItem="{Binding Ch3Scale}"/>
                             <TextBlock Grid.Column="6" Text="Offs:" Style="{StaticResource FieldLabel}"/>
                             <TextBox Grid.Column="7" Style="{StaticResource ValBox}"
                                      Text="{Binding Ch3Offset, UpdateSourceTrigger=PropertyChanged}"/>
-                            <TextBlock Grid.Column="9" Text="Spr:" Style="{StaticResource FieldLabel}"/>
+                            <TextBlock Grid.Column="9" Text="{DynamicResource FP_RTB_Coup}" Style="{StaticResource FieldLabel}"/>
                             <ComboBox Grid.Column="10" Style="{StaticResource CbBox}"
                                       ItemsSource="{Binding CouplingOptions}" SelectedItem="{Binding Ch3Coupling}"/>
                             <TextBlock Grid.Column="12" Text="x:" Style="{StaticResource FieldLabel}"/>
@@ -364,23 +377,26 @@
                             <ColumnDefinition Width="*"/>
                             <ColumnDefinition Width="Auto"/>
                         </Grid.ColumnDefinitions>
-                        <TextBlock Grid.Column="0" Text="CH4" Foreground="{StaticResource Ch4Color}"
-                                   FontFamily="Consolas" FontSize="12" FontWeight="Bold" VerticalAlignment="Center"/>
+                        <Border Grid.Column="0" Background="#001900" CornerRadius="2" Padding="4,2"
+                                HorizontalAlignment="Left" VerticalAlignment="Center">
+                            <TextBlock Text="CH4" Foreground="{StaticResource Ch4Color}"
+                                       FontFamily="Consolas" FontSize="12" FontWeight="Bold"/>
+                        </Border>
                         <CheckBox Grid.Column="1" IsChecked="{Binding Ch4Enabled}"
                                   HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                        <TextBlock Grid.Column="3" Text="V/dz:" Style="{StaticResource FieldLabel}"/>
+                        <TextBlock Grid.Column="3" Text="{DynamicResource FP_RTB_VDiv}" Style="{StaticResource FieldLabel}"/>
                         <ComboBox Grid.Column="4" Style="{StaticResource CbBox}"
                                   ItemsSource="{Binding ScaleOptions}" SelectedItem="{Binding Ch4Scale}"/>
                         <TextBlock Grid.Column="6" Text="Offs:" Style="{StaticResource FieldLabel}"/>
                         <TextBox Grid.Column="7" Style="{StaticResource ValBox}"
                                  Text="{Binding Ch4Offset, UpdateSourceTrigger=PropertyChanged}"/>
-                        <TextBlock Grid.Column="9" Text="Spr:" Style="{StaticResource FieldLabel}"/>
+                        <TextBlock Grid.Column="9" Text="{DynamicResource FP_RTB_Coup}" Style="{StaticResource FieldLabel}"/>
                         <ComboBox Grid.Column="10" Style="{StaticResource CbBox}"
                                   ItemsSource="{Binding CouplingOptions}" SelectedItem="{Binding Ch4Coupling}"/>
                         <TextBlock Grid.Column="12" Text="x:" Style="{StaticResource FieldLabel}"/>
                         <ComboBox Grid.Column="13" Style="{StaticResource CbBox}"
                                   ItemsSource="{Binding ProbeOptions}" SelectedItem="{Binding Ch4Probe}"/>
-                        <Button Grid.Column="15" Content="ZASTOSUJ" Width="80"
+                        <Button Grid.Column="15" Content="{DynamicResource FP_RTB_Apply}" Width="80"
                                 Background="{StaticResource RsBrand}" Style="{StaticResource SmBtn}"
                                 Command="{Binding ApplyChannelsCommand}"/>
                     </Grid>
@@ -399,7 +415,7 @@
                         BorderBrush="{StaticResource BorderClr}" BorderThickness="1"
                         CornerRadius="4" Padding="10,8">
                     <StackPanel>
-                        <TextBlock Text="PODSTAWA CZASU" Style="{StaticResource SecTitle}"/>
+                        <TextBlock Text="{DynamicResource FP_RTB_Timebase}" Style="{StaticResource SecTitle}"/>
                         <Grid>
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="Auto"/>
@@ -407,7 +423,7 @@
                                 <ColumnDefinition Width="Auto"/>
                                 <ColumnDefinition Width="Auto"/>
                             </Grid.ColumnDefinitions>
-                            <TextBlock Grid.Column="0" Text="s/dz:" Style="{StaticResource FieldLabel}" Margin="0,0,6,0"/>
+                            <TextBlock Grid.Column="0" Text="{DynamicResource FP_RTB_SDiv}" Style="{StaticResource FieldLabel}" Margin="0,0,6,0"/>
                             <ComboBox Grid.Column="1" Style="{StaticResource CbBox}"
                                       ItemsSource="{Binding TimebaseOptions}" SelectedItem="{Binding SelectedTimescale}"/>
                             <TextBlock Grid.Column="2" Text="s" Style="{StaticResource FieldLabel}" Margin="4,0,8,0"/>
@@ -422,7 +438,7 @@
                         BorderBrush="{StaticResource BorderClr}" BorderThickness="1"
                         CornerRadius="4" Padding="10,8">
                     <StackPanel>
-                        <TextBlock Text="WYZWALANIE" Style="{StaticResource SecTitle}"/>
+                        <TextBlock Text="{DynamicResource FP_RTB_Trigger}" Style="{StaticResource SecTitle}"/>
                         <Grid>
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="Auto"/>
@@ -439,16 +455,16 @@
                                 <ColumnDefinition Width="8"/>
                                 <ColumnDefinition Width="Auto"/>
                             </Grid.ColumnDefinitions>
-                            <TextBlock Grid.Column="0" Text="Źr:" Style="{StaticResource FieldLabel}"/>
+                            <TextBlock Grid.Column="0" Text="{DynamicResource FP_RTB_Src}" Style="{StaticResource FieldLabel}"/>
                             <ComboBox Grid.Column="1" Style="{StaticResource CbBox}"
                                       ItemsSource="{Binding TriggerSources}" SelectedItem="{Binding TriggerSource}"/>
-                            <TextBlock Grid.Column="3" Text="Poz:" Style="{StaticResource FieldLabel}"/>
+                            <TextBlock Grid.Column="3" Text="{DynamicResource FP_RTB_Pos}" Style="{StaticResource FieldLabel}"/>
                             <TextBox Grid.Column="4" Style="{StaticResource ValBox}"
                                      Text="{Binding TriggerLevel, UpdateSourceTrigger=PropertyChanged}"/>
-                            <TextBlock Grid.Column="6" Text="Zb:" Style="{StaticResource FieldLabel}"/>
+                            <TextBlock Grid.Column="6" Text="{DynamicResource FP_RTB_Slope}" Style="{StaticResource FieldLabel}"/>
                             <ComboBox Grid.Column="7" Style="{StaticResource CbBox}"
                                       ItemsSource="{Binding TriggerSlopes}" SelectedItem="{Binding TriggerSlope}"/>
-                            <TextBlock Grid.Column="9" Text="Tr:" Style="{StaticResource FieldLabel}"/>
+                            <TextBlock Grid.Column="9" Text="{DynamicResource FP_RTB_Trig}" Style="{StaticResource FieldLabel}"/>
                             <ComboBox Grid.Column="10" Style="{StaticResource CbBox}"
                                       ItemsSource="{Binding TriggerModes}" SelectedItem="{Binding TriggerMode}"/>
                             <Button Grid.Column="12" Content="OK" Width="40"
@@ -464,7 +480,7 @@
                     BorderBrush="{StaticResource BorderClr}" BorderThickness="1"
                     CornerRadius="4" Margin="14,5,14,0" Padding="10,8">
                 <StackPanel>
-                    <TextBlock Text="STEROWANIE AKWIZYCJĄ" Style="{StaticResource SecTitle}"/>
+                    <TextBlock Text="{DynamicResource FP_RTB_AcqControl}" Style="{StaticResource SecTitle}"/>
                     <UniformGrid Rows="1" Columns="4">
                         <Button Content="RUN"    Background="#1A5C1A" Margin="2"
                                 Style="{StaticResource AcqBtn}" Command="{Binding RunCommand}"/>
@@ -488,8 +504,8 @@
                             <ColumnDefinition Width="*"/>
                             <ColumnDefinition Width="Auto"/>
                         </Grid.ColumnDefinitions>
-                        <TextBlock Grid.Column="0" Text="POMIARY" Style="{StaticResource SecTitle}"/>
-                        <Button Grid.Column="1" Content="ODSWIEZ" Width="80"
+                        <TextBlock Grid.Column="0" Text="{DynamicResource FP_RTB_Measurements}" Style="{StaticResource SecTitle}"/>
+                        <Button Grid.Column="1" Content="{DynamicResource FP_RTB_Refresh}" Width="80"
                                 Background="#223355" Style="{StaticResource SmBtn}"
                                 Command="{Binding UpdateMeasurementsCommand}"/>
                     </Grid>
@@ -515,60 +531,60 @@
                         </Grid.RowDefinitions>
 
                         <!-- M1 -->
-                        <TextBlock Grid.Row="0" Grid.Column="0" Text="M1" Foreground="#AABB88"
+                        <TextBlock Grid.Row="0" Grid.Column="0" Text="M1" Foreground="#5C7A2E"
                                    FontFamily="Consolas" FontSize="11" FontWeight="Bold" VerticalAlignment="Center"/>
                         <ComboBox Grid.Row="0" Grid.Column="1" Style="{StaticResource CbBox}"
                                   ItemsSource="{Binding ChannelSources}" SelectedItem="{Binding M1Source}"/>
                         <ComboBox Grid.Row="0" Grid.Column="3" Style="{StaticResource CbBox}"
                                   ItemsSource="{Binding MeasTypes}" SelectedItem="{Binding M1Type}"/>
-                        <Border Grid.Row="0" Grid.Column="5" Background="#14182A"
+                        <Border Grid.Row="0" Grid.Column="5" Background="#FFFFFF"
                                 BorderBrush="{StaticResource BorderClr}" BorderThickness="1" CornerRadius="2" Padding="6,2">
-                            <TextBlock Text="{Binding M1Result}" Foreground="#88DDAA"
+                            <TextBlock Text="{Binding M1Result}" Foreground="#0A8F42"
                                        FontFamily="Consolas" FontSize="11" VerticalAlignment="Center"/>
                         </Border>
                         <TextBlock Grid.Row="0" Grid.Column="6" Text="{Binding M1Unit}"
                                    Style="{StaticResource FieldLabel}" Margin="4,0,0,0"/>
 
                         <!-- M2 -->
-                        <TextBlock Grid.Row="2" Grid.Column="0" Text="M2" Foreground="#AABB88"
+                        <TextBlock Grid.Row="2" Grid.Column="0" Text="M2" Foreground="#5C7A2E"
                                    FontFamily="Consolas" FontSize="11" FontWeight="Bold" VerticalAlignment="Center"/>
                         <ComboBox Grid.Row="2" Grid.Column="1" Style="{StaticResource CbBox}"
                                   ItemsSource="{Binding ChannelSources}" SelectedItem="{Binding M2Source}"/>
                         <ComboBox Grid.Row="2" Grid.Column="3" Style="{StaticResource CbBox}"
                                   ItemsSource="{Binding MeasTypes}" SelectedItem="{Binding M2Type}"/>
-                        <Border Grid.Row="2" Grid.Column="5" Background="#14182A"
+                        <Border Grid.Row="2" Grid.Column="5" Background="#FFFFFF"
                                 BorderBrush="{StaticResource BorderClr}" BorderThickness="1" CornerRadius="2" Padding="6,2">
-                            <TextBlock Text="{Binding M2Result}" Foreground="#88DDAA"
+                            <TextBlock Text="{Binding M2Result}" Foreground="#0A8F42"
                                        FontFamily="Consolas" FontSize="11" VerticalAlignment="Center"/>
                         </Border>
                         <TextBlock Grid.Row="2" Grid.Column="6" Text="{Binding M2Unit}"
                                    Style="{StaticResource FieldLabel}" Margin="4,0,0,0"/>
 
                         <!-- M3 -->
-                        <TextBlock Grid.Row="4" Grid.Column="0" Text="M3" Foreground="#AABB88"
+                        <TextBlock Grid.Row="4" Grid.Column="0" Text="M3" Foreground="#5C7A2E"
                                    FontFamily="Consolas" FontSize="11" FontWeight="Bold" VerticalAlignment="Center"/>
                         <ComboBox Grid.Row="4" Grid.Column="1" Style="{StaticResource CbBox}"
                                   ItemsSource="{Binding ChannelSources}" SelectedItem="{Binding M3Source}"/>
                         <ComboBox Grid.Row="4" Grid.Column="3" Style="{StaticResource CbBox}"
                                   ItemsSource="{Binding MeasTypes}" SelectedItem="{Binding M3Type}"/>
-                        <Border Grid.Row="4" Grid.Column="5" Background="#14182A"
+                        <Border Grid.Row="4" Grid.Column="5" Background="#FFFFFF"
                                 BorderBrush="{StaticResource BorderClr}" BorderThickness="1" CornerRadius="2" Padding="6,2">
-                            <TextBlock Text="{Binding M3Result}" Foreground="#88DDAA"
+                            <TextBlock Text="{Binding M3Result}" Foreground="#0A8F42"
                                        FontFamily="Consolas" FontSize="11" VerticalAlignment="Center"/>
                         </Border>
                         <TextBlock Grid.Row="4" Grid.Column="6" Text="{Binding M3Unit}"
                                    Style="{StaticResource FieldLabel}" Margin="4,0,0,0"/>
 
                         <!-- M4 -->
-                        <TextBlock Grid.Row="6" Grid.Column="0" Text="M4" Foreground="#AABB88"
+                        <TextBlock Grid.Row="6" Grid.Column="0" Text="M4" Foreground="#5C7A2E"
                                    FontFamily="Consolas" FontSize="11" FontWeight="Bold" VerticalAlignment="Center"/>
                         <ComboBox Grid.Row="6" Grid.Column="1" Style="{StaticResource CbBox}"
                                   ItemsSource="{Binding ChannelSources}" SelectedItem="{Binding M4Source}"/>
                         <ComboBox Grid.Row="6" Grid.Column="3" Style="{StaticResource CbBox}"
                                   ItemsSource="{Binding MeasTypes}" SelectedItem="{Binding M4Type}"/>
-                        <Border Grid.Row="6" Grid.Column="5" Background="#14182A"
+                        <Border Grid.Row="6" Grid.Column="5" Background="#FFFFFF"
                                 BorderBrush="{StaticResource BorderClr}" BorderThickness="1" CornerRadius="2" Padding="6,2">
-                            <TextBlock Text="{Binding M4Result}" Foreground="#88DDAA"
+                            <TextBlock Text="{Binding M4Result}" Foreground="#0A8F42"
                                        FontFamily="Consolas" FontSize="11" VerticalAlignment="Center"/>
                         </Border>
                         <TextBlock Grid.Row="6" Grid.Column="6" Text="{Binding M4Unit}"
@@ -613,7 +629,7 @@
                             <TextBlock Text="{Binding TimescaleDisplay}" Foreground="#7090B8"
                                        FontFamily="Consolas" FontSize="9" VerticalAlignment="Center"/>
                         </StackPanel>
-                        <Button Grid.Column="1" Content="ODCZYT PRZEBIEGÓW"
+                        <Button Grid.Column="1" Content="{DynamicResource FP_RTB_CaptureWaveform}"
                                 Background="#1A2E50" Style="{StaticResource SmBtn}"
                                 Margin="0,2,6,2" Padding="10,0"
                                 Command="{Binding CaptureWaveformCommand}"
@@ -642,10 +658,10 @@
                 <Button Grid.Column="0" Content="SCREENSHOT"
                         Background="#1A3318" Style="{StaticResource AcqBtn}"
                         Command="{Binding TakeScreenshotCommand}"/>
-                <Button Grid.Column="2" Content="ZAPISZ PRESET"
+                <Button Grid.Column="2" Content="{DynamicResource FP_RTB_SavePreset}"
                         Background="#1A2840" Style="{StaticResource AcqBtn}"
                         Command="{Binding SavePresetCommand}"/>
-                <Button Grid.Column="4" Content="WCZYTAJ PRESET"
+                <Button Grid.Column="4" Content="{DynamicResource FP_RTB_LoadPreset}"
                         Background="#1A2840" Style="{StaticResource AcqBtn}"
                         Command="{Binding LoadPresetCommand}"/>
                 <Button Grid.Column="6" Content="LIVE DATA"
@@ -669,7 +685,7 @@
                     <Ellipse Grid.Column="0" Width="8" Height="8" VerticalAlignment="Center" Margin="0,0,6,0">
                         <Ellipse.Style>
                             <Style TargetType="Ellipse">
-                                <Setter Property="Fill" Value="#2A2A55"/>
+                                <Setter Property="Fill" Value="#AEB4C8"/>
                                 <Style.Triggers>
                                     <DataTrigger Binding="{Binding IsConnected}" Value="True">
                                         <Setter Property="Fill" Value="{StaticResource RsBrand}"/>
@@ -683,7 +699,7 @@
                                FontFamily="Consolas" FontSize="10"
                                VerticalAlignment="Center" TextTrimming="CharacterEllipsis"/>
                     <TextBlock Grid.Column="2" Text="R&amp;S RTB2004  |  4CH 300MHz"
-                               Foreground="#506070" FontFamily="Consolas" FontSize="9"
+                               Foreground="#5A6483" FontFamily="Consolas" FontSize="9"
                                VerticalAlignment="Center"/>
                 </Grid>
             </Border>

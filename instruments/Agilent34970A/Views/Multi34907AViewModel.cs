@@ -27,7 +27,8 @@ public partial class Multi34907AViewModel : CardTabViewModel
     [ObservableProperty] private double _dac2Voltage;
     [ObservableProperty] private double _dacStep = 0.1;
 
-    public string DacRangeHint => $"Zakres {Card34907A.DacMin:0.#}…{Card34907A.DacMax:0.#} V (kanały s04 / s05)";
+    public string DacRangeHint => T("FP_A34970A_DacRangeHint", "Range {0}…{1} V (channels s04 / s05)",
+        Card34907A.DacMin.ToString("0.#"), Card34907A.DacMax.ToString("0.#"));
 
     [RelayCommand] private Task SetDac1Async() => SendDacAsync(1, Dac1Voltage);
     [RelayCommand] private Task SetDac2Async() => SendDacAsync(2, Dac2Voltage);
@@ -47,7 +48,7 @@ public partial class Multi34907AViewModel : CardTabViewModel
             await Driver.SetDacAsync(Slot, dac, voltage);
             SetStatus($"DAC{dac} slot {Slot}: {voltage:F4} V");
         }
-        catch (Exception ex) { SetStatus($"Błąd DAC{dac}: {ex.Message}"); }
+        catch (Exception ex) { SetStatus(T("FP_A34970A_ErrSetDac", "DAC{0} error: {1}", dac, ex.Message)); }
     }
 
     // ── Totalizator (kanał s03) ──────────────────────────────────────────────────
@@ -63,7 +64,7 @@ public partial class Multi34907AViewModel : CardTabViewModel
             TotalizerValueText = double.IsNaN(v) ? "ERR" : $"{v:F0}";
             SetStatus($"Totalizer slot {Slot}: {TotalizerValueText}");
         }
-        catch (Exception ex) { SetStatus($"Błąd totalizer: {ex.Message}"); TotalizerValueText = "ERR"; }
+        catch (Exception ex) { SetStatus(T("FP_A34970A_ErrTotalizer", "Totalizer error: {0}", ex.Message)); TotalizerValueText = "ERR"; }
     }
 
     [RelayCommand]
@@ -74,8 +75,8 @@ public partial class Multi34907AViewModel : CardTabViewModel
         {
             await Driver.ResetTotalizerAsync(Slot);
             TotalizerValueText = "0";
-            SetStatus($"Totalizer slot {Slot} — reset");
+            SetStatus(T("FP_A34970A_TotalizerResetDone", "Totalizer slot {0} — reset", Slot));
         }
-        catch (Exception ex) { SetStatus($"Błąd reset totalizer: {ex.Message}"); }
+        catch (Exception ex) { SetStatus(T("FP_A34970A_ErrTotalizerReset", "Totalizer reset error: {0}", ex.Message)); }
     }
 }
