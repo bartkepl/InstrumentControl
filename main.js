@@ -339,7 +339,7 @@ var assemblies = [
   {
     "name": "InstrumentControl.Core",
     "classes": [
-      { "name": "InstrumentControl.Core.Base.InstrumentDriverBase", "rp": "InstrumentControl.Core_InstrumentDriverBase.html", "cl": 18, "ucl": 1, "cal": 19, "tl": 130, "cb": 12, "tb": 16, "cm": 0, "fcm": 0, "tm": 0, "lch": [], "bch": [], "mch": [], "mfch": [], "hc": [], "metrics": { } },
+      { "name": "InstrumentControl.Core.Base.InstrumentDriverBase", "rp": "InstrumentControl.Core_InstrumentDriverBase.html", "cl": 28, "ucl": 6, "cal": 34, "tl": 161, "cb": 13, "tb": 18, "cm": 0, "fcm": 0, "tm": 0, "lch": [], "bch": [], "mch": [], "mfch": [], "hc": [], "metrics": { } },
       { "name": "InstrumentControl.Core.Base.SequenceBlockBase", "rp": "InstrumentControl.Core_SequenceBlockBase.html", "cl": 37, "ucl": 4, "cal": 41, "tl": 75, "cb": 18, "tb": 22, "cm": 0, "fcm": 0, "tm": 0, "lch": [], "bch": [], "mch": [], "mfch": [], "hc": [], "metrics": { } },
       { "name": "InstrumentControl.Core.Blocks.AddToChartBlock", "rp": "InstrumentControl.Core_AddToChartBlock.html", "cl": 31, "ucl": 0, "cal": 31, "tl": 50, "cb": 3, "tb": 4, "cm": 0, "fcm": 0, "tm": 0, "lch": [], "bch": [], "mch": [], "mfch": [], "hc": [], "metrics": { } },
       { "name": "InstrumentControl.Core.Blocks.ConditionBlock", "rp": "InstrumentControl.Core_ConditionBlock.html", "cl": 45, "ucl": 1, "cal": 46, "tl": 146, "cb": 22, "tb": 26, "cm": 0, "fcm": 0, "tm": 0, "lch": [], "bch": [], "mch": [], "mfch": [], "hc": [], "metrics": { } },
@@ -366,12 +366,13 @@ var assemblies = [
       { "name": "InstrumentControl.Core.Services.DataManager", "rp": "InstrumentControl.Core_DataManager.html", "cl": 43, "ucl": 0, "cal": 43, "tl": 77, "cb": 20, "tb": 20, "cm": 0, "fcm": 0, "tm": 0, "lch": [], "bch": [], "mch": [], "mfch": [], "hc": [], "metrics": { } },
       { "name": "InstrumentControl.Core.Services.InstrumentDriverAttribute", "rp": "InstrumentControl.Core_InstrumentDriverAttribute.html", "cl": 0, "ucl": 1, "cal": 1, "tl": 69, "cb": 0, "tb": 0, "cm": 0, "fcm": 0, "tm": 0, "lch": [], "bch": [], "mch": [], "mfch": [], "hc": [], "metrics": { } },
       { "name": "InstrumentControl.Core.Services.LogService", "rp": "InstrumentControl.Core_LogService.html", "cl": 37, "ucl": 0, "cal": 37, "tl": 66, "cb": 14, "tb": 18, "cm": 0, "fcm": 0, "tm": 0, "lch": [], "bch": [], "mch": [], "mfch": [], "hc": [], "metrics": { } },
+      { "name": "InstrumentControl.Core.Services.MeasurementLogService", "rp": "InstrumentControl.Core_MeasurementLogService.html", "cl": 37, "ucl": 1, "cal": 38, "tl": 66, "cb": 13, "tb": 18, "cm": 0, "fcm": 0, "tm": 0, "lch": [], "bch": [], "mch": [], "mfch": [], "hc": [], "metrics": { } },
       { "name": "InstrumentControl.Core.Services.PluginLoader", "rp": "InstrumentControl.Core_PluginLoader.html", "cl": 25, "ucl": 11, "cal": 36, "tl": 69, "cb": 8, "tb": 10, "cm": 0, "fcm": 0, "tm": 0, "lch": [], "bch": [], "mch": [], "mfch": [], "hc": [], "metrics": { } },
       { "name": "InstrumentControl.Core.Services.SequenceEngine", "rp": "InstrumentControl.Core_SequenceEngine.html", "cl": 26, "ucl": 0, "cal": 26, "tl": 163, "cb": 11, "tb": 16, "cm": 0, "fcm": 0, "tm": 0, "lch": [], "bch": [], "mch": [], "mfch": [], "hc": [], "metrics": { } },
-      { "name": "InstrumentControl.Core.Services.SerialConnectionProvider", "rp": "InstrumentControl.Core_SerialConnectionProvider.html", "cl": 8, "ucl": 20, "cal": 28, "tl": 635, "cb": 0, "tb": 8, "cm": 0, "fcm": 0, "tm": 0, "lch": [], "bch": [], "mch": [], "mfch": [], "hc": [], "metrics": { } },
-      { "name": "InstrumentControl.Core.Services.SimulatedConnectionProvider", "rp": "InstrumentControl.Core_SimulatedConnectionProvider.html", "cl": 172, "ucl": 53, "cal": 225, "tl": 635, "cb": 200, "tb": 352, "cm": 0, "fcm": 0, "tm": 0, "lch": [], "bch": [], "mch": [], "mfch": [], "hc": [], "metrics": { } },
-      { "name": "InstrumentControl.Core.Services.VisaConnectionProvider", "rp": "InstrumentControl.Core_VisaConnectionProvider.html", "cl": 0, "ucl": 53, "cal": 53, "tl": 635, "cb": 0, "tb": 14, "cm": 0, "fcm": 0, "tm": 0, "lch": [], "bch": [], "mch": [], "mfch": [], "hc": [], "metrics": { } },
-      { "name": "InstrumentControl.Core.Services.VisaService", "rp": "InstrumentControl.Core_VisaService.html", "cl": 40, "ucl": 31, "cal": 71, "tl": 635, "cb": 4, "tb": 18, "cm": 0, "fcm": 0, "tm": 0, "lch": [], "bch": [], "mch": [], "mfch": [], "hc": [], "metrics": { } },
+      { "name": "InstrumentControl.Core.Services.SerialConnectionProvider", "rp": "InstrumentControl.Core_SerialConnectionProvider.html", "cl": 9, "ucl": 12, "cal": 21, "tl": 728, "cb": 0, "tb": 8, "cm": 0, "fcm": 0, "tm": 0, "lch": [], "bch": [], "mch": [], "mfch": [], "hc": [], "metrics": { } },
+      { "name": "InstrumentControl.Core.Services.SimulatedConnectionProvider", "rp": "InstrumentControl.Core_SimulatedConnectionProvider.html", "cl": 172, "ucl": 53, "cal": 225, "tl": 728, "cb": 200, "tb": 352, "cm": 0, "fcm": 0, "tm": 0, "lch": [], "bch": [], "mch": [], "mfch": [], "hc": [], "metrics": { } },
+      { "name": "InstrumentControl.Core.Services.VisaConnectionProvider", "rp": "InstrumentControl.Core_VisaConnectionProvider.html", "cl": 0, "ucl": 52, "cal": 52, "tl": 728, "cb": 0, "tb": 18, "cm": 0, "fcm": 0, "tm": 0, "lch": [], "bch": [], "mch": [], "mfch": [], "hc": [], "metrics": { } },
+      { "name": "InstrumentControl.Core.Services.VisaService", "rp": "InstrumentControl.Core_VisaService.html", "cl": 40, "ucl": 31, "cal": 71, "tl": 728, "cb": 4, "tb": 18, "cm": 0, "fcm": 0, "tm": 0, "lch": [], "bch": [], "mch": [], "mfch": [], "hc": [], "metrics": { } },
     ]},
   {
     "name": "ItechIT6922B",
@@ -457,7 +458,7 @@ var riskHotspots = [
       { "value": 106, "exceeded": true },
     ]},
   {
-    "assembly": "InstrumentControl.Core", "class": "InstrumentControl.Core.Services.SimulatedConnectionProvider", "reportPath": "InstrumentControl.Core_SimulatedConnectionProvider.html", "methodName": "DmmValue()", "methodShortName": "DmmValue()", "fileIndex": 0, "line": 338,
+    "assembly": "InstrumentControl.Core", "class": "InstrumentControl.Core.Services.SimulatedConnectionProvider", "reportPath": "InstrumentControl.Core_SimulatedConnectionProvider.html", "methodName": "DmmValue()", "methodShortName": "DmmValue()", "fileIndex": 0, "line": 382,
     "metrics": [
       { "value": 1017, "exceeded": true },
       { "value": 60, "exceeded": true },
@@ -487,13 +488,13 @@ var riskHotspots = [
       { "value": 146, "exceeded": true },
     ]},
   {
-    "assembly": "InstrumentControl.Core", "class": "InstrumentControl.Core.Services.SimulatedConnectionProvider", "reportPath": "InstrumentControl.Core_SimulatedConnectionProvider.html", "methodName": "BuildResponse(System.String)", "methodShortName": "BuildResponse(...)", "fileIndex": 0, "line": 253,
+    "assembly": "InstrumentControl.Core", "class": "InstrumentControl.Core.Services.SimulatedConnectionProvider", "reportPath": "InstrumentControl.Core_SimulatedConnectionProvider.html", "methodName": "BuildResponse(System.String)", "methodShortName": "BuildResponse(...)", "fileIndex": 0, "line": 297,
     "metrics": [
       { "value": 218, "exceeded": true },
       { "value": 144, "exceeded": true },
     ]},
   {
-    "assembly": "InstrumentControl.Core", "class": "InstrumentControl.Core.Services.SimulatedConnectionProvider", "reportPath": "InstrumentControl.Core_SimulatedConnectionProvider.html", "methodName": "OsciMeas(System.String)", "methodShortName": "OsciMeas(...)", "fileIndex": 0, "line": 353,
+    "assembly": "InstrumentControl.Core", "class": "InstrumentControl.Core.Services.SimulatedConnectionProvider", "reportPath": "InstrumentControl.Core_SimulatedConnectionProvider.html", "methodName": "OsciMeas(System.String)", "methodShortName": "OsciMeas(...)", "fileIndex": 0, "line": 397,
     "metrics": [
       { "value": 213, "exceeded": true },
       { "value": 22, "exceeded": true },
@@ -505,13 +506,13 @@ var riskHotspots = [
       { "value": 12, "exceeded": false },
     ]},
   {
-    "assembly": "InstrumentControl.Core", "class": "InstrumentControl.Core.Services.SimulatedConnectionProvider", "reportPath": "InstrumentControl.Core_SimulatedConnectionProvider.html", "methodName": "CountScpiChannels(System.String)", "methodShortName": "CountScpiChannels(...)", "fileIndex": 0, "line": 396,
+    "assembly": "InstrumentControl.Core", "class": "InstrumentControl.Core.Services.SimulatedConnectionProvider", "reportPath": "InstrumentControl.Core_SimulatedConnectionProvider.html", "methodName": "CountScpiChannels(System.String)", "methodShortName": "CountScpiChannels(...)", "fileIndex": 0, "line": 440,
     "metrics": [
       { "value": 156, "exceeded": true },
       { "value": 12, "exceeded": false },
     ]},
   {
-    "assembly": "InstrumentControl.Core", "class": "InstrumentControl.Core.Services.SimulatedConnectionProvider", "reportPath": "InstrumentControl.Core_SimulatedConnectionProvider.html", "methodName": "ProcessWrite(System.String)", "methodShortName": "ProcessWrite(...)", "fileIndex": 0, "line": 185,
+    "assembly": "InstrumentControl.Core", "class": "InstrumentControl.Core.Services.SimulatedConnectionProvider", "reportPath": "InstrumentControl.Core_SimulatedConnectionProvider.html", "methodName": "ProcessWrite(System.String)", "methodShortName": "ProcessWrite(...)", "fileIndex": 0, "line": 229,
     "metrics": [
       { "value": 132, "exceeded": true },
       { "value": 94, "exceeded": true },
@@ -529,7 +530,7 @@ var riskHotspots = [
       { "value": 56, "exceeded": true },
     ]},
   {
-    "assembly": "InstrumentControl.Core", "class": "InstrumentControl.Core.Services.VisaConnectionProvider", "reportPath": "InstrumentControl.Core_VisaConnectionProvider.html", "methodName": "ReadAsync(System.Int32)", "methodShortName": "ReadAsync(...)", "fileIndex": 0, "line": 72,
+    "assembly": "InstrumentControl.Core", "class": "InstrumentControl.Core.Services.VisaConnectionProvider", "reportPath": "InstrumentControl.Core_VisaConnectionProvider.html", "methodName": "ReadCore(System.Int32)", "methodShortName": "ReadCore(...)", "fileIndex": 0, "line": 101,
     "metrics": [
       { "value": 42, "exceeded": true },
       { "value": 6, "exceeded": false },
@@ -547,7 +548,7 @@ var riskHotspots = [
       { "value": 32, "exceeded": true },
     ]},
   {
-    "assembly": "InstrumentControl.Core", "class": "InstrumentControl.Core.Services.VisaService", "reportPath": "InstrumentControl.Core_VisaService.html", "methodName": "FindResources(System.String)", "methodShortName": "FindResources(...)", "fileIndex": 0, "line": 521,
+    "assembly": "InstrumentControl.Core", "class": "InstrumentControl.Core.Services.VisaService", "reportPath": "InstrumentControl.Core_VisaService.html", "methodName": "FindResources(System.String)", "methodShortName": "FindResources(...)", "fileIndex": 0, "line": 614,
     "metrics": [
       { "value": 36, "exceeded": true },
       { "value": 10, "exceeded": false },

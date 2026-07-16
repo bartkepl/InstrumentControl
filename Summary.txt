@@ -1,23 +1,23 @@
 Summary - InstrumentControl coverage
-  Generated on: 6/19/2026 - 2:38:55 PM
-  Coverage date: 6/19/2026 - 2:38:15 PM - 6/19/2026 - 2:38:50 PM
+  Generated on: 7/16/2026 - 11:53:20 AM
+  Coverage date: 7/16/2026 - 11:52:49 AM - 7/16/2026 - 11:53:14 AM
   Parser: MultiReport (2x Cobertura)
   Assemblies: 8
-  Classes: 119
-  Files: 42
-  Line coverage: 83.4%
-  Covered lines: 2103
-  Uncovered lines: 416
-  Coverable lines: 2519
-  Total lines: 8084
-  Branch coverage: 59.3% (963 of 1623)
-  Covered branches: 963
-  Total branches: 1623
-  Method coverage: 92.3% (744 of 806)
-  Full method coverage: 88.3% (712 of 806)
-  Covered methods: 744
-  Fully covered methods: 712
-  Total methods: 806
+  Classes: 120
+  Files: 43
+  Line coverage: 83.8%
+  Covered lines: 2151
+  Uncovered lines: 413
+  Coverable lines: 2564
+  Total lines: 8274
+  Branch coverage: 59.3% (977 of 1647)
+  Covered branches: 977
+  Total branches: 1647
+  Method coverage: 92.4% (749 of 810)
+  Full method coverage: 88.2% (715 of 810)
+  Covered methods: 749
+  Fully covered methods: 715
+  Total methods: 810
 
 Agilent34970A                                                   87.1%
   Agilent34970A.A34970A_DetectCards                              100%
@@ -62,8 +62,8 @@ HP34401A                                                        85.9%
   HP34401A.HP34401ABlocks                                        100%
   HP34401A.HP34401ADriver                                       92.5%
 
-InstrumentControl.Core                                          79.8%
-  InstrumentControl.Core.Base.InstrumentDriverBase              94.7%
+InstrumentControl.Core                                          80.9%
+  InstrumentControl.Core.Base.InstrumentDriverBase              82.3%
   InstrumentControl.Core.Base.SequenceBlockBase                 90.2%
   InstrumentControl.Core.Blocks.AddToChartBlock                  100%
   InstrumentControl.Core.Blocks.ConditionBlock                  97.8%
@@ -90,9 +90,10 @@ InstrumentControl.Core                                          79.8%
   InstrumentControl.Core.Services.DataManager                    100%
   InstrumentControl.Core.Services.InstrumentDriverAttribute        0%
   InstrumentControl.Core.Services.LogService                     100%
+  InstrumentControl.Core.Services.MeasurementLogService         97.3%
   InstrumentControl.Core.Services.PluginLoader                  69.4%
   InstrumentControl.Core.Services.SequenceEngine                 100%
-  InstrumentControl.Core.Services.SerialConnectionProvider      28.5%
+  InstrumentControl.Core.Services.SerialConnectionProvider      42.8%
   InstrumentControl.Core.Services.SimulatedConnectionProvider   76.4%
   InstrumentControl.Core.Services.VisaConnectionProvider           0%
   InstrumentControl.Core.Services.VisaService                   56.3%

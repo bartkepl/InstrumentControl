@@ -3,20 +3,20 @@
 
 |||
 |:---|:---|
-| Generated on: | 6/19/2026 - 2:38:55 PM |
-| Coverage date: | 6/19/2026 - 2:38:15 PM - 6/19/2026 - 2:38:50 PM |
+| Generated on: | 7/16/2026 - 11:53:20 AM |
+| Coverage date: | 7/16/2026 - 11:52:49 AM - 7/16/2026 - 11:53:14 AM |
 | Parser: | MultiReport (2x Cobertura) |
 | Assemblies: | 8 |
-| Classes: | 119 |
-| Files: | 42 |
-| **Line coverage:** | 83.4% (2103 of 2519) |
-| Covered lines: | 2103 |
-| Uncovered lines: | 416 |
-| Coverable lines: | 2519 |
-| Total lines: | 8084 |
-| **Branch coverage:** | 59.3% (963 of 1623) |
-| Covered branches: | 963 |
-| Total branches: | 1623 |
+| Classes: | 120 |
+| Files: | 43 |
+| **Line coverage:** | 83.8% (2151 of 2564) |
+| Covered lines: | 2151 |
+| Uncovered lines: | 413 |
+| Coverable lines: | 2564 |
+| Total lines: | 8274 |
+| **Branch coverage:** | 59.3% (977 of 1647) |
+| Covered branches: | 977 |
+| Total branches: | 1647 |
 | **Method coverage:** | [Feature is only available for sponsors](https://reportgenerator.io/pro) |
 
 </details>
@@ -80,12 +80,12 @@
 |HP34401A.HP34401ADriver|92.5%|100%|
 
 </details>
-<details><summary>InstrumentControl.Core - 79.8%</summary>
+<details><summary>InstrumentControl.Core - 80.9%</summary>
 
 |**Name**|**Line**|**Branch**|
 |:---|---:|---:|
-|**InstrumentControl.Core**|**79.8%**|**67.5%**|
-|InstrumentControl.Core.Base.InstrumentDriverBase|94.7%|75%|
+|**InstrumentControl.Core**|**80.9%**|**67.3%**|
+|InstrumentControl.Core.Base.InstrumentDriverBase|82.3%|72.2%|
 |InstrumentControl.Core.Base.SequenceBlockBase|90.2%|81.8%|
 |InstrumentControl.Core.Blocks.AddToChartBlock|100%|75%|
 |InstrumentControl.Core.Blocks.ConditionBlock|97.8%|84.6%|
@@ -112,9 +112,10 @@
 |InstrumentControl.Core.Services.DataManager|100%|100%|
 |InstrumentControl.Core.Services.InstrumentDriverAttribute|0%||
 |InstrumentControl.Core.Services.LogService|100%|77.7%|
+|InstrumentControl.Core.Services.MeasurementLogService|97.3%|72.2%|
 |InstrumentControl.Core.Services.PluginLoader|69.4%|80%|
 |InstrumentControl.Core.Services.SequenceEngine|100%|68.7%|
-|InstrumentControl.Core.Services.SerialConnectionProvider|28.5%|0%|
+|InstrumentControl.Core.Services.SerialConnectionProvider|42.8%|0%|
 |InstrumentControl.Core.Services.SimulatedConnectionProvider|76.4%|56.8%|
 |InstrumentControl.Core.Services.VisaConnectionProvider|0%|0%|
 |InstrumentControl.Core.Services.VisaService|56.3%|22.2%|
